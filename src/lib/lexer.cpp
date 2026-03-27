@@ -21,16 +21,25 @@ vector<Token> Lexer::tokenize(){
         if(currChar == EOF){
             break;
         }
-        if(isalpha(currChar)){ // alphanumerics
+        if(checkAlpha(currChar)){
             ts.push_back(readWord());
-        } else if(isdigit(currChar)){
+        } else if(checkDigit(currChar)){
             ts.push_back(readNum());
         } else if(currChar == '\''){
             ts.push_back(readStr());
-        } else if(currChar == '{' || currChar == '(') {
+        } else if(currChar == '{') {
             ts.push_back(readComment());
+        } else if(currChar == '('){
+            char n = f.peek();
+            if(n == '*'){
+                ts.push_back(readComment());
+            } else {
+                ts.push_back(Token{ArionToken::LPARENT, string(1, currChar), currLine});
+                next();
+            }
         } else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
+            next();
         }
     }
 
@@ -42,14 +51,14 @@ void Lexer::next() {
     if(f.get(currChar)) {
         if(currChar == '\n'){
             currLine++;
-        } else {
-            currChar = EOF;
         }
+    } else {
+        currChar = EOF;
     }
 }
 
 void Lexer::skip() {
-    while(currChar != EOF && isspace(currChar)){
+    while(currChar != EOF && checkSpace(currChar)){
         next();
     }
 }
@@ -93,6 +102,21 @@ ArionToken Lexer::checkWord(const string& w){
 }
 
 Token Lexer::readWord(){}
+
 Token Lexer::readNum(){}
+
 Token Lexer::readStr(){}
+
 Token Lexer::readComment(){}
+
+bool Lexer::checkAlpha(char c){
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool Lexer::checkDigit(char c){
+    return (c >= '0' && c <= '9');
+}
+
+bool Lexer::checkSpace(char c){
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+}

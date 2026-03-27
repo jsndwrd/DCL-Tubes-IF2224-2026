@@ -44,6 +44,10 @@ private:
     // Return COMMENT or an Error Token (unclosed comment)
     Token readComment();
 
+    // Checker
+    bool checkAlpha(char c);
+    bool checkDigit(char c);
+    bool checkSpace(char c);
 
 };
 
