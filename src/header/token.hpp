@@ -56,6 +56,7 @@ enum ArionToken {
     DOWNTOSY,
     THENSY,
     COMMENT,
+    EOFILE,
     UNKNOWN // sentinel
 };
 
@@ -112,6 +113,7 @@ const char* ArionTokenName[] = {
     "downtosy",
     "thensy",
     "comment",
+    "eofile",
     "unknown"
 };
 
