@@ -1,0 +1,63 @@
+program FiturLengkap;
+
+const
+  MAX := 100;
+  PI := 3.14;
+  HURUF := 'A';
+  NAMA := 'Arion';
+
+type
+  Bilangan = integer;
+  Teks = array[1..MAX] of char;
+
+var
+  x, y: integer;
+  r: real;
+  c: char;
+  s: string;
+  arr: Teks;
+
+function Tambah(a, b: integer): integer;
+begin
+  Tambah := a + b;
+end;
+
+procedure CetakHasil(n: integer);
+begin
+  writeln('Hasil: ', n);
+end;
+
+begin
+  x := 42;
+  y := 7;
+  r := 3.14;
+  c := 'Z';
+  s := 'Halo Dunia';
+
+  { ini komentar satu baris }
+
+  (* ini komentar
+     multi baris *)
+
+  if x > y then
+    CetakHasil(Tambah(x, y))
+  else
+    writeln('y lebih besar');
+
+  for x := 1 to 10 do
+    arr[x] := 'A';
+
+  while y > 0 do
+  begin
+    y := y - 1;
+  end;
+
+  repeat
+    x := x + 1;
+  until x >= MAX;
+
+  case x of
+    1: writeln('satu');
+    2: writeln('dua');
+  end;
+end.

@@ -1,0 +1,19 @@
+program TestError;
+
+var
+  x: integer;
+  y: real;
+
+begin
+  x := 10;
+  y := 3.14;
+
+  if x == y then
+    writeln('sama');
+
+  x := @;
+
+  writeln(1.);
+
+  writeln('belum ditutup);
+end.
