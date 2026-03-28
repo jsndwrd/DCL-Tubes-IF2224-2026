@@ -1,7 +1,10 @@
 #include "../header/lexer.hpp"
 #include <iostream>
+#include <string>
 using namespace std;
 
+
+/*buat baca file*/
 Lexer::Lexer(const std::string& fn){
     fname = fn;
     currLine = 1;
@@ -22,11 +25,11 @@ vector<Token> Lexer::tokenize(){
             break;
         }
         if(checkAlpha(currChar)){
-            ts.push_back(readWord());
+            ts.push_back(readWord()); // ini nanti bisa cek identifier atau keyword
         } else if(checkDigit(currChar)){
-            ts.push_back(readNum());
+            ts.push_back(readNum()); // pas read num bakalan ada bagian untuk baca real
         } else if(currChar == '\''){
-            ts.push_back(readStr());
+            ts.push_back(readStr()); // ini baca char atau string jadinya
         } else if(currChar == '{') {
             ts.push_back(readComment());
         } else if(currChar == '('){
@@ -37,6 +40,21 @@ vector<Token> Lexer::tokenize(){
                 ts.push_back(Token{ArionToken::LPARENT, string(1, currChar), currLine});
                 next();
             }
+        } else if (currChar == '+'){
+            ts.push_back(Token(ArionToken::PLUS, string(1, currChar), currLine));
+            next();
+        } else if(currChar == ':'){
+            char n = f.peek();
+            if (n == '='){
+                ts.push_back(Token(ArionToken::BECOMES, ":=", currLine));
+                next();
+            } else {
+                ts.push_back(Token(ArionToken::COLON, ":", currLine));
+                next();
+            }
+        } else if (currChar == '<'){
+            ts.push_back(Token(ArionToken::LSS, "<", currLine));
+            next();
         } else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
             next();
@@ -101,7 +119,9 @@ ArionToken Lexer::checkWord(const string& w){
     return IDENT;
 }
 
-Token Lexer::readWord(){}
+Token Lexer::readWord(){
+    
+}
 
 Token Lexer::readNum(){}
 
