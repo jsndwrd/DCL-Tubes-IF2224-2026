@@ -39,7 +39,37 @@ Athilla Zaidan Zidna Fann<br>
 
 ## Instructions
 
-WIP.
+### Instalasi
+
+Pastikan `g++` dan `make` sudah terinstal.
+
+### Build
+
+```bash
+make
+```
+
+atau secara eksplisit:
+
+```bash
+make build
+```
+
+Hasil kompilasi tersimpan di `bin/lexer` (Linux) atau `bin/lexer.exe` (Windows).
+
+---
+
+### Menjalankan Program
+
+```bash
+make run
+```
+
+### Membersihkan Build
+
+```bash
+make clean
+```
 
 ## Task Distribution
 
