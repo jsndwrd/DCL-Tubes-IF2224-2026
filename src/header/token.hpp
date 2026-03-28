@@ -60,7 +60,7 @@ enum ArionToken {
     UNKNOWN // sentinel
 };
 
-const char* ArionTokenName[] = {
+static const char* ArionTokenName[] = {
     "intcon",
     "realcon",
     "charcon",

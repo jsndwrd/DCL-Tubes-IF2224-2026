@@ -1,7 +1,12 @@
 #include "../header/lexer.hpp"
 #include <iostream>
+#include <string>
+#include <algorithm>
+#include <cctype>
 using namespace std;
 
+
+/*buat baca file*/
 Lexer::Lexer(const std::string& fn){
     fname = fn;
     currLine = 1;
@@ -22,22 +27,104 @@ vector<Token> Lexer::tokenize(){
             break;
         }
         if(checkAlpha(currChar)){
-            ts.push_back(readWord());
+            ts.push_back(readWord()); // ini nanti bisa cek identifier atau keyword
         } else if(checkDigit(currChar)){
-            ts.push_back(readNum());
+            ts.push_back(readNum()); // pas read num bakalan ada bagian untuk baca real
         } else if(currChar == '\''){
-            ts.push_back(readStr());
+            ts.push_back(readStr()); // ini baca char atau string jadinya
         } else if(currChar == '{') {
-            ts.push_back(readComment());
+            Token t = readComment();
+            if (t.type != ArionToken::COMMENT) {
+                ts.push_back(t);
+            }
         } else if(currChar == '('){
             char n = f.peek();
             if(n == '*'){
-                ts.push_back(readComment());
+                Token t = readComment();
+                if (t.type != ArionToken::COMMENT) {
+                    ts.push_back(t);
+                }
             } else {
                 ts.push_back(Token{ArionToken::LPARENT, string(1, currChar), currLine});
                 next();
             }
-        } else {
+        } else if (currChar == '+'){
+            ts.push_back(Token(ArionToken::PLUS, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '-'){
+            ts.push_back(Token(ArionToken::MINUS, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '*'){
+            ts.push_back(Token(ArionToken::TIMES, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '/'){
+            ts.push_back(Token(ArionToken::RDIV, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '='){
+            char n = f.peek();
+            if (n == '=') {
+                next(); // konsumsi '=' pertama
+                next(); // konsumsi '=' kedua
+                ts.push_back(Token(ArionToken::EQL, "==", currLine));
+            } else {
+                // '=' sendirian = tidak valid
+                ts.push_back(Token(ArionToken::UNKNOWN, "=", currLine));
+                next();
+            }
+        } else if(currChar == ':'){
+            char n = f.peek();
+            if (n == '='){
+                next();
+                next();
+                ts.push_back(Token(ArionToken::BECOMES, ":=", currLine));
+            } else {
+                ts.push_back(Token(ArionToken::COLON, ":", currLine));
+                next();
+            }
+        } else if (currChar == '<'){
+            char n = f.peek();
+            if (n == '>') {
+                next();
+                next();
+                ts.push_back(Token(ArionToken::NEQ, "<>", currLine));
+            } else if (n == '='){
+                next();
+                next();
+                ts.push_back(Token(ArionToken::LEQ, "<=", currLine));
+            } else {
+                ts.push_back(Token(ArionToken::LSS, "<", currLine));
+                next();
+            }
+        } else if (currChar == '>'){
+            char n = f.peek();
+            if (n == '='){
+                next();
+                next();
+                ts.push_back(Token(ArionToken::GEQ, ">=", currLine));
+            } else {
+                ts.push_back(Token(ArionToken::GTR, ">", currLine));
+                next();
+            }
+        } else if (currChar == ')'){
+            ts.push_back(Token(ArionToken::RPARENT, ")", currLine));
+            next();
+        } else if (currChar == '['){
+            ts.push_back(Token(ArionToken::LBRACK, "[", currLine));
+            next();
+        } else if (currChar == ']'){
+            ts.push_back(Token(ArionToken::RBRACK, "]", currLine));
+            next();
+        } else if (currChar == ','){
+            ts.push_back(Token(ArionToken::COMMA, ",", currLine));
+            next();
+        } else if (currChar == ';'){
+            ts.push_back(Token(ArionToken::SEMICOLON, ";", currLine));
+            next();
+        } else if (currChar == '.'){
+            ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
+            next();
+        } 
+        else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
             next();
         }
@@ -101,13 +188,113 @@ ArionToken Lexer::checkWord(const string& w){
     return IDENT;
 }
 
-Token Lexer::readWord(){}
+Token Lexer::readWord(){
+    string buffer = "";
+    int startLine = currLine;
+    
+    while (checkAlpha(currChar) || checkDigit(currChar)) {
+        buffer += currChar;
+        next();
+    }
 
-Token Lexer::readNum(){}
+    transform(buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
 
-Token Lexer::readStr(){}
+    ArionToken type = checkWord(buffer);
+    if (type == IDENT){
+        return Token(IDENT, buffer, startLine);
+    } else {
+        return Token(type, "", startLine);
+    }
+}
 
-Token Lexer::readComment(){}
+Token Lexer::readNum(){
+    string buffer = "";
+    int startLine = currLine;
+
+    while (checkDigit(currChar)) {
+        buffer += currChar;
+        next();
+    }
+
+    if (currChar == '.'){
+        buffer += currChar;
+        next();
+        if (!checkDigit(currChar)){
+        // gak ada angka setelah titik
+        return Token(ArionToken::UNKNOWN, buffer, startLine);
+    }
+        while (checkDigit(currChar)){
+            buffer += currChar;
+            next();
+        }
+        return Token(ArionToken::REALCON, buffer, startLine);
+    } else {
+        return Token(ArionToken::INTCON, buffer, startLine);;
+    }
+}
+
+Token Lexer::readStr(){
+    string buffer = "";
+    int startLine = currLine;
+    
+    buffer += currChar; // petik pembuka '
+    next();
+    
+    int count = 0;
+    while (currChar != '\'' && currChar != EOF) {
+        buffer += currChar;
+        next();
+        count++;
+    }
+    
+    // konsumsi petik penutup
+    buffer += currChar; // masukin ' penutup ke buffer
+    next();
+    
+    if (count == 0) {
+        return Token(ArionToken::UNKNOWN, buffer, startLine); // '' kosong = error
+    } else if (count == 1) {
+        return Token(ArionToken::CHARCON, buffer, startLine);
+    } else {
+        return Token(ArionToken::STRING, buffer, startLine);
+    }
+}
+
+Token Lexer::readComment(){
+    int startLine = currLine;
+    
+    if (currChar == '{') {
+        next(); 
+        while (currChar != '}' && currChar != EOF) {
+            next();
+        }
+        if (currChar == '}') {
+            next(); 
+        } else {
+            return Token(ArionToken::UNKNOWN, "unclosed comment", startLine);
+        }
+        return Token(ArionToken::COMMENT, "", startLine);
+        
+    } else {
+        next(); 
+        next(); 
+        while (currChar != EOF) {
+            if (currChar == '*') {
+                next();
+                if (currChar == ')') {
+                    next(); 
+                    break;
+                }
+            } else {
+                next();
+            }
+        }
+        if (currChar == EOF) {
+            return Token(ArionToken::UNKNOWN, "unclosed comment", startLine);
+        }
+        return Token(ArionToken::COMMENT, "", startLine);
+    }
+}
 
 bool Lexer::checkAlpha(char c){
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
