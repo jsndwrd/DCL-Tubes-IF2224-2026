@@ -68,8 +68,9 @@ vector<Token> Lexer::tokenize(){
         } else if(currChar == ':'){
             char n = f.peek();
             if (n == '='){
-                ts.push_back(Token(ArionToken::BECOMES, ":=", currLine));
                 next();
+                next();
+                ts.push_back(Token(ArionToken::BECOMES, ":=", currLine));
             } else {
                 ts.push_back(Token(ArionToken::COLON, ":", currLine));
                 next();
@@ -88,7 +89,36 @@ vector<Token> Lexer::tokenize(){
                 ts.push_back(Token(ArionToken::LSS, "<", currLine));
                 next();
             }
-        } else {
+        } else if (currChar == '>'){
+            char n = f.peek();
+            if (n == '='){
+                next();
+                next();
+                ts.push_back(Token(ArionToken::GEQ, ">=", currLine));
+            } else {
+                ts.push_back(Token(ArionToken::GTR, ">", currLine));
+                next();
+            }
+        } else if (currChar == ')'){
+            ts.push_back(Token(ArionToken::RPARENT, ")", currLine));
+            next();
+        } else if (currChar == '['){
+            ts.push_back(Token(ArionToken::LBRACK, "[", currLine));
+            next();
+        } else if (currChar == ']'){
+            ts.push_back(Token(ArionToken::RBRACK, "]", currLine));
+            next();
+        } else if (currChar == ','){
+            ts.push_back(Token(ArionToken::COMMA, ",", currLine));
+            next();
+        } else if (currChar == ';'){
+            ts.push_back(Token(ArionToken::SEMICOLON, ";", currLine));
+            next();
+        } else if (currChar == '.'){
+            ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
+            next();
+        } 
+        else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
             next();
         }
