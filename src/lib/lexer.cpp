@@ -197,9 +197,68 @@ Token Lexer::readNum(){
     }
 }
 
-Token Lexer::readStr(){}
+Token Lexer::readStr(){
+    string buffer = "";
+    int startLine = currLine;
+    
+    buffer += currChar; // petik pembuka '
+    next();
+    
+    int count = 0;
+    while (currChar != '\'' && currChar != EOF) {
+        buffer += currChar;
+        next();
+        count++;
+    }
+    
+    // konsumsi petik penutup
+    buffer += currChar; // masukin ' penutup ke buffer
+    next();
+    
+    if (count == 0) {
+        return Token(ArionToken::UNKNOWN, buffer, startLine); // '' kosong = error
+    } else if (count == 1) {
+        return Token(ArionToken::CHARCON, buffer, startLine);
+    } else {
+        return Token(ArionToken::STRING, buffer, startLine);
+    }
+}
 
-Token Lexer::readComment(){}
+Token Lexer::readComment(){
+    int startLine = currLine;
+    
+    if (currChar == '{') {
+        next(); 
+        while (currChar != '}' && currChar != EOF) {
+            next();
+        }
+        if (currChar == '}') {
+            next(); 
+        } else {
+            return Token(ArionToken::UNKNOWN, "unclosed comment", startLine);
+        }
+        return Token(ArionToken::COMMENT, "", startLine);
+        
+    } else {
+        next(); 
+        next(); 
+        while (currChar != EOF) {
+            if (currChar == '*') {
+                next();
+                if (currChar == ')') {
+                    next(); 
+                    break;
+                }
+            } else {
+                next();
+            }
+        }
+        if (currChar == EOF) {
+            return Token(ArionToken::UNKNOWN, "unclosed comment", startLine);
+        }
+        return Token(ArionToken::COMMENT, "", startLine);
+    }
+}
 
 bool Lexer::checkAlpha(char c){
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
