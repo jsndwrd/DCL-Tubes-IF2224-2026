@@ -43,6 +43,26 @@ vector<Token> Lexer::tokenize(){
         } else if (currChar == '+'){
             ts.push_back(Token(ArionToken::PLUS, string(1, currChar), currLine));
             next();
+        } else if (currChar == '-'){
+            ts.push_back(Token(ArionToken::MINUS, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '*'){
+            ts.push_back(Token(ArionToken::TIMES, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '/'){
+            ts.push_back(Token(ArionToken::RDIV, string(1, currChar), currLine));
+            next();
+        } else if (currChar == '='){
+            char n = f.peek();
+            if (n == '=') {
+                next(); // konsumsi '=' pertama
+                next(); // konsumsi '=' kedua
+                ts.push_back(Token(ArionToken::EQL, "==", currLine));
+            } else {
+                // '=' sendirian = tidak valid
+                ts.push_back(Token(ArionToken::UNKNOWN, "=", currLine));
+                next();
+            }
         } else if(currChar == ':'){
             char n = f.peek();
             if (n == '='){
@@ -53,8 +73,19 @@ vector<Token> Lexer::tokenize(){
                 next();
             }
         } else if (currChar == '<'){
-            ts.push_back(Token(ArionToken::LSS, "<", currLine));
-            next();
+            char n = f.peek();
+            if (n == '>') {
+                next();
+                next();
+                ts.push_back(Token(ArionToken::NEQ, "<>", currLine));
+            } else if (n == '='){
+                next();
+                next();
+                ts.push_back(Token(ArionToken::LEQ, "<=", currLine));
+            } else {
+                ts.push_back(Token(ArionToken::LSS, "<", currLine));
+                next();
+            }
         } else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
             next();
