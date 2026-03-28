@@ -40,7 +40,10 @@ vector<Token> Lexer::tokenize(){
         } else if(currChar == '('){
             char n = f.peek();
             if(n == '*'){
-                ts.push_back(readComment());
+                Token t = readComment();
+                if (t.type != ArionToken::COMMENT) {
+                    ts.push_back(t);
+                }
             } else {
                 ts.push_back(Token{ArionToken::LPARENT, string(1, currChar), currLine});
                 next();
