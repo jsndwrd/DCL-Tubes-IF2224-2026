@@ -33,7 +33,10 @@ vector<Token> Lexer::tokenize(){
         } else if(currChar == '\''){
             ts.push_back(readStr()); // ini baca char atau string jadinya
         } else if(currChar == '{') {
-            ts.push_back(readComment());
+            Token t = readComment();
+            if (t.type != ArionToken::COMMENT) {
+                ts.push_back(t);
+            }
         } else if(currChar == '('){
             char n = f.peek();
             if(n == '*'){
