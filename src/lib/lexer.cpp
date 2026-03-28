@@ -1,6 +1,8 @@
 #include "../header/lexer.hpp"
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <cctype>
 using namespace std;
 
 
@@ -151,7 +153,22 @@ ArionToken Lexer::checkWord(const string& w){
 }
 
 Token Lexer::readWord(){
+    string buffer = "";
+    int startLine = currLine;
     
+    while (checkAlpha(currChar) || checkDigit(currChar)) {
+        buffer += currChar;
+        next();
+    }
+
+    transform(buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
+
+    ArionToken type = checkWord(buffer);
+    if (type == IDENT){
+        return Token(IDENT, buffer, startLine);
+    } else {
+        return Token(type, "", startLine);
+    }
 }
 
 Token Lexer::readNum(){}
