@@ -171,7 +171,31 @@ Token Lexer::readWord(){
     }
 }
 
-Token Lexer::readNum(){}
+Token Lexer::readNum(){
+    string buffer = "";
+    int startLine = currLine;
+
+    while (checkDigit(currChar)) {
+        buffer += currChar;
+        next();
+    }
+
+    if (currChar == '.'){
+        buffer += currChar;
+        next();
+        if (!checkDigit(currChar)){
+        // gak ada angka setelah titik
+        return Token(ArionToken::UNKNOWN, buffer, startLine);
+    }
+        while (checkDigit(currChar)){
+            buffer += currChar;
+            next();
+        }
+        return Token(ArionToken::REALCON, buffer, startLine);
+    } else {
+        return Token(ArionToken::INTCON, buffer, startLine);;
+    }
+}
 
 Token Lexer::readStr(){}
 
