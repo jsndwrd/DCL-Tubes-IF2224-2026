@@ -101,16 +101,21 @@ int main() {
 
     string inputPath;
 
-    while (true){
-        cout << "Masukkan path berkas kode sumber Arion (.txt): ";
-        if (!getline(cin, inputPath)) {
+    while (true) {
+        cout << "Masukkan path berkas dari folder test/ (contoh: milestone-1/input-1.txt): ";
+        string raw;
+        if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
             return 0;
         }
 
-        if (inputPath.empty()) {
+        if (raw.empty()) {
             cout << "ERROR: Path berkas tidak boleh kosong.\n";
-        } else if (!fs::exists(inputPath)) {
+            continue;
+        }
+
+        inputPath = "test/" + raw;
+        if (!fs::exists(inputPath)) {
             cout << "ERROR: Berkas tidak ditemukan: " << inputPath << "\n";
         } else {
             break;
@@ -127,7 +132,10 @@ int main() {
 
     cout << "\nSimpan hasil ke berkas? (y/n): ";
     string jawab;
-    getline(cin, jawab);
+    if (!getline(cin, jawab)) {
+        cout << "\nProgram dihentikan.\n";
+        return 0;
+    }
 
     if (jawab != "y" && jawab != "Y") {
         cout << "Hasil tidak disimpan.\n\n";
@@ -136,14 +144,18 @@ int main() {
 
     string outputPath;
     while (true) {
-        cout << "Masukkan path berkas keluaran\n";
-        cout << "(contoh: test/milestone-1/output-1.txt): ";
-        if (!getline(cin, outputPath)) {
+        cout << "Masukkan path keluaran dari folder test/ (contoh: milestone-1/output-1.txt): ";
+        string raw;
+        if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
             return 0;
         }
-        if (!outputPath.empty()) break;
-        cout << "ERROR: Path keluaran tidak boleh kosong.\n";
+        if (raw.empty()) {
+            cout << "ERROR: Path keluaran tidak boleh kosong.\n";
+            continue;
+        }
+        outputPath = "test/" + raw;
+        break;
     }
 
     writeOutput(tokens, outputPath);
