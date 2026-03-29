@@ -1,0 +1,205 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+\onehalfspacing
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\graphicspath{{./}{./assets/}{./images/}}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, shapes.misc, arrows.meta, positioning, calc, automata}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{HTML}{F7F7F7}
+\definecolor{codeframe}{HTML}{DDDDDD}
+\definecolor{keyword}{HTML}{005FAF}
+\definecolor{comment}{HTML}{6A737D}
+\definecolor{string}{HTML}{D73A49}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keyword}\bfseries,
+    commentstyle=\color{comment}\itshape,
+    stringstyle=\color{string},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    tabsize=4,
+    showstringspaces=false,
+    language=C++,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+\AddToHook{cmd/section/before}{\clearpage}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=keyword,
+    citecolor=black,
+    pdfauthor={Made Branenda Jordhy, Muhammad Nur Majiid, Jason Edward Salim, Athilla Zaidan Zidna Fann},
+    pdftitle={Laporan Milestone 1 - Lexical Analysis - IF2224}
+}
+
+% HEADER/FOOTER
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{36pt}
+\fancyhead[L]{%
+    \small\textnormal{School of Electrical Engineering and Informatics}\\[-1pt]
+    \small\textnormal{Institut Teknologi Bandung}%
+}
+\fancyhead[R]{\IfFileExists{assets/LogoITB.png}{\includegraphics[height=1cm]{assets/LogoITB.png}}{}}
+\fancyfoot[L]{\small\textnormal{IF2224 Formal Language and Automata Theory}}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% TITLE
+\title{
+    \vspace{-1.5cm}
+    {\Large\textsc{Tugas Besar --- IF2224 Formal Language and Automata Theory}}\\[0.35cm]
+    {\LARGE\textbf{Arion Interpreter --- Milestone 1: Lexical Analysis}}\\[0.3cm]
+    \vspace{-0.3cm}
+}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+% TODO: ganti foto kelompok
+\begin{figure}[H]
+    \centering
+    \IfFileExists{assets/foto_kelompok.jpg}{%
+        \includegraphics[width=0.6\textwidth]{assets/foto_kelompok.jpg}%
+    }{%
+        \vspace{4cm}% placeholder space
+    }
+\end{figure}
+
+\vspace{1cm}
+\begin{center}
+    \textbf{Made Branenda Jordhy} --- 13524026 \\[0.15cm]
+    \textbf{Muhammad Nur Majiid} --- 13524028 \\[0.15cm]
+    \textbf{Jason Edward Salim} --- 13524034 \\[0.15cm]
+    \textbf{Athilla Zaidan Zidna Fann} --- 13524068
+\end{center}
+
+\vspace{3cm}
+\begin{center}
+    {\large\textbf{School of Electrical Engineering and Informatics}}\\[0.1cm]
+    {\large\textbf{Institut Teknologi Bandung}}\\[0.1cm]
+    {\large\textbf{Semester II 2025/2026}}\\[0.1cm]
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------------------------
+\section{Theoretical Background}
+
+
+
+% -----------------------------------------------------------------------
+\section{Design and Implementation}
+
+
+
+% -----------------------------------------------------------------------
+\section{Testing}
+
+
+
+% -----------------------------------------------------------------------
+\section{Conclusion}
+
+
+
+% -----------------------------------------------------------------------
+\begin{thebibliography}{9}
+
+\bibitem{tutorialspoint}
+``Compiler Design - Lexical Analysis,''
+TutorialsPoint.
+\url{https://www.tutorialspoint.com/compiler_design/compiler_design_lexical_analysis.htm}
+
+\bibitem{hopcroft2006}
+J.~E.~Hopcroft, R.~Motwani, and J.~D.~Ullman,
+\textit{Introduction to Automata Theory, Languages, and Computation}, 3rd ed.
+Pearson, 2006.
+
+\bibitem{aho2006}
+A.~V.~Aho, M.~S.~Lam, R.~Sethi, and J.~D.~Ullman,
+\textit{Compilers: Principles, Techniques, and Tools}, 2nd ed.
+Addison-Wesley, 2006.
+
+\bibitem{gnu_make}
+``An Introduction to Makefiles,''
+GNU Make Manual.
+\url{https://www.gnu.org/software/make/manual/html_node/Introduction.html}
+
+\end{thebibliography}
+
+% -----------------------------------------------------------------------
+\newpage
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+\subsection*{GitHub Repository}
+
+\url{https://github.com/jsndwrd/DCL-Tubes-IF2224-2026}
+
+\subsection*{DFA Transition Diagram}
+
+% TODO: tambahkan link workspace draw.io
+
+\subsection*{Task Distribution}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{clX}
+        \toprule
+        \textbf{NIM} & \textbf{Nama} & \textbf{Kontribusi} \\
+        \midrule
+        13524026 & Made Branenda Jordhy       & \\
+        13524028 & Muhammad Nur Majiid        & \\
+        13524034 & Jason Edward Salim         & \\
+        13524068 & Athilla Zaidan Zidna Fann  & \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\end{document}
