@@ -1,8 +1,10 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include <bits/stdc++.h>
+#include <string>
+#include <vector>
 #include <fstream>
+#include <algorithm>
 #include "token.hpp"
 
 class Lexer {

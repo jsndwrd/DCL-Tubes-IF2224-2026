@@ -13,6 +13,10 @@ else
 	RUN = ./$(OUT)
 	MKDIR = mkdir -p $(BIN)
 	CLEAN = rm -rf $(BIN)
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S), Darwin)
+		export SDKROOT := $(shell xcrun --show-sdk-path)
+	endif
 endif
 
 .PHONY: all build run clean

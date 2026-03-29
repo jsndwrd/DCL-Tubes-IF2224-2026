@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
+#include <unordered_map>
 using namespace std;
 
 
@@ -191,15 +192,16 @@ ArionToken Lexer::checkWord(const string& w){
 Token Lexer::readWord(){
     string buffer = "";
     int startLine = currLine;
-    
+
     while (checkAlpha(currChar) || checkDigit(currChar)) {
         buffer += currChar;
         next();
     }
 
-    transform(buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
+    string lower = buffer;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
-    ArionToken type = checkWord(buffer);
+    ArionToken type = checkWord(lower);
     if (type == IDENT){
         return Token(IDENT, buffer, startLine);
     } else {
@@ -246,11 +248,16 @@ Token Lexer::readStr(){
         next();
         count++;
     }
-    
+
+    if (currChar == EOF) {
+        // string ga ditutup sebelum EOF
+        return Token(ArionToken::UNKNOWN, buffer, startLine);
+    }
+
     // konsumsi petik penutup
     buffer += currChar; // masukin ' penutup ke buffer
     next();
-    
+
     if (count == 0) {
         return Token(ArionToken::UNKNOWN, buffer, startLine); // '' kosong = error
     } else if (count == 1) {
