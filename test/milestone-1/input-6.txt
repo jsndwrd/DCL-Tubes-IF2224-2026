@@ -1,0 +1,19 @@
+program CampuranError;
+
+var
+  n: integer;
+
+begin
+  n := 5;
+
+  { komentar valid }
+
+  (* komentar tidak ditutup
+
+  n := n + #;
+
+  writeln('');
+
+  if n = 10 then
+    writeln('ok');
+end.

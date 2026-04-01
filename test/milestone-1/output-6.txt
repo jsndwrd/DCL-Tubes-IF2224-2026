@@ -1,0 +1,17 @@
+programsy
+ident (campuranerror)
+semicolon
+
+varsy
+ident (n)
+colon
+ident (integer)
+semicolon
+
+beginsy
+ident (n)
+becomes
+intcon (5)
+semicolon
+
+unknown (unclosed comment)
