@@ -98,13 +98,12 @@
 \maketitle
 \thispagestyle{empty}
 
-% TODO: ganti foto kelompok
 \begin{figure}[H]
     \centering
-    \IfFileExists{assets/foto_kelompok.jpg}{%
-        \includegraphics[width=0.6\textwidth]{assets/foto_kelompok.jpg}%
+    \IfFileExists{assets/foto_kelompok.png}{%
+        \includegraphics[width=0.6\textwidth]{assets/foto_kelompok.png}%
     }{%
-        \vspace{4cm}% placeholder space
+        \vspace{4cm}
     }
 \end{figure}
 
@@ -229,59 +228,81 @@ pada diagram.
 
 \begin{figure}[p]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     shorten >=1pt,
     auto,
     on grid,
-    node distance=1.6cm and 2.8cm,
+    node distance=1.6cm and 2.4cm,
     every state/.style={minimum size=0.85cm, font=\small},
     every edge quotes/.style={font=\scriptsize, fill=white, inner sep=1.5pt},
     >=Stealth
 ]
-    % q0
-    \node[state, initial left, initial text={}] (q0) at (0,0) {$q_0$};
+    % q0 — centre of diagram
+    \node[state, initial above, initial text={}] (q0) at (0,0) {$q_0$};
+
+    % ── RIGHT SIDE: multi-state sub-automata ──────────────────────────────
 
     % WORD
-    \node[state, accepting] (qW)  at (4, 5.5)  {$q_w$};
+    \node[state, accepting] (qW)  at (3.5,  6)   {$q_w$};
 
     % NUMBER
-    \node[state, accepting] (qI)  at (4, 3.5)  {$q_i$};
-    \node[state]            (qD)  at (7, 3.5)  {$q_d$};
-    \node[state, accepting] (qR)  at (10, 3.5) {$q_r$};
+    \node[state, accepting] (qI)  at (3.5,  4.2) {$q_i$};
+    \node[state]            (qD)  at (6.0,  4.2) {$q_d$};
+    \node[state, accepting] (qR)  at (8.5,  4.2) {$q_r$};
 
     % STRING
-    \node[state, accepting] (qS0) at (4, 2)    {$q_{s_0}$};
-    \node[state, accepting] (qS1) at (7, 2)    {$q_{s_1}$};
-    \node[state, accepting] (qS2) at (10, 2)   {$q_{s_2}$};
+    \node[state]            (qS0) at (3.5,  2.6) {$q_{s_0}$};
+    \node[state, accepting] (qS1) at (6.0,  2.6) {$q_{s_1}$};
+    \node[state, accepting] (qS2) at (8.5,  2.6) {$q_{s_2}$};
 
     % COMMENT BRACE
-    \node[state, accepting] (qCB) at (4, 0.5)  {$q_{cb}$};
+    \node[state, accepting] (qCB) at (3.5,  1.1) {$q_{cb}$};
 
     % COMMENT PAREN
-    \node[state]            (qCP) at (4, -1)   {$q_{cp}$};
-    \node[state]            (qCS) at (7, -1)   {$q_{cs}$};
+    \node[state]            (qCP) at (3.5, -1.2) {$q_{cp}$};
+    \node[state]            (qCS) at (6.0, -1.2) {$q_{cs}$};
 
-    % MULTI-CHAR OPERATORS
-    \node[state, accepting] (qCOL) at (4, -2.5) {$q_:$};
-    \node[state, accepting] (qBEC) at (7, -2.5) {$q_{:=}$};
+    % MULTI-CHAR OPERATORS (right)
+    \node[state, accepting] (qCOL) at (3.5, -2.8) {$q_:$};
+    \node[state, accepting] (qBEC) at (6.0, -2.8) {$q_{:=}$};
 
-    \node[state, accepting] (qEQ)  at (4, -4)   {$q_=$};
-    \node[state, accepting] (qEQL) at (7, -4)   {$q_{==}$};
+    \node[state, accepting] (qEQ)  at (3.5, -4.2) {$q_=$};
+    \node[state, accepting] (qEQL) at (6.0, -4.2) {$q_{==}$};
 
-    \node[state, accepting] (qLT)  at (4, -5.5) {$q_{<}$};
-    \node[state, accepting] (qNEQ) at (7, -5)   {$q_{<>}$};
-    \node[state, accepting] (qLEQ) at (7, -6)   {$q_{\leq}$};
+    \node[state, accepting] (qLT)  at (3.5, -5.6) {$q_{<}$};
+    \node[state, accepting] (qNEQ) at (6.0, -5.1) {$q_{<>}$};
+    \node[state, accepting] (qLEQ) at (6.0, -6.1) {$q_{\leq}$};
 
-    \node[state, accepting] (qGT)  at (4, -7.5) {$q_{>}$};
-    \node[state, accepting] (qGEQ) at (7, -7.5) {$q_{\geq}$};
+    \node[state, accepting] (qGT)  at (3.5, -7.3) {$q_{>}$};
+    \node[state, accepting] (qGEQ) at (6.0, -7.3) {$q_{\geq}$};
 
-    % TRANSITIONS FROM q0
+    % ── LEFT SIDE: single-char tokens ─────────────────────────────────────
+    % Two sub-columns to avoid overlap: x=-3 (col A) and x=-6 (col B)
+
+    % Col A (x = -3): +  -  *  /  )  [  ]  ,  ;  .
+    \node[state, accepting] (qPLUS) at (-3,  6.0) {$q_{+}$};
+    \node[state, accepting] (qMIN)  at (-3,  4.8) {$q_{-}$};
+    \node[state, accepting] (qTIM)  at (-3,  3.6) {$q_{*}$};
+    \node[state, accepting] (qRDIV) at (-3,  2.4) {$q_{/}$};
+    \node[state, accepting] (qRPAR) at (-3,  1.2) {$q_{)}$};
+    \node[state, accepting] (qLBRK) at (-3,  0.0) {$q_{[}$};
+    \node[state, accepting] (qRBRK) at (-3, -1.2) {$q_{]}$};
+    \node[state, accepting] (qCOM)  at (-3, -2.4) {$q_{,}$};
+    \node[state, accepting] (qSEMI) at (-3, -3.6) {$q_{;}$};
+    \node[state, accepting] (qPER)  at (-3, -4.8) {$q_{.}$};
+
+    % Col B (x = -6): ( intermediate + lparent accepting
+    % q_( is intermediate: resolves lparent vs (*...*) comment
+    \node[state]            (qLPAR) at (-6,  1.2) {$q_{(}$};
+    \node[state, accepting] (qLPAC) at (-6, -0.6) {$q_{lp}$};
+
+    % ── TRANSITIONS FROM q0 ───────────────────────────────────────────────
     \path[->]
         (q0) edge ["{\scriptsize[a-zA-Z]}", above, sloped] (qW)
-        (q0) edge ["{\scriptsize[0-9]}", above, sloped, pos=0.45] (qI)
-        (q0) edge ["{\scriptsize\texttt{'}}", above, sloped, pos=0.45] (qS0)
+        (q0) edge ["{\scriptsize[0-9]}", above, sloped, pos=0.4] (qI)
+        (q0) edge ["{\scriptsize\texttt{'}}", above, sloped, pos=0.4] (qS0)
         (q0) edge ["{\scriptsize\texttt{\{}}",  above, sloped, pos=0.35] (qCB)
-        (q0) edge ["{\scriptsize\texttt{(*}}", below, sloped, pos=0.35] (qCP)
         (q0) edge ["{\scriptsize\texttt{:}}", above, sloped, pos=0.4] (qCOL)
         (q0) edge ["{\scriptsize\texttt{=}}", above, sloped, pos=0.4] (qEQ)
         (q0) edge ["{\scriptsize\texttt{<}}", above, sloped, pos=0.4] (qLT)
@@ -315,7 +336,7 @@ pada diagram.
         (qCS) edge[bend left=20] node[below, font=\scriptsize] {other} (qCP)
         (qCS) edge[loop right] node[font=\scriptsize] {\texttt{*}} (qCS);
 
-    % OPERATOR TRANSITIONS
+    % MULTI-CHAR OPERATOR TRANSITIONS
     \path[->]
         (qCOL) edge node[above, font=\scriptsize] {\texttt{=}} (qBEC)
         (qEQ)  edge node[above, font=\scriptsize] {\texttt{=}} (qEQL)
@@ -323,10 +344,33 @@ pada diagram.
         (qLT)  edge[bend right=10] node[below, font=\scriptsize] {\texttt{=}} (qLEQ)
         (qGT)  edge node[above, font=\scriptsize] {\texttt{=}} (qGEQ);
 
+    % TRANSITIONS TO SINGLE-CHAR STATES (col A)
+    \path[->]
+        (q0) edge ["{\scriptsize\texttt{+}}", above, sloped] (qPLUS)
+        (q0) edge ["{\scriptsize\texttt{-}}", above, sloped] (qMIN)
+        (q0) edge ["{\scriptsize\texttt{*}}", above, sloped] (qTIM)
+        (q0) edge ["{\scriptsize\texttt{/}}", above, sloped] (qRDIV)
+        (q0) edge ["{\scriptsize\texttt{)}}", above, sloped] (qRPAR)
+        (q0) edge ["{\scriptsize\texttt{[}}", above, sloped] (qLBRK)
+        (q0) edge ["{\scriptsize\texttt{]}}", below, sloped] (qRBRK)
+        (q0) edge ["{\scriptsize\texttt{,}}", below, sloped] (qCOM)
+        (q0) edge ["{\scriptsize\texttt{;}}", below, sloped] (qSEMI)
+        (q0) edge ["{\scriptsize\texttt{.}}", below, sloped] (qPER);
+
+    % LPAR DISAMBIGUATION (col B)
+    \path[->]
+        (q0)    edge ["{\scriptsize\texttt{(}}", above, sloped] (qLPAR)
+        (qLPAR) edge node[right, font=\scriptsize] {\texttt{*}}      (qCP)
+        (qLPAR) edge node[right, font=\scriptsize] {other+pb}        (qLPAC);
+
 \end{tikzpicture}
-\caption{DFA overview: state awal $q_0$ dan seluruh state utama.
-         State dengan lingkaran ganda adalah \textit{accepting states}.
-         Token berkarakter tunggal tidak ditampilkan individual.}
+}% end resizebox
+\caption{DFA overview: state awal $q_0$ dan seluruh state.
+         Kolom kiri (x$<$0) adalah token berkarakter tunggal.
+         $q_{(}$ adalah \textit{intermediate state} (non-accepting):
+         jika karakter berikutnya \texttt{*} masuk ke $q_{cp}$ (komentar),
+         selainnya emit \texttt{lparent} via $q_{lp}$.
+         State dengan lingkaran ganda adalah \textit{accepting states}.}
 \label{fig:dfa-overview}
 \end{figure}
 
@@ -491,7 +535,53 @@ menampilkan detail transisi untuk sub-automaton yang lebih kompleks.
 \caption{Relational \texttt{<} operators recognition}
 \end{subfigure}
 
-\caption{Detail sub-automaton untuk pola leksikal kompleks.}
+\vspace{1.5em}
+
+% (g) Relational >
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0] {$q_1$};
+    \node[state, accepting, minimum width=1.4cm] (gtr) [below=of s0] {\scriptsize GTR};
+    \node[state, accepting, minimum width=1.4cm] (geq) [below=of s1] {\scriptsize GEQ};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{>}}   (s1)
+        (s1) edge node[left]  {\scriptsize other+pb}    (gtr)
+        (s1) edge node[right] {\scriptsize\texttt{=}}   (geq);
+\end{tikzpicture}
+\caption{Relational \texttt{>} operators recognition}
+\end{subfigure}
+\hfill
+% (h) Equal / EQL
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0] {$q_1$};
+    \node[state, accepting, minimum width=1.4cm] (eql) [right=of s1]  {\scriptsize EQL};
+    \node[state, accepting, minimum width=1.6cm] (unk) [below=of s1]  {\scriptsize UNKNOWN};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{=}}   (s1)
+        (s1) edge node[above] {\scriptsize\texttt{=}}   (eql)
+        (s1) edge node[right] {\scriptsize other+pb}    (unk);
+\end{tikzpicture}
+\caption{Equal operator (\texttt{==}) recognition}
+\end{subfigure}
+
+\caption{Detail sub-automaton untuk pola leksikal kompleks (termasuk operator relasional \texttt{>} dan \texttt{==}).}
 \label{fig:dfa-detail}
 \end{figure}
 
@@ -814,6 +904,22 @@ sudah siap digunakan untuk pekerjaan membangun representasi
 \textit{Abstract Syntax Tree} (AST) pada pengerjaan \textit{Syntax Analysis} /
 Parsing selanjutnya.
 
+\subsection{Saran}
+
+Berdasarkan hasil pengerjaan Milestone 1 ini, beberapa saran untuk pengembangan ke depan adalah sebagai berikut.
+
+\begin{enumerate}
+    \item \textbf{Pesan kesalahan yang lebih informatif.}
+          Saat ini, karakter yang ga dikenali oleh DFA dikategorikan sebagai \texttt{UNKNOWN} tanpa informasi konteks tambahan.
+          Ke depannya, pesan kesalahan sebaiknya disertai nomor baris dan nomor kolom untuk mempermudah proses \textit{debugging} oleh pengguna bahasa Arion.
+    \item \textbf{Penanganan \textit{escape character} dalam string.}
+          Implementasi saat ini belum mendukung karakter \textit{escape} seperti \texttt{\textbackslash n} atau \texttt{\textbackslash t} di dalam string literal.
+          Penambahan fitur ini perlu dipertimbangkan dalam revisi spesifikasi bahasa atau pada milestone berikutnya.
+    \item \textbf{Integrasi dengan komponen berikutnya.}
+          Lexer telah dirancang secara modular sehingga \textit{token stream} yang dihasilkan siap dikonsumsi oleh \textit{parser} pada Milestone 2.
+          Disarankan agar antarmuka antara Lexer dan Parser dipastikan konsisten sejak dini untuk menghindari refactoring besar di kemudian hari.
+\end{enumerate}
+
 % -----------------------------------------------------------------------
 \begin{thebibliography}{9}
 
@@ -850,7 +956,7 @@ GNU Make Manual.
 
 \subsection*{DFA Transition Diagram}
 
-% TODO: add link workspace draw.io
+\url{https://drive.google.com/file/d/1Nn-a8DDgsxw4Qw8OxduvNSawWOEN7yzI/view?usp=sharing}
 
 \subsection*{Task Distribution}
 
@@ -860,10 +966,10 @@ GNU Make Manual.
         \toprule
         \textbf{NIM} & \textbf{Nama} & \textbf{Kontribusi} \\
         \midrule
-        13524026 & Made Branenda Jordhy       & \\
-        13524028 & Muhammad Nur Majiid        & \\
-        13524034 & Jason Edward Salim         & \\
-        13524068 & Athilla Zaidan Zidna Fann  & \\
+            13524026 & Made Branenda Jordhy      & 25\% \\
+            13524028 & Muhammad Nur Majiid       & 25\% \\
+            13524034 & Jason Edward Salim        & 25\% \\
+            13524068 & Athilla Zaidan Zidna Fann & 25\% \\
         \bottomrule
     \end{tabularx}
 \end{table}
