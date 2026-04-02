@@ -1,0 +1,56 @@
+programsy
+ident (operator)
+semicolon
+
+varsy
+ident (a)
+comma
+ident (b)
+colon
+ident (integer)
+semicolon
+
+beginsy
+ident (a)
+becomes
+intcon (10)
+semicolon
+ident (b)
+becomes
+intcon (20)
+semicolon
+
+ifsy
+ident (a)
+neq
+ident (b)
+thensy
+ident (writeln)
+lparent
+string ('tidak sama')
+rparent
+semicolon
+
+ifsy
+ident (a)
+leq
+ident (b)
+thensy
+ident (writeln)
+lparent
+string ('a kecil')
+rparent
+semicolon
+
+ifsy
+ident (b)
+geq
+ident (a)
+thensy
+ident (writeln)
+lparent
+string ('b besar')
+rparent
+semicolon
+endsy
+period

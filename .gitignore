@@ -1,0 +1,13 @@
+.vscode/
+bin/
+
+# LaTeX
+doc/*.aux
+doc/*.log
+doc/*.out
+doc/*.toc
+doc/*.synctex.gz
+doc/*.fls
+doc/*.fdb_latexmk
+
+.DS_Store

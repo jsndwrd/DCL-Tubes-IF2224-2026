@@ -1,0 +1,51 @@
+programsy
+ident (testerror)
+semicolon
+
+varsy
+ident (x)
+colon
+ident (integer)
+semicolon
+ident (y)
+colon
+ident (real)
+semicolon
+
+beginsy
+ident (x)
+becomes
+intcon (10)
+semicolon
+ident (y)
+becomes
+realcon (3.14)
+semicolon
+
+ifsy
+ident (x)
+eql
+ident (y)
+thensy
+ident (writeln)
+lparent
+string ('sama')
+rparent
+semicolon
+
+ident (x)
+becomes
+unknown (@)
+semicolon
+
+ident (writeln)
+lparent
+unknown (1.)
+rparent
+semicolon
+
+ident (writeln)
+lparent
+string ('belum ditutup);
+end.
+ÿ)

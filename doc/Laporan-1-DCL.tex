@@ -1,0 +1,977 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+\onehalfspacing
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\graphicspath{{./}{./assets/}{./images/}}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, shapes.misc, arrows.meta, positioning, calc, automata, quotes}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{HTML}{F7F7F7}
+\definecolor{codeframe}{HTML}{DDDDDD}
+\definecolor{keyword}{HTML}{005FAF}
+\definecolor{comment}{HTML}{6A737D}
+\definecolor{string}{HTML}{D73A49}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keyword}\bfseries,
+    commentstyle=\color{comment}\itshape,
+    stringstyle=\color{string},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    tabsize=4,
+    showstringspaces=false,
+    language=C++,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=keyword,
+    citecolor=black,
+    pdfauthor={Made Branenda Jordhy, Muhammad Nur Majiid, Jason Edward Salim, Athilla Zaidan Zidna Fann},
+    pdftitle={Laporan Milestone 1 - Lexical Analysis - IF2224}
+}
+
+% HEADER/FOOTER
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{36pt}
+\fancyhead[L]{%
+    \small\textnormal{School of Electrical Engineering and Informatics}\\[-1pt]
+    \small\textnormal{Institut Teknologi Bandung}%
+}
+\fancyhead[R]{\IfFileExists{assets/LogoITB.png}{\includegraphics[height=1cm]{assets/LogoITB.png}}{}}
+\fancyfoot[L]{\small\textnormal{IF2224 Formal Language and Automata Theory}}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% TITLE
+\title{
+    \vspace{-1.5cm}
+    {\Large\textsc{IF2224 Formal Language and Automata Theory}}\\[0.35cm]
+    {\LARGE\textbf{Arion Interpreter --- Milestone 1: Lexical Analysis}}\\[0.3cm]
+    \vspace{-0.3cm}
+}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{assets/foto_kelompok.png}{%
+        \includegraphics[width=0.6\textwidth]{assets/foto_kelompok.png}%
+    }{%
+        \vspace{4cm}
+    }
+\end{figure}
+
+\vspace{1cm}
+\begin{center}
+    \textbf{Made Branenda Jordhy} --- 13524026 \\[0.15cm]
+    \textbf{Muhammad Nur Majiid} --- 13524028 \\[0.15cm]
+    \textbf{Jason Edward Salim} --- 13524034 \\[0.15cm]
+    \textbf{Athilla Zaidan Zidna Fann} --- 13524068
+\end{center}
+
+\vspace{3cm}
+\begin{center}
+    {\large\textbf{School of Electrical Engineering and Informatics}}\\[0.1cm]
+    {\large\textbf{Institut Teknologi Bandung}}\\[0.1cm]
+    {\large\textbf{Semester II 2025/2026}}\\[0.1cm]
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------------------------
+\section{Theoretical Background}
+
+\subsection{Lexical Analysis}
+
+\textit{Lexical analysis} adalah fase pertama dalam pipeline kompilasi maupun interpretasi.
+Fase ini bertanggung jawab mengubah aliran karakter mentah dari source code menjadi
+aliran \textit{token} berterstruktur yang siap dikonsumsi oleh parser.
+Komponen yang melaksanakan proses ini disebut \textit{lexer} atau \textit{scanner}.
+
+Lexer beroperasi dengan membaca input secara sekuensial, satu karakter per iterasi,
+sambil memelihara state internal yang merepresentasikan pola yang sedang dikenali.
+Karakter yang tidak membawa makna semantis, yaitu whitespace dan komentar, dibuang
+pada fase ini sehingga tidak membebani tahap analisis selanjutnya.
+Keluaran lexer adalah barisan token yang menjadi representasi leksikal dari program,
+dan barisan inilah yang diserahkan ke \textit{syntax analyzer} untuk diproses lebih lanjut.
+
+\subsection{Token}
+
+Sebuah \textit{token} adalah pasangan $(t, v)$ di mana $t$ menyatakan \textit{token type}
+dan $v$ menyatakan \textit{lexeme}, yaitu substring dari source code yang membentuk token tersebut.
+Sebagai contoh, ekspresi \texttt{x := 5} menghasilkan tiga token:
+\texttt{IDENT("x")}, \texttt{BECOMES}, dan \texttt{INTCON("5")}.
+
+Token dalam bahasa pemrograman umumnya terklasifikasi ke dalam kategori berikut.
+
+\begin{itemize}
+    \item \textbf{Literals.} Konstanta bernilai tetap: integer, bilangan riil, karakter, dan string.
+    \item \textbf{Keywords.} Reserved words yang memiliki semantik khusus dalam bahasa,
+          seperti \texttt{if}, \texttt{while}, \texttt{begin}, dan \texttt{function}.
+    \item \textbf{Identifiers.} Nama yang didefinisikan pengguna untuk variabel,
+          fungsi, prosedur, dan tipe.
+    \item \textbf{Operators.} Simbol operasi aritmatika, logika, dan relasional.
+    \item \textbf{Delimiters.} Karakter pembatas struktural seperti \texttt{(},
+          \texttt{)}, \texttt{;}, dan \texttt{.}.
+\end{itemize}
+
+Perlu diperhatikan bahwa keyword dan identifier secara leksikal memiliki pola reguler
+yang identik. Disambiguasi dilakukan setelah lexeme terbaca secara lengkap: lexeme
+yang terdaftar sebagai reserved word dikategorikan sebagai keyword, selainnya sebagai identifier.
+
+\subsection{Deterministic Finite Automaton (DFA)}
+
+Pola leksikal dari setiap kategori token dapat dideskripsikan oleh \textit{regular expression},
+dan setiap regular expression ekuivalen dengan sebuah \textit{finite automaton}.
+Model komputasi yang digunakan dalam implementasi lexer adalah
+\textit{Deterministic Finite Automaton} (DFA).
+
+\begin{quote}
+\textbf{Definisi.}
+Sebuah DFA adalah 5-tupel $M = (Q,\, \Sigma,\, \delta,\, q_0,\, F)$, di mana:
+$Q$ adalah himpunan state berhingga,
+$\Sigma$ adalah alfabet input,
+$\delta : Q \times \Sigma \to Q$ adalah fungsi transisi total,
+$q_0 \in Q$ adalah state awal, dan
+$F \subseteq Q$ adalah himpunan accepting states.
+\end{quote}
+
+Sifat deterministik dari DFA dinyatakan oleh totalitas $\delta$: untuk setiap
+$(q, a) \in Q \times \Sigma$, terdapat tepat satu state $q' = \delta(q, a)$.
+Hal ini menjamin bahwa eksekusi DFA pada string input manapun bersifat unik dan dapat
+diprediksi, tanpa backtracking maupun pencabangan komputasi.
+
+Dalam penggunaan sebagai lexer, DFA beroperasi sebagai berikut. Dimulai dari $q_0$,
+setiap karakter $a_i$ dari input menginduksi transisi $\delta(q_{\text{curr}}, a_i) = q_{\text{next}}$.
+Apabila $q_{\text{curr}} \in F$ dan $\delta(q_{\text{curr}}, a_{i+1})$ tidak terdefinisi
+atau mengarah ke state error, maka lexeme yang terakumulasi diemisikan sebagai token.
+Automaton kemudian direset ke $q_0$ untuk memulai pengenalan token berikutnya.
+Proses ini berjalan dalam waktu $O(n)$ terhadap panjang input $n$, karena setiap
+karakter diproses dalam satu transisi $O(1)$.
+
+% -----------------------------------------------------------------------
+\section{Design and Implementation}
+
+\subsection{Overview}
+
+Program lexer diimplementasikan dalam C++17 menggunakan pendekatan DFA berbasis
+pembacaan karakter tunggal. Setiap token dikenali melalui satu karakter per iterasi,
+di mana state machine memutuskan transisi berdasarkan \texttt{currChar} dan, bila
+diperlukan, satu karakter \textit{lookahead} melalui \texttt{f.peek()}.
+Penggunaan lookahead tunggal tetap konsisten dengan model DFA karena setiap
+transisi tetap deterministik: tidak ada backtracking dan tidak ada pilihan ganda.
+
+Program terdiri dari tiga komponen yang terpisah:
+\texttt{token.hpp} mendefinisikan enum \texttt{ArionToken} dan kelas \texttt{Token};
+\texttt{lexer.hpp}/\texttt{lexer.cpp} mengimplementasikan kelas \texttt{Lexer} yang
+menjalankan DFA; dan \texttt{main.cpp} menangani antarmuka I/O serta pemrosesan berkas.
+
+\subsection{DFA Design}
+
+DFA yang diimplementasikan memiliki state awal $q_0$ yang berfungsi sebagai titik
+reset setelah setiap token diemisikan. Dari $q_0$, karakter pertama yang terbaca
+menentukan cabang sub-automaton yang akan dimasuki.
+Diagram~\ref{fig:dfa-overview} menampilkan gambaran umum transisi dari $q_0$ ke
+seluruh state utama. Untuk keterbacaan, token berkarakter tunggal
+($+$, $-$, $*$, $/$ , \texttt{(}, \texttt{)}, \texttt{[}, \texttt{]},
+\texttt{,}, \texttt{;}, \texttt{.}) masing-masing memiliki transisi langsung dari
+$q_0$ ke sebuah \textit{accepting state} dan tidak ditampilkan secara individual
+pada diagram.
+
+\begin{figure}[p]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    shorten >=1pt,
+    auto,
+    on grid,
+    node distance=1.6cm and 2.4cm,
+    every state/.style={minimum size=0.85cm, font=\small},
+    every edge quotes/.style={font=\scriptsize, fill=white, inner sep=1.5pt},
+    >=Stealth
+]
+    % q0 — centre of diagram
+    \node[state, initial above, initial text={}] (q0) at (0,0) {$q_0$};
+
+    % ── RIGHT SIDE: multi-state sub-automata ──────────────────────────────
+
+    % WORD
+    \node[state, accepting] (qW)  at (3.5,  6)   {$q_w$};
+
+    % NUMBER
+    \node[state, accepting] (qI)  at (3.5,  4.2) {$q_i$};
+    \node[state]            (qD)  at (6.0,  4.2) {$q_d$};
+    \node[state, accepting] (qR)  at (8.5,  4.2) {$q_r$};
+
+    % STRING
+    \node[state]            (qS0) at (3.5,  2.6) {$q_{s_0}$};
+    \node[state, accepting] (qS1) at (6.0,  2.6) {$q_{s_1}$};
+    \node[state, accepting] (qS2) at (8.5,  2.6) {$q_{s_2}$};
+
+    % COMMENT BRACE
+    \node[state, accepting] (qCB) at (3.5,  1.1) {$q_{cb}$};
+
+    % COMMENT PAREN
+    \node[state]            (qCP) at (3.5, -1.2) {$q_{cp}$};
+    \node[state]            (qCS) at (6.0, -1.2) {$q_{cs}$};
+
+    % MULTI-CHAR OPERATORS (right)
+    \node[state, accepting] (qCOL) at (3.5, -2.8) {$q_:$};
+    \node[state, accepting] (qBEC) at (6.0, -2.8) {$q_{:=}$};
+
+    \node[state, accepting] (qEQ)  at (3.5, -4.2) {$q_=$};
+    \node[state, accepting] (qEQL) at (6.0, -4.2) {$q_{==}$};
+
+    \node[state, accepting] (qLT)  at (3.5, -5.6) {$q_{<}$};
+    \node[state, accepting] (qNEQ) at (6.0, -5.1) {$q_{<>}$};
+    \node[state, accepting] (qLEQ) at (6.0, -6.1) {$q_{\leq}$};
+
+    \node[state, accepting] (qGT)  at (3.5, -7.3) {$q_{>}$};
+    \node[state, accepting] (qGEQ) at (6.0, -7.3) {$q_{\geq}$};
+
+    % ── LEFT SIDE: single-char tokens ─────────────────────────────────────
+    % Two sub-columns to avoid overlap: x=-3 (col A) and x=-6 (col B)
+
+    % Col A (x = -3): +  -  *  /  )  [  ]  ,  ;  .
+    \node[state, accepting] (qPLUS) at (-3,  6.0) {$q_{+}$};
+    \node[state, accepting] (qMIN)  at (-3,  4.8) {$q_{-}$};
+    \node[state, accepting] (qTIM)  at (-3,  3.6) {$q_{*}$};
+    \node[state, accepting] (qRDIV) at (-3,  2.4) {$q_{/}$};
+    \node[state, accepting] (qRPAR) at (-3,  1.2) {$q_{)}$};
+    \node[state, accepting] (qLBRK) at (-3,  0.0) {$q_{[}$};
+    \node[state, accepting] (qRBRK) at (-3, -1.2) {$q_{]}$};
+    \node[state, accepting] (qCOM)  at (-3, -2.4) {$q_{,}$};
+    \node[state, accepting] (qSEMI) at (-3, -3.6) {$q_{;}$};
+    \node[state, accepting] (qPER)  at (-3, -4.8) {$q_{.}$};
+
+    % Col B (x = -6): ( intermediate + lparent accepting
+    % q_( is intermediate: resolves lparent vs (*...*) comment
+    \node[state]            (qLPAR) at (-6,  1.2) {$q_{(}$};
+    \node[state, accepting] (qLPAC) at (-6, -0.6) {$q_{lp}$};
+
+    % ── TRANSITIONS FROM q0 ───────────────────────────────────────────────
+    \path[->]
+        (q0) edge ["{\scriptsize[a-zA-Z]}", above, sloped] (qW)
+        (q0) edge ["{\scriptsize[0-9]}", above, sloped, pos=0.4] (qI)
+        (q0) edge ["{\scriptsize\texttt{'}}", above, sloped, pos=0.4] (qS0)
+        (q0) edge ["{\scriptsize\texttt{\{}}",  above, sloped, pos=0.35] (qCB)
+        (q0) edge ["{\scriptsize\texttt{:}}", above, sloped, pos=0.4] (qCOL)
+        (q0) edge ["{\scriptsize\texttt{=}}", above, sloped, pos=0.4] (qEQ)
+        (q0) edge ["{\scriptsize\texttt{<}}", above, sloped, pos=0.4] (qLT)
+        (q0) edge ["{\scriptsize\texttt{>}}", above, sloped, pos=0.4] (qGT);
+
+    % WORD LOOP
+    \path[->]
+        (qW) edge[loop right] node[font=\scriptsize] {[a-zA-Z0-9]} (qW);
+
+    % NUMBER TRANSITIONS
+    \path[->]
+        (qI) edge[loop above] node[font=\scriptsize] {[0-9]} (qI)
+        (qI) edge node[above, font=\scriptsize] {\texttt{.}} (qD)
+        (qD) edge node[above, font=\scriptsize] {[0-9]} (qR)
+        (qR) edge[loop right] node[font=\scriptsize] {[0-9]} (qR);
+
+    % STRING TRANSITIONS
+    \path[->]
+        (qS0) edge node[above, font=\scriptsize] {char} (qS1)
+        (qS1) edge node[above, font=\scriptsize] {char} (qS2)
+        (qS2) edge[loop right] node[font=\scriptsize] {char} (qS2);
+
+    % COMMENT BRACE LOOP
+    \path[->]
+        (qCB) edge[loop right] node[font=\scriptsize] {$\neg$\texttt{\}}} (qCB);
+
+    % COMMENT PAREN TRANSITIONS
+    \path[->]
+        (qCP) edge[loop above] node[font=\scriptsize] {$\neg$\texttt{*}} (qCP)
+        (qCP) edge node[above, font=\scriptsize] {\texttt{*}} (qCS)
+        (qCS) edge[bend left=20] node[below, font=\scriptsize] {other} (qCP)
+        (qCS) edge[loop right] node[font=\scriptsize] {\texttt{*}} (qCS);
+
+    % MULTI-CHAR OPERATOR TRANSITIONS
+    \path[->]
+        (qCOL) edge node[above, font=\scriptsize] {\texttt{=}} (qBEC)
+        (qEQ)  edge node[above, font=\scriptsize] {\texttt{=}} (qEQL)
+        (qLT)  edge[bend left=10] node[above, font=\scriptsize] {\texttt{>}} (qNEQ)
+        (qLT)  edge[bend right=10] node[below, font=\scriptsize] {\texttt{=}} (qLEQ)
+        (qGT)  edge node[above, font=\scriptsize] {\texttt{=}} (qGEQ);
+
+    % TRANSITIONS TO SINGLE-CHAR STATES (col A)
+    \path[->]
+        (q0) edge ["{\scriptsize\texttt{+}}", above, sloped] (qPLUS)
+        (q0) edge ["{\scriptsize\texttt{-}}", above, sloped] (qMIN)
+        (q0) edge ["{\scriptsize\texttt{*}}", above, sloped] (qTIM)
+        (q0) edge ["{\scriptsize\texttt{/}}", above, sloped] (qRDIV)
+        (q0) edge ["{\scriptsize\texttt{)}}", above, sloped] (qRPAR)
+        (q0) edge ["{\scriptsize\texttt{[}}", above, sloped] (qLBRK)
+        (q0) edge ["{\scriptsize\texttt{]}}", below, sloped] (qRBRK)
+        (q0) edge ["{\scriptsize\texttt{,}}", below, sloped] (qCOM)
+        (q0) edge ["{\scriptsize\texttt{;}}", below, sloped] (qSEMI)
+        (q0) edge ["{\scriptsize\texttt{.}}", below, sloped] (qPER);
+
+    % LPAR DISAMBIGUATION (col B)
+    \path[->]
+        (q0)    edge ["{\scriptsize\texttt{(}}", above, sloped] (qLPAR)
+        (qLPAR) edge node[right, font=\scriptsize] {\texttt{*}}      (qCP)
+        (qLPAR) edge node[right, font=\scriptsize] {other+pb}        (qLPAC);
+
+\end{tikzpicture}
+}% end resizebox
+\caption{DFA overview: state awal $q_0$ dan seluruh state.
+         Kolom kiri (x$<$0) adalah token berkarakter tunggal.
+         $q_{(}$ adalah \textit{intermediate state} (non-accepting):
+         jika karakter berikutnya \texttt{*} masuk ke $q_{cp}$ (komentar),
+         selainnya emit \texttt{lparent} via $q_{lp}$.
+         State dengan lingkaran ganda adalah \textit{accepting states}.}
+\label{fig:dfa-overview}
+\end{figure}
+
+Beberapa pola pengenalan memerlukan perhatian lebih lanjut. Diagram~\ref{fig:dfa-detail}
+menampilkan detail transisi untuk sub-automaton yang lebih kompleks.
+
+\begin{figure}[p]
+\centering
+
+% (a) Number
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.6cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}] (qi) {$q_i$};
+    \node[state]            (qd)  [right=of qi] {$q_d$};
+    \node[state, accepting] (qr)  [right=of qd] {$q_r$};
+    \node[state, accepting, minimum width=1.5cm] (acc) [below=of qi] {\scriptsize INTCON};
+    \node[state, accepting, minimum width=1.6cm] (err) [below=of qd] {\scriptsize UNKNOWN};
+
+    \path[->]
+        (qi) edge[loop above] node {\scriptsize[0-9]} (qi)
+        (qi) edge node[above] {\scriptsize\texttt{.}} (qd)
+        (qi) edge node[left]  {\scriptsize other}     (acc)
+        (qd) edge node[above] {\scriptsize[0-9]}      (qr)
+        (qd) edge node[right] {\scriptsize other}     (err)
+        (qr) edge[loop above] node {\scriptsize[0-9]} (qr);
+\end{tikzpicture}
+\caption{Number recognition}
+\end{subfigure}
+\hfill
+% (b) String/Char
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}] (s0) {$q_{s_0}$};
+    \node[state] (s1) [right=of s0] {$q_{s_1}$};
+    \node[state] (s2) [right=of s1] {$q_{s_2}$};
+
+    \node[state, accepting, minimum width=1.4cm] (unk) [below=of s0] {\scriptsize UNK};
+    \node[state, accepting, minimum width=1.6cm] (chr) [below=of s1] {\scriptsize CHARCON};
+    \node[state, accepting, minimum width=1.5cm] (str) [below=of s2] {\scriptsize STRING};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize char}      (s1)
+        (s1) edge node[above] {\scriptsize char}      (s2)
+        (s2) edge[loop above] node {\scriptsize char} (s2)
+        (s0) edge node[left]  {\scriptsize \texttt{'}/EOF} (unk)
+        (s1) edge node[right] {\scriptsize \texttt{'}}     (chr)
+        (s2) edge node[right] {\scriptsize \texttt{'}}     (str)
+        (s1) edge[out=225, in=45, looseness=0.7]
+             node[below left, pos=0.55] {\scriptsize EOF} (unk)
+        (s2) edge[out=210, in=0, looseness=0.6]
+             node[below, pos=0.4] {\scriptsize EOF}       (unk);
+\end{tikzpicture}
+\caption{String/char recognition}
+\end{subfigure}
+
+\vspace{1.5em}
+
+% (c) Comment Brace
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 3cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (cb)  {$q_{cb}$};
+    \node[state, accepting, minimum width=1.6cm] (ok)  [right=of cb]  {\scriptsize COMMENT};
+    \node[state, accepting, minimum width=1.6cm] (err) [below=of cb]  {\scriptsize UNKNOWN};
+
+    \path[->]
+        (cb) edge[loop above] node {\scriptsize $\neg$\texttt{\}}, $\neg$EOF} (cb)
+        (cb) edge node[above] {\scriptsize\texttt{\}}} (ok)
+        (cb) edge node[left]  {\scriptsize EOF}        (err);
+\end{tikzpicture}
+\caption{Comment \texttt{\{...\}} recognition}
+\end{subfigure}
+\hfill
+% (d) Comment Paren
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.6cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (cp)  {$q_{cp}$};
+    \node[state]                                 (cs)  [right=of cp] {$q_{cs}$};
+    \node[state, accepting, minimum width=1.6cm] (ok)  [right=of cs] {\scriptsize COMMENT};
+    \node[state, accepting, minimum width=1.6cm] (err) [below=2.8cm of cs] {\scriptsize UNKNOWN};
+
+    \path[->]
+        (cp) edge[loop above] node {\scriptsize $\neg$\texttt{*}, $\neg$EOF} (cp)
+        (cp) edge node[above] {\scriptsize\texttt{*}} (cs)
+        (cs) edge node[above] {\scriptsize\texttt{)}} (ok)
+        (cs) edge[loop above] node {\scriptsize\texttt{*}} (cs)
+        (cs) edge[bend right=22] node[below] {\scriptsize other} (cp)
+        (cs) edge node[right] {\scriptsize EOF} (err)
+        (cp) edge[out=270, in=180] node[below left] {\scriptsize EOF} (err);
+\end{tikzpicture}
+\caption{Comment \texttt{(*...*)} recognition}
+\end{subfigure}
+
+\vspace{1.5em}
+
+% (e) Colon / Becomes
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.6cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0]  {$q_1$};
+    \node[state, accepting, minimum width=1.6cm] (bec) [right=of s1]  {\scriptsize BECOMES};
+    \node[state, accepting, minimum width=1.6cm] (col) [below=of s1]  {\scriptsize COLON};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{:}}      (s1)
+        (s1) edge node[above] {\scriptsize\texttt{=}}      (bec)
+        (s1) edge node[right] {\scriptsize other+pb}       (col);
+\end{tikzpicture}
+\caption{Colon / Becomes recognition}
+\end{subfigure}
+\hfill
+% (f) Relational <
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0] {$q_1$};
+    \node[state, accepting, minimum width=1.4cm] (lss) [below=of s0] {\scriptsize LSS};
+    \node[state, accepting, minimum width=1.4cm] (leq) [below=of s1] {\scriptsize LEQ};
+    \node[state, accepting, minimum width=1.4cm] (neq) [right=of s1]  {\scriptsize NEQ};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{<}}   (s1)
+        (s1) edge node[left]  {\scriptsize other+pb}    (lss)
+        (s1) edge node[right] {\scriptsize\texttt{=}}   (leq)
+        (s1) edge node[above] {\scriptsize\texttt{>}}   (neq);
+\end{tikzpicture}
+\caption{Relational \texttt{<} operators recognition}
+\end{subfigure}
+
+\vspace{1.5em}
+
+% (g) Relational >
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0] {$q_1$};
+    \node[state, accepting, minimum width=1.4cm] (gtr) [below=of s0] {\scriptsize GTR};
+    \node[state, accepting, minimum width=1.4cm] (geq) [below=of s1] {\scriptsize GEQ};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{>}}   (s1)
+        (s1) edge node[left]  {\scriptsize other+pb}    (gtr)
+        (s1) edge node[right] {\scriptsize\texttt{=}}   (geq);
+\end{tikzpicture}
+\caption{Relational \texttt{>} operators recognition}
+\end{subfigure}
+\hfill
+% (h) Equal / EQL
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[
+    shorten >=1pt, auto, on grid,
+    node distance=2.2cm and 2.4cm,
+    every state/.style={minimum size=0.95cm, font=\small},
+    >=Stealth
+]
+    \node[state, initial left, initial text={}]  (s0)  {$q_0$};
+    \node[state]                                 (s1)  [right=of s0] {$q_1$};
+    \node[state, accepting, minimum width=1.4cm] (eql) [right=of s1]  {\scriptsize EQL};
+    \node[state, accepting, minimum width=1.6cm] (unk) [below=of s1]  {\scriptsize UNKNOWN};
+
+    \path[->]
+        (s0) edge node[above] {\scriptsize\texttt{=}}   (s1)
+        (s1) edge node[above] {\scriptsize\texttt{=}}   (eql)
+        (s1) edge node[right] {\scriptsize other+pb}    (unk);
+\end{tikzpicture}
+\caption{Equal operator (\texttt{==}) recognition}
+\end{subfigure}
+
+\caption{Detail sub-automaton untuk pola leksikal kompleks (termasuk operator relasional \texttt{>} dan \texttt{==}).}
+\label{fig:dfa-detail}
+\end{figure}
+
+\paragraph{Catatan mengenai keyword.}
+Keyword dan identifier memiliki pola leksikal yang identik: keduanya dimulai
+dengan huruf dan dapat diikuti kombinasi huruf dan angka.
+Disambiguasi tidak dilakukan melalui state DFA yang terpisah, melainkan melalui
+\textit{reserved word lookup} pada \texttt{std::unordered\_map} setelah seluruh
+lexeme terbaca oleh $q_w$. Pendekatan ini ekuivalen secara teoritis karena tabel
+lookup adalah fungsi total dari string ke kategori token, tanpa memerlukan
+pencabangan automaton.
+Selain itu, nilai \textit{lexeme} dipertahankan dalam huruf asli (case-sensitive)
+untuk identifier, sedangkan keyword tidak menyimpan nilai lexeme.
+
+\subsection{Tokenization Flow}
+
+Gambar~\ref{fig:flow} menunjukkan alur eksekusi fungsi \texttt{tokenize()}.
+Pada setiap iterasi, whitespace dilewati terlebih dahulu, kemudian karakter
+saat ini digunakan sebagai kondisi dispatch ke sub-automaton yang sesuai.
+Apabila karakter tidak dikenali oleh pola manapun, token \texttt{UNKNOWN}
+diemisikan sebagai penanda kesalahan leksikal.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.05cm and 2cm,
+    on grid,
+    every node/.style={font=\small},
+    proc/.style={rectangle, draw, fill=codebg, minimum width=3.4cm,
+                 minimum height=0.68cm, rounded corners=2pt},
+    dec/.style={diamond, draw, fill=yellow!10, minimum width=2.0cm,
+                minimum height=0.68cm, aspect=2.5, font=\small, inner sep=1pt},
+    term/.style={rounded rectangle, draw, fill=black!8, minimum width=2.5cm,
+                 minimum height=0.68cm},
+    arr/.style={-{Stealth[length=2.5mm]}, thick},
+    lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
+]
+    \node[term]               (start)  {START};
+    \node[proc, below=of start]  (skip)   {skip whitespace};
+    \node[dec,  below=of skip]   (eof)    {EOF?};
+    \node[term, right=4.5cm of eof](end)  {END};
+    \node[dec,  below=of eof]    (dalpha) {alpha?};
+    \node[dec,  below=of dalpha] (ddigit) {digit?};
+    \node[dec,  below=of ddigit] (dquote) {\texttt{'}?};
+    \node[dec,  below=of dquote] (dcmt)   {\texttt{\{}/\texttt{(*}?};
+    \node[dec,  below=of dcmt]   (dmulti) {\texttt{:=<>}?};
+    \node[dec,  below=of dmulti] (dsin)   {single-char?};
+
+    \node[proc, right=4.5cm of dalpha] (rword)  {readWord()};
+    \node[proc, right=4.5cm of ddigit] (rnum)   {readNum()};
+    \node[proc, right=4.5cm of dquote] (rstr)   {readStr()};
+    \node[proc, right=4.5cm of dcmt]   (rcmt)   {readComment()};
+    \node[proc, right=4.5cm of dmulti] (rmulti) {peek \& emit op};
+    \node[proc, right=4.5cm of dsin]   (rsin)   {emit token};
+    \node[proc, below=1.05cm of dsin]  (runk)   {emit UNKNOWN};
+
+    % push at y-level of rcmt (vertical midpoint of proc column), far right
+    \node[proc, right=9cm of dcmt]     (push)   {push token};
+
+    \draw[arr] (start) -- (skip);
+    \draw[arr] (skip)  -- (eof);
+    \draw[arr] (eof)   -- node[lbl, above] {yes} (end);
+    \draw[arr] (eof)   -- node[lbl, right] {no}  (dalpha);
+    \draw[arr] (dalpha) -- node[lbl, above] {yes} (rword);
+    \draw[arr] (dalpha) -- node[lbl, right] {no}  (ddigit);
+    \draw[arr] (ddigit) -- node[lbl, above] {yes} (rnum);
+    \draw[arr] (ddigit) -- node[lbl, right] {no}  (dquote);
+    \draw[arr] (dquote) -- node[lbl, above] {yes} (rstr);
+    \draw[arr] (dquote) -- node[lbl, right] {no}  (dcmt);
+    \draw[arr] (dcmt)   -- node[lbl, above] {yes} (rcmt);
+    \draw[arr] (dcmt)   -- node[lbl, right] {no}  (dmulti);
+    \draw[arr] (dmulti) -- node[lbl, above] {yes} (rmulti);
+    \draw[arr] (dmulti) -- node[lbl, right] {no}  (dsin);
+    \draw[arr] (dsin)   -- node[lbl, above] {yes} (rsin);
+    \draw[arr] (dsin)   -- node[lbl, right] {no}  (runk);
+
+    % proc nodes → push: all right-angle (-|): go right to push x, then vertical
+    \draw[arr] (rword)  -| (push);
+    \draw[arr] (rnum)   -| (push);
+    \draw[arr] (rstr)   -| (push);
+    \draw[arr] (rcmt)   -- (push);
+    \draw[arr] (rmulti) -| (push);
+    \draw[arr] (rsin)   -| (push);
+    \draw[arr] (runk)   -| (push);
+
+    % loop back: push is lower than skip, so path goes right → up → left cleanly
+    \draw[arr] (push.east) -- ++(0.6,0) |- (skip.east);
+\end{tikzpicture}
+\caption{Alur eksekusi fungsi \texttt{tokenize()}.}
+\label{fig:flow}
+\end{figure}
+
+\subsection{Token Classification}
+
+Tabel~\ref{tab:tokens} merangkum seluruh 53 jenis token yang dikenali oleh lexer
+beserta pola atau simbol yang merepresentasikannya, dikelompokkan berdasarkan kategori.
+
+\renewcommand{\arraystretch}{1.0}
+\footnotesize
+\begin{longtable}{l l p{8.5cm}}
+\caption{Daftar token bahasa Arion.}
+\label{tab:tokens}\\
+\toprule
+\textbf{Category} & \textbf{Token} & \textbf{Pattern / Example} \\
+\midrule
+\endfirsthead
+\multicolumn{3}{l}{\small\itshape (continued)} \\[2pt]
+\toprule
+\textbf{Category} & \textbf{Token} & \textbf{Pattern / Example} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\small\itshape Continued on next page\ldots} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\multicolumn{3}{l}{\textit{Literals}} \\[2pt]
+ & \texttt{intcon}  & Integer constant: \texttt{1}, \texttt{42}, \texttt{100} \\
+ & \texttt{realcon} & Real constant: \texttt{3.14}, \texttt{0.5} \\
+ & \texttt{charcon} & Single char in quotes: \texttt{'A'}, \texttt{'z'} \\
+ & \texttt{string}  & Multi-char in quotes: \texttt{'hello'}, \texttt{'IRK'} \\
+\midrule
+\multicolumn{3}{l}{\textit{Arithmetic Operators}} \\[2pt]
+ & \texttt{plus}   & \texttt{+} \\
+ & \texttt{minus}  & \texttt{-} \\
+ & \texttt{times}  & \texttt{*} \\
+ & \texttt{rdiv}   & \texttt{/} \\
+ & \texttt{idiv}   & \texttt{div} \\
+ & \texttt{imod}   & \texttt{mod} \\
+\midrule
+\multicolumn{3}{l}{\textit{Logical Operators}} \\[2pt]
+ & \texttt{andsy}  & \texttt{AND} \\
+ & \texttt{orsy}   & \texttt{OR} \\
+ & \texttt{notsy}  & \texttt{NOT} \\
+\midrule
+\multicolumn{3}{l}{\textit{Relational Operators}} \\[2pt]
+ & \texttt{eql}  & \texttt{==} \\
+ & \texttt{neq}  & \texttt{<>} \\
+ & \texttt{lss}  & \texttt{<} \\
+ & \texttt{leq}  & \texttt{<=} \\
+ & \texttt{gtr}  & \texttt{>} \\
+ & \texttt{geq}  & \texttt{>=} \\
+\midrule
+\multicolumn{3}{l}{\textit{Delimiters \& Punctuation}} \\[2pt]
+ & \texttt{lparent}   & \texttt{(} \\
+ & \texttt{rparent}   & \texttt{)} \\
+ & \texttt{lbrack}    & \texttt{[} \\
+ & \texttt{rbrack}    & \texttt{]} \\
+ & \texttt{comma}     & \texttt{,} \\
+ & \texttt{semicolon} & \texttt{;} \\
+ & \texttt{period}    & \texttt{.} \\
+ & \texttt{colon}     & \texttt{:} \\
+ & \texttt{becomes}   & \texttt{:=} \\
+\midrule
+\multicolumn{3}{l}{\textit{Declaration Keywords}} \\[2pt]
+ & \texttt{constsy}     & \texttt{const} \\
+ & \texttt{typesy}      & \texttt{type} \\
+ & \texttt{varsy}       & \texttt{var} \\
+ & \texttt{functionsy}  & \texttt{function} \\
+ & \texttt{proceduresy} & \texttt{procedure} \\
+ & \texttt{arraysy}     & \texttt{array} \\
+ & \texttt{recordsy}    & \texttt{record} \\
+ & \texttt{programsy}   & \texttt{program} \\
+\midrule
+\multicolumn{3}{l}{\textit{Control Flow Keywords}} \\[2pt]
+ & \texttt{beginsy}  & \texttt{begin} \\
+ & \texttt{endsy}    & \texttt{end} \\
+ & \texttt{ifsy}     & \texttt{if} \\
+ & \texttt{thensy}   & \texttt{then} \\
+ & \texttt{elsesy}   & \texttt{else} \\
+ & \texttt{casesy}   & \texttt{case} \\
+ & \texttt{ofsy}     & \texttt{of} \\
+ & \texttt{whilesy}  & \texttt{while} \\
+ & \texttt{dosy}     & \texttt{do} \\
+ & \texttt{repeatsy} & \texttt{repeat} \\
+ & \texttt{untilsy}  & \texttt{until} \\
+ & \texttt{forsy}    & \texttt{for} \\
+ & \texttt{tosy}     & \texttt{to} \\
+ & \texttt{downtosy} & \texttt{downto} \\
+\midrule
+\multicolumn{3}{l}{\textit{Special}} \\[2pt]
+ & \texttt{ident}   & Identifier: \texttt{x}, \texttt{myVar}, \texttt{h4g} \\
+ & \texttt{comment} & \texttt{\{...\}} or \texttt{(*...*)} (discarded) \\
+ & \texttt{unknown} & Unrecognized token (lexical error) \\
+\end{longtable}
+\renewcommand{\arraystretch}{1.15}
+
+% -----------------------------------------------------------------------
+\section{Testing}
+
+Pengujian(testing) Program dilakukan menggunakan testcase yang sudah dibuat dan disimpan pada direktori:
+\texttt{test/milestone-1/}.
+Setiap testcase memiliki pasangan berkas input-output dengan format nama:
+\texttt{input-\{n\}.txt} dan \texttt{output-\{n\}.txt}.
+
+\subsection{Lokasi File Pengujian}
+
+\begin{itemize}
+    \item Berkas input testing: \texttt{test/milestone-1/input-1.txt} s.d. \texttt{test/milestone-1/input-6.txt}
+    \item Berkas output testing: \texttt{test/milestone-1/output-1.txt} s.d. \texttt{test/milestone-1/output-6.txt}
+\end{itemize}
+
+\subsection{Hasil Uji Berdasarkan Screenshot}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/input-1.png}
+        \caption{Input 1 (\texttt{test/milestone-1/input-1.txt})}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/output-1.png}
+        \caption{Output 1 (\texttt{test/milestone-1/output-1.txt})}
+    \end{subfigure}
+    \caption{Pasangan hasil uji kasus 1.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/input-3.png}
+        \caption{Input 3 (\texttt{test/milestone-1/input-3.txt})}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/output-3.png}
+        \caption{Output 3 (\texttt{test/milestone-1/output-3.txt})}
+    \end{subfigure}
+    \caption{Pasangan hasil uji kasus 3 (mengandung lexical error).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/input-4.png}
+        \caption{Input 4 (\texttt{test/milestone-1/input-4.txt})}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/output-4.png}
+        \caption{Output 4 (\texttt{test/milestone-1/output-4.txt})}
+    \end{subfigure}
+    \caption{Pasangan hasil uji kasus 4 (operator relasional).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/input-5.png}
+        \caption{Input 5 (\texttt{test/milestone-1/input-5.txt})}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/output-5.png}
+        \caption{Output 5 (\texttt{test/milestone-1/output-5.txt})}
+    \end{subfigure}
+    \caption{Pasangan hasil uji kasus 5 (fitur \texttt{record} dan akses field).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/input-6.png}
+        \caption{Input 6 (\texttt{test/milestone-1/input-6.txt})}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/output-6.png}
+        \caption{Output 6 (\texttt{test/milestone-1/output-6.txt})}
+    \end{subfigure}
+    \caption{Pasangan hasil uji kasus 6 (unclosed comment).}
+\end{figure}
+
+
+
+% -----------------------------------------------------------------------
+\section{Conclusion}
+
+Dari pengerjaan Milestone 1 ini, komponen \textit{Lexical Analyzer} (Lexer)
+untuk Arion Interpreter berhasil diimplementasikan dan diuji.
+Pembuatan lexer ini sepenuhnya menggunakan bahasa pemrograman C++17, dengan
+menerapkan \textit{Deterministic Finite Automaton} (DFA) yang dirancang untuk
+membaca \textit{source code} karakter demi karakter. Secara keseluruhan,
+program lexer sudah sanggup berjalan dengan baik sesuai spesifikasi bahasa
+yang diharapkan.
+
+Salah satu poin penting dari arsitektur lexer ini adalah proses pemindaiannya
+yang terbukti tidak membutuhkan \textit{backtracking}. Semata-mata karena
+memanfaatkan sistem satu karakter \textit{lookahead}, transisi antar \textit{state}
+di dalam DFA bisa dieksekusi secara deterministik. Hal ini berdampak bagus
+pada kinerjanya yang efisien dengan kompleksitas waktu yang linier, yakni $O(n)$
+terhadap panjang input. Alhasil, proses ini relatif lebih hemat memori dan aman
+saat dieksekusi.
+
+Program lexer ini sukses mengidentifikasi dan mengelompokkan 53 jenis tipe token
+dasar yang ada di dalam spesifikasi bahasa Arion. Proses klasifikasinya juga
+sudah mencakup unsur pengenalan seperti \textit{literals}, \textit{operators},
+\textit{delimiters}, hingga \textit{keywords} dan \textit{identifiers}. Selain
+itu, lexer terbukti pintar mendeteksi serta membuang karakter berlebih yang
+tidak ada fungsinya (non-semantis), sebut saja semua variasi jarak pemisah kata
+(\textit{whitespace}) serta dua macam tata cara format penulisan komentar.
+
+Kesimpulannya, keluaran langsung dari pengerjaan leksikal ini terbukti sukses
+mencetak \textit{token stream} yang rapi, utuh, dan terstruktur. Karena keluaran
+barisan token ini sudah dipilah-pilah dari gangguan sinyal ("derau") dan tidak 
+punya sisi ketidakpastian alias ambigu, ini bakal mempermudah kita mengerjakan
+langkah lanjut di tahapan Milestone 2. Intinya, landasan token ini
+sudah siap digunakan untuk pekerjaan membangun representasi
+\textit{Abstract Syntax Tree} (AST) pada pengerjaan \textit{Syntax Analysis} /
+Parsing selanjutnya.
+
+\subsection{Saran}
+
+Berdasarkan hasil pengerjaan Milestone 1 ini, beberapa saran untuk pengembangan ke depan adalah sebagai berikut.
+
+\begin{enumerate}
+    \item \textbf{Pesan kesalahan yang lebih informatif.}
+          Saat ini, karakter yang ga dikenali oleh DFA dikategorikan sebagai \texttt{UNKNOWN} tanpa informasi konteks tambahan.
+          Ke depannya, pesan kesalahan sebaiknya disertai nomor baris dan nomor kolom untuk mempermudah proses \textit{debugging} oleh pengguna bahasa Arion.
+    \item \textbf{Penanganan \textit{escape character} dalam string.}
+          Implementasi saat ini belum mendukung karakter \textit{escape} seperti \texttt{\textbackslash n} atau \texttt{\textbackslash t} di dalam string literal.
+          Penambahan fitur ini perlu dipertimbangkan dalam revisi spesifikasi bahasa atau pada milestone berikutnya.
+    \item \textbf{Integrasi dengan komponen berikutnya.}
+          Lexer telah dirancang secara modular sehingga \textit{token stream} yang dihasilkan siap dikonsumsi oleh \textit{parser} pada Milestone 2.
+          Disarankan agar antarmuka antara Lexer dan Parser dipastikan konsisten sejak dini untuk menghindari refactoring besar di kemudian hari.
+\end{enumerate}
+
+% -----------------------------------------------------------------------
+\begin{thebibliography}{9}
+
+\bibitem{tutorialspoint}
+``Compiler Design - Lexical Analysis,''
+TutorialsPoint.
+\url{https://www.tutorialspoint.com/compiler_design/compiler_design_lexical_analysis.htm}
+
+\bibitem{hopcroft2006}
+J.~E.~Hopcroft, R.~Motwani, and J.~D.~Ullman,
+\textit{Introduction to Automata Theory, Languages, and Computation}, 3rd ed.
+Pearson, 2006.
+
+\bibitem{aho2006}
+A.~V.~Aho, M.~S.~Lam, R.~Sethi, and J.~D.~Ullman,
+\textit{Compilers: Principles, Techniques, and Tools}, 2nd ed.
+Addison-Wesley, 2006.
+
+\bibitem{gnu_make}
+``An Introduction to Makefiles,''
+GNU Make Manual.
+\url{https://www.gnu.org/software/make/manual/html_node/Introduction.html}
+
+\end{thebibliography}
+
+% -----------------------------------------------------------------------
+\newpage
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+\subsection*{GitHub Repository}
+
+\url{https://github.com/jsndwrd/DCL-Tubes-IF2224-2026}
+
+\subsection*{DFA Transition Diagram}
+
+\url{https://drive.google.com/file/d/1Nn-a8DDgsxw4Qw8OxduvNSawWOEN7yzI/view?usp=sharing}
+
+\subsection*{Task Distribution}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{clX}
+        \toprule
+        \textbf{NIM} & \textbf{Nama} & \textbf{Kontribusi} \\
+        \midrule
+            13524026 & Made Branenda Jordhy      & 25\% \\
+            13524028 & Muhammad Nur Majiid       & 25\% \\
+            13524034 & Jason Edward Salim        & 25\% \\
+            13524068 & Athilla Zaidan Zidna Fann & 25\% \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\end{document}

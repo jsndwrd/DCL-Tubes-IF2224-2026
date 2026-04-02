@@ -1,0 +1,18 @@
+program Operator;
+
+var
+  a, b: integer;
+
+begin
+  a := 10;
+  b := 20;
+
+  if a <> b then
+    writeln('tidak sama');
+
+  if a <= b then
+    writeln('a kecil');
+
+  if b >= a then
+    writeln('b besar');
+end.

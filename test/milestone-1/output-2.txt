@@ -1,0 +1,211 @@
+programsy
+ident (fiturlengkap)
+semicolon
+
+constsy
+ident (max)
+becomes
+intcon (100)
+semicolon
+ident (pi)
+becomes
+realcon (3.14)
+semicolon
+ident (huruf)
+becomes
+charcon ('A')
+semicolon
+ident (nama)
+becomes
+string ('Arion')
+semicolon
+
+typesy
+ident (bilangan)
+unknown (=)
+ident (integer)
+semicolon
+ident (teks)
+unknown (=)
+arraysy
+lbrack
+unknown (1.)
+period
+ident (max)
+rbrack
+ofsy
+ident (char)
+semicolon
+
+varsy
+ident (x)
+comma
+ident (y)
+colon
+ident (integer)
+semicolon
+ident (r)
+colon
+ident (real)
+semicolon
+ident (c)
+colon
+ident (char)
+semicolon
+ident (s)
+colon
+ident (string)
+semicolon
+ident (arr)
+colon
+ident (teks)
+semicolon
+
+functionsy
+ident (tambah)
+lparent
+ident (a)
+comma
+ident (b)
+colon
+ident (integer)
+rparent
+colon
+ident (integer)
+semicolon
+beginsy
+ident (tambah)
+becomes
+ident (a)
+plus
+ident (b)
+semicolon
+endsy
+semicolon
+
+proceduresy
+ident (cetakhasil)
+lparent
+ident (n)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+ident (writeln)
+lparent
+string ('Hasil: ')
+comma
+ident (n)
+rparent
+semicolon
+endsy
+semicolon
+
+beginsy
+ident (x)
+becomes
+intcon (42)
+semicolon
+ident (y)
+becomes
+intcon (7)
+semicolon
+ident (r)
+becomes
+realcon (3.14)
+semicolon
+ident (c)
+becomes
+charcon ('Z')
+semicolon
+ident (s)
+becomes
+string ('Halo Dunia')
+semicolon
+
+ifsy
+ident (x)
+gtr
+ident (y)
+thensy
+ident (cetakhasil)
+lparent
+ident (tambah)
+lparent
+ident (x)
+comma
+ident (y)
+rparent
+rparent
+elsesy
+ident (writeln)
+lparent
+string ('y lebih besar')
+rparent
+semicolon
+
+forsy
+ident (x)
+becomes
+intcon (1)
+tosy
+intcon (10)
+dosy
+ident (arr)
+lbrack
+ident (x)
+rbrack
+becomes
+charcon ('A')
+semicolon
+
+whilesy
+ident (y)
+gtr
+intcon (0)
+dosy
+beginsy
+ident (y)
+becomes
+ident (y)
+minus
+intcon (1)
+semicolon
+endsy
+semicolon
+
+repeatsy
+ident (x)
+becomes
+ident (x)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (x)
+geq
+ident (max)
+semicolon
+
+casesy
+ident (x)
+ofsy
+intcon (1)
+colon
+ident (writeln)
+lparent
+string ('satu')
+rparent
+semicolon
+intcon (2)
+colon
+ident (writeln)
+lparent
+string ('dua')
+rparent
+semicolon
+endsy
+semicolon
+endsy
+period
