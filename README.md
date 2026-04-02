@@ -39,9 +39,9 @@ Athilla Zaidan Zidna Fann<br>
 
 ## Instructions
 
-### Instalasi
+### Installation
 
-Pastikan `g++` dan `make` sudah terinstal.
+Make sure `g++` and `make` are installed on your machine.
 
 ### Build
 
@@ -49,35 +49,35 @@ Pastikan `g++` dan `make` sudah terinstal.
 make
 ```
 
-atau secara eksplisit:
+or explicitly:
 
 ```bash
 make build
 ```
 
-Hasil kompilasi tersimpan di `bin/lexer` (Linux) atau `bin/lexer.exe` (Windows).
+Compilation is saved in `bin/lexer` (Linux) or `bin/lexer.exe` (Windows).
 
 ---
 
-### Menjalankan Program
+### How to Run
 
 ```bash
 make run
 ```
 
-### Membersihkan Build
+### Remove Old Compilation
 
 ```bash
 make clean
 ```
 
-## Task Distribution
+## Task Contribution
 
 ### Milestone 1
 
-| NIM      | Name                      | Contribution | Percentage |
-| -------- | ------------------------- | ------------ | ---------- |
-| 13524026 | Made Branenda Jordhy      |              | 25%        |
-| 13524028 | Muhammad Nur Majiid       |              | 25%        |
-| 13524034 | Jason Edward Salim        |              | 25%        |
-| 13524068 | Athilla Zaidan Zidna Fann |              | 25%        |
+| NIM      | Name                      | Percentage |
+| -------- | ------------------------- | ---------- |
+| 13524026 | Made Branenda Jordhy      | 25%        |
+| 13524028 | Muhammad Nur Majiid       | 25%        |
+| 13524034 | Jason Edward Salim        | 25%        |
+| 13524068 | Athilla Zaidan Zidna Fann | 25%        |

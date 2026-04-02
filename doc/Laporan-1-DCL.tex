@@ -15,6 +15,7 @@
     bottom=2.5cm
 }
 \onehalfspacing
+\raggedbottom
 
 \usepackage{graphicx}
 \usepackage{float}
@@ -57,6 +58,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{longtable}
+\usepackage{etoolbox}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -87,7 +89,7 @@
 \title{
     \vspace{-1.5cm}
     {\Large\textsc{IF2224 Formal Language and Automata Theory}}\\[0.35cm]
-    {\LARGE\textbf{Arion Interpreter --- Milestone 1: Lexical Analysis}}\\[0.3cm]
+    {\LARGE\textbf{Arion Interpreter - Milestone 1: Lexical Analysis}}\\[0.3cm]
     \vspace{-0.3cm}
 }
 \author{}
@@ -109,10 +111,10 @@
 
 \vspace{1cm}
 \begin{center}
-    \textbf{Made Branenda Jordhy} --- 13524026 \\[0.15cm]
-    \textbf{Muhammad Nur Majiid} --- 13524028 \\[0.15cm]
-    \textbf{Jason Edward Salim} --- 13524034 \\[0.15cm]
-    \textbf{Athilla Zaidan Zidna Fann} --- 13524068
+    \textbf{Made Branenda Jordhy} - 13524026 \\[0.15cm]
+    \textbf{Muhammad Nur Majiid} - 13524028 \\[0.15cm]
+    \textbf{Jason Edward Salim} - 13524034 \\[0.15cm]
+    \textbf{Athilla Zaidan Zidna Fann} - 13524068
 \end{center}
 
 \vspace{3cm}
@@ -681,23 +683,15 @@ beserta pola atau simbol yang merepresentasikannya, dikelompokkan berdasarkan ka
 
 \renewcommand{\arraystretch}{1.0}
 \footnotesize
-\begin{longtable}{l l p{8.5cm}}
+\begin{table}[H]
+\centering
 \caption{Daftar token bahasa Arion.}
-\label{tab:tokens}\\
+\label{tab:tokens}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l p{8.5cm}}
 \toprule
 \textbf{Category} & \textbf{Token} & \textbf{Pattern / Example} \\
 \midrule
-\endfirsthead
-\multicolumn{3}{l}{\small\itshape (continued)} \\[2pt]
-\toprule
-\textbf{Category} & \textbf{Token} & \textbf{Pattern / Example} \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{r}{\small\itshape Continued on next page\ldots} \\
-\endfoot
-\bottomrule
-\endlastfoot
 \multicolumn{3}{l}{\textit{Literals}} \\[2pt]
  & \texttt{intcon}  & Integer constant: \texttt{1}, \texttt{42}, \texttt{100} \\
  & \texttt{realcon} & Real constant: \texttt{3.14}, \texttt{0.5} \\
@@ -766,7 +760,10 @@ beserta pola atau simbol yang merepresentasikannya, dikelompokkan berdasarkan ka
  & \texttt{ident}   & Identifier: \texttt{x}, \texttt{myVar}, \texttt{h4g} \\
  & \texttt{comment} & \texttt{\{...\}} or \texttt{(*...*)} (discarded) \\
  & \texttt{unknown} & Unrecognized token (lexical error) \\
-\end{longtable}
+\bottomrule
+\end{tabular}%
+}
+\end{table}
 \renewcommand{\arraystretch}{1.15}
 
 % -----------------------------------------------------------------------
