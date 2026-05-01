@@ -1,0 +1,9 @@
+program LongestMatch;
+
+var
+  x: real;
+
+begin
+  x := .23.e-+/1.e-+/1;
+  writeln(1.);
+end.

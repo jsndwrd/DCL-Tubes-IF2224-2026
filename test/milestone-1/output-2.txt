@@ -29,7 +29,8 @@ ident(Teks)
 unknown(=)
 arraysy
 lbrack
-unknown(1.)
+intcon(1)
+period
 period
 ident(MAX)
 rbrack

@@ -122,9 +122,18 @@ vector<Token> Lexer::tokenize(){
             ts.push_back(Token(ArionToken::SEMICOLON, ";", currLine));
             next();
         } else if (currChar == '.'){
-            ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
-            next();
-        } 
+            // ".digit" → bukan angka valid (Arion tidak mengizinkan real tanpa
+            // angka pra-titik); konsumsi sebagai satu token UNKNOWN (longest-match).
+            if (checkDigit(f.peek())) {
+                string buffer(1, currChar);
+                int startLine = currLine;
+                next();
+                ts.push_back(readMalformedNumber(buffer, startLine));
+            } else {
+                ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
+                next();
+            }
+        }
         else {
             ts.push_back(Token{ArionToken::UNKNOWN, string(1, currChar), currLine});
             next();
@@ -219,20 +228,38 @@ Token Lexer::readNum(){
     }
 
     if (currChar == '.'){
+        // ".." operator range (mis. 1..10), bukan bagian dari angka
+        if (f.peek() == '.') {
+            return Token(ArionToken::INTCON, buffer, startLine);
+        }
         buffer += currChar;
         next();
         if (!checkDigit(currChar)){
-        // gak ada angka setelah titik
-        return Token(ArionToken::UNKNOWN, buffer, startLine);
-    }
+            return readMalformedNumber(buffer, startLine);
+        }
         while (checkDigit(currChar)){
             buffer += currChar;
             next();
         }
+        if (currChar == '.' || checkAlpha(currChar)) {
+            return readMalformedNumber(buffer, startLine);
+        }
         return Token(ArionToken::REALCON, buffer, startLine);
     } else {
-        return Token(ArionToken::INTCON, buffer, startLine);;
+        return Token(ArionToken::INTCON, buffer, startLine);
     }
+}
+
+Token Lexer::readMalformedNumber(string buffer, int startLine) {
+    while (currChar != EOF) {
+        bool numLike = checkAlpha(currChar) || checkDigit(currChar)
+                       || currChar == '.' || currChar == '+'
+                       || currChar == '-' || currChar == '/';
+        if (!numLike) break;
+        buffer += currChar;
+        next();
+    }
+    return Token(ArionToken::UNKNOWN, buffer, startLine);
 }
 
 Token Lexer::readStr(){

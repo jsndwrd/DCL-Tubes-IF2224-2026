@@ -38,6 +38,11 @@ private:
     // Return INTCON or REALCON
     Token readNum();
 
+    // Longest-match (huruf, digit, ., +, -, /)
+    // sebagai satu token UNKNOWN. dipake saat sekuens diawali angka/`.angka`
+    // tetapi ga bentuk INTCON/REALCON yang valid.
+    Token readMalformedNumber(std::string buffer, int startLine);
+
     // Read char with ''
     // Return CHARCON or STRING
     Token readStr();
