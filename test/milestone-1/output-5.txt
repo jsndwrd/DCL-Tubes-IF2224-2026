@@ -1,50 +1,50 @@
 programsy
-ident (rekord)
+ident(Rekord)
 semicolon
 
 typesy
-ident (titik)
-unknown (=)
+ident(Titik)
+unknown(=)
 recordsy
-ident (x)
+ident(x)
 comma
-ident (y)
+ident(y)
 colon
-ident (integer)
+ident(integer)
 semicolon
 endsy
 semicolon
 
 varsy
-ident (p)
+ident(p)
 colon
-ident (titik)
+ident(Titik)
 semicolon
 
 beginsy
-ident (p)
+ident(p)
 period
-ident (x)
+ident(x)
 becomes
-intcon (3)
+intcon(3)
 semicolon
-ident (p)
+ident(p)
 period
-ident (y)
+ident(y)
 becomes
-intcon (4)
+intcon(4)
 semicolon
-ident (writeln)
+ident(writeln)
 lparent
-string ('Jarak: ')
+string('Jarak: ')
 comma
-ident (p)
+ident(p)
 period
-ident (x)
+ident(x)
 plus
-ident (p)
+ident(p)
 period
-ident (y)
+ident(y)
 rparent
 semicolon
 endsy

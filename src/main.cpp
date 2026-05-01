@@ -17,7 +17,7 @@ string formatToken(const Token& t) {
         case CHARCON:
         case STRING:
         case UNKNOWN:
-            if (!t.value.empty()) return t.name() + " (" + t.value + ")";
+            if (!t.value.empty()) return t.name() + "(" + t.value + ")";
             return t.name();
         default:
             return t.name();

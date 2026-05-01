@@ -132,7 +132,7 @@ public:
 
     std::string toString() const {
         if (value.empty()) return name();
-        return name() + " (" + value + ")";
+        return name() + "(" + value + ")";
     }
 
 };

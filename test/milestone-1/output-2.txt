@@ -1,208 +1,208 @@
 programsy
-ident (fiturlengkap)
+ident(FiturLengkap)
 semicolon
 
 constsy
-ident (max)
+ident(MAX)
 becomes
-intcon (100)
+intcon(100)
 semicolon
-ident (pi)
+ident(PI)
 becomes
-realcon (3.14)
+realcon(3.14)
 semicolon
-ident (huruf)
+ident(HURUF)
 becomes
-charcon ('A')
+charcon('A')
 semicolon
-ident (nama)
+ident(NAMA)
 becomes
-string ('Arion')
+string('Arion')
 semicolon
 
 typesy
-ident (bilangan)
-unknown (=)
-ident (integer)
+ident(Bilangan)
+unknown(=)
+ident(integer)
 semicolon
-ident (teks)
-unknown (=)
+ident(Teks)
+unknown(=)
 arraysy
 lbrack
-unknown (1.)
+unknown(1.)
 period
-ident (max)
+ident(MAX)
 rbrack
 ofsy
-ident (char)
+ident(char)
 semicolon
 
 varsy
-ident (x)
+ident(x)
 comma
-ident (y)
+ident(y)
 colon
-ident (integer)
+ident(integer)
 semicolon
-ident (r)
+ident(r)
 colon
-ident (real)
+ident(real)
 semicolon
-ident (c)
+ident(c)
 colon
-ident (char)
+ident(char)
 semicolon
-ident (s)
+ident(s)
 colon
-ident (string)
+ident(string)
 semicolon
-ident (arr)
+ident(arr)
 colon
-ident (teks)
+ident(Teks)
 semicolon
 
 functionsy
-ident (tambah)
+ident(Tambah)
 lparent
-ident (a)
+ident(a)
 comma
-ident (b)
+ident(b)
 colon
-ident (integer)
+ident(integer)
 rparent
 colon
-ident (integer)
+ident(integer)
 semicolon
 beginsy
-ident (tambah)
+ident(Tambah)
 becomes
-ident (a)
+ident(a)
 plus
-ident (b)
+ident(b)
 semicolon
 endsy
 semicolon
 
 proceduresy
-ident (cetakhasil)
+ident(CetakHasil)
 lparent
-ident (n)
+ident(n)
 colon
-ident (integer)
+ident(integer)
 rparent
 semicolon
 beginsy
-ident (writeln)
+ident(writeln)
 lparent
-string ('Hasil: ')
+string('Hasil: ')
 comma
-ident (n)
+ident(n)
 rparent
 semicolon
 endsy
 semicolon
 
 beginsy
-ident (x)
+ident(x)
 becomes
-intcon (42)
+intcon(42)
 semicolon
-ident (y)
+ident(y)
 becomes
-intcon (7)
+intcon(7)
 semicolon
-ident (r)
+ident(r)
 becomes
-realcon (3.14)
+realcon(3.14)
 semicolon
-ident (c)
+ident(c)
 becomes
-charcon ('Z')
+charcon('Z')
 semicolon
-ident (s)
+ident(s)
 becomes
-string ('Halo Dunia')
+string('Halo Dunia')
 semicolon
 
 ifsy
-ident (x)
+ident(x)
 gtr
-ident (y)
+ident(y)
 thensy
-ident (cetakhasil)
+ident(CetakHasil)
 lparent
-ident (tambah)
+ident(Tambah)
 lparent
-ident (x)
+ident(x)
 comma
-ident (y)
+ident(y)
 rparent
 rparent
 elsesy
-ident (writeln)
+ident(writeln)
 lparent
-string ('y lebih besar')
+string('y lebih besar')
 rparent
 semicolon
 
 forsy
-ident (x)
+ident(x)
 becomes
-intcon (1)
+intcon(1)
 tosy
-intcon (10)
+intcon(10)
 dosy
-ident (arr)
+ident(arr)
 lbrack
-ident (x)
+ident(x)
 rbrack
 becomes
-charcon ('A')
+charcon('A')
 semicolon
 
 whilesy
-ident (y)
+ident(y)
 gtr
-intcon (0)
+intcon(0)
 dosy
 beginsy
-ident (y)
+ident(y)
 becomes
-ident (y)
+ident(y)
 minus
-intcon (1)
+intcon(1)
 semicolon
 endsy
 semicolon
 
 repeatsy
-ident (x)
+ident(x)
 becomes
-ident (x)
+ident(x)
 plus
-intcon (1)
+intcon(1)
 semicolon
 untilsy
-ident (x)
+ident(x)
 geq
-ident (max)
+ident(MAX)
 semicolon
 
 casesy
-ident (x)
+ident(x)
 ofsy
-intcon (1)
+intcon(1)
 colon
-ident (writeln)
+ident(writeln)
 lparent
-string ('satu')
+string('satu')
 rparent
 semicolon
-intcon (2)
+intcon(2)
 colon
-ident (writeln)
+ident(writeln)
 lparent
-string ('dua')
+string('dua')
 rparent
 semicolon
 endsy

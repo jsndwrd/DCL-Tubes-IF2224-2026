@@ -1,51 +1,51 @@
 programsy
-ident (testerror)
+ident(TestError)
 semicolon
 
 varsy
-ident (x)
+ident(x)
 colon
-ident (integer)
+ident(integer)
 semicolon
-ident (y)
+ident(y)
 colon
-ident (real)
+ident(real)
 semicolon
 
 beginsy
-ident (x)
+ident(x)
 becomes
-intcon (10)
+intcon(10)
 semicolon
-ident (y)
+ident(y)
 becomes
-realcon (3.14)
+realcon(3.14)
 semicolon
 
 ifsy
-ident (x)
+ident(x)
 eql
-ident (y)
+ident(y)
 thensy
-ident (writeln)
+ident(writeln)
 lparent
-string ('sama')
+string('sama')
 rparent
 semicolon
 
-ident (x)
+ident(x)
 becomes
-unknown (@)
+unknown(@)
 semicolon
 
-ident (writeln)
+ident(writeln)
 lparent
-unknown (1.)
+unknown(1.)
 rparent
 semicolon
 
-ident (writeln)
+ident(writeln)
 lparent
-string ('belum ditutup);
+unknown('belum ditutup);
 end.
-ÿ)
+)

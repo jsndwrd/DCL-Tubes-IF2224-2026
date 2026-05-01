@@ -1,55 +1,55 @@
 programsy
-ident (operator)
+ident(Operator)
 semicolon
 
 varsy
-ident (a)
+ident(a)
 comma
-ident (b)
+ident(b)
 colon
-ident (integer)
+ident(integer)
 semicolon
 
 beginsy
-ident (a)
+ident(a)
 becomes
-intcon (10)
+intcon(10)
 semicolon
-ident (b)
+ident(b)
 becomes
-intcon (20)
+intcon(20)
 semicolon
 
 ifsy
-ident (a)
+ident(a)
 neq
-ident (b)
+ident(b)
 thensy
-ident (writeln)
+ident(writeln)
 lparent
-string ('tidak sama')
+string('tidak sama')
 rparent
 semicolon
 
 ifsy
-ident (a)
+ident(a)
 leq
-ident (b)
+ident(b)
 thensy
-ident (writeln)
+ident(writeln)
 lparent
-string ('a kecil')
+string('a kecil')
 rparent
 semicolon
 
 ifsy
-ident (b)
+ident(b)
 geq
-ident (a)
+ident(a)
 thensy
-ident (writeln)
+ident(writeln)
 lparent
-string ('b besar')
+string('b besar')
 rparent
 semicolon
 endsy

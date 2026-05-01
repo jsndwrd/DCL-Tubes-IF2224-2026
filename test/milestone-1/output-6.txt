@@ -1,17 +1,17 @@
 programsy
-ident (campuranerror)
+ident(CampuranError)
 semicolon
 
 varsy
-ident (n)
+ident(n)
 colon
-ident (integer)
+ident(integer)
 semicolon
 
 beginsy
-ident (n)
+ident(n)
 becomes
-intcon (5)
+intcon(5)
 semicolon
 
-unknown (unclosed comment)
+unknown(unclosed comment)
