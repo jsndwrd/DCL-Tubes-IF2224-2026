@@ -14,6 +14,30 @@ const char* tokenType(ArionToken type) {
     return ArionTokenName[type];
 }
 
+bool isRelational(ArionToken t) {
+    return t == EQL || t == NEQ || t == GTR || t == GEQ || t == LSS || t == LEQ;
+}
+
+bool isAdditiveOp(ArionToken t) {
+    return t == PLUS || t == MINUS || t == ORSY;
+}
+
+bool isMultiplicativeOp(ArionToken t) {
+    return t == TIMES || t == RDIV || t == IDIV || t == IMOD || t == ANDSY;
+}
+
+bool canStartConstant(ArionToken t) {
+    return t == PLUS || t == MINUS || t == IDENT || t == INTCON || t == REALCON || t == CHARCON ||
+            t == STRING;
+}
+
+void checkNotUnknown(const Token& t) {
+    if (t.type == UNKNOWN) {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                            ": unexpected token " + t.toString());
+    }
+}
+
 }
 
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), pos(0) {}
@@ -47,19 +71,65 @@ void Parser::expect(ArionToken expectedType) {
 }
 
 ParseNode* Parser::parse() {
-
+    ParseNode* root = parseProgram();
+    Token t = peek();
+    if (t.type != EOFILE) {
+        checkNotUnknown(t);
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected eofile");
+    }
+    return root;
 }
-    
-ParseNode* Parser::parseProgram() {
 
+ParseNode* Parser::parseProgram() {
+    auto* n = new ParseNode{"<program>", {}};
+    n->children.push_back(parseHeader());
+    n->children.push_back(parseDeclaration());
+    n->children.push_back(parseCompound());
+    n->children.push_back(new ParseNode{"period", {}});
+    expect(PERIOD);
+    return n;
 }
 
 ParseNode* Parser::parseHeader() {
-
+    auto* n = new ParseNode{"<program-header>", {}};
+    n->children.push_back(new ParseNode{"programsy", {}});
+    expect(PROGRAMSY);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    n->children.push_back(new ParseNode{"semicolon", {}});
+    expect(SEMICOLON);
+    return n;
 }
 
 ParseNode* Parser::parseDeclaration() {
+    auto* n = new ParseNode{"<declaration-part>", {}};
 
+    while (peek().type == CONSTSY) {
+        n->children.push_back(parseConsts());
+    }
+
+    while (peek().type == TYPESY) {
+        n->children.push_back(parseTypes());
+    }
+
+    while (peek().type == VARSY) {
+        n->children.push_back(parseVars());
+    }
+
+    while (peek().type == PROCEDURESY || peek().type == FUNCTIONSY) {
+        n->children.push_back(parseSub());
+    }
+
+    Token nx = peek();
+    if (nx.type != BEGINSY) {
+        checkNotUnknown(nx);
+        throw SyntaxError("Syntax error at line " + std::to_string(nx.line) +
+                          ": unexpected token " + nx.toString() + ", expected beginsy (strict "
+                          "declaration order: const, type, var, subprogram)");
+    }
+
+    return n;
 }
 
 ParseNode* Parser::parseConsts() {
