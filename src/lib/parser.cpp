@@ -133,23 +133,81 @@ ParseNode* Parser::parseDeclaration() {
 }
 
 ParseNode* Parser::parseConsts() {
-
+    auto* n = new ParseNode{"<const-declaration>", {}};
+    n->children.push_back(new ParseNode{"constsy", {}});
+    expect(CONSTSY);
+    do {
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(IDENT);
+        expect(EQL);
+        n->children.push_back(parseConstDef());
+        expect(SEMICOLON);
+    } while (peek().type == IDENT && peekAt(1).type == EQL);
+    return n;
 }
 
 ParseNode* Parser::parseConstDef() {
+    auto* n = new ParseNode{"<constant>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
 
+    if (t.type == CHARCON || t.type == STRING) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        return n;
+    }
+
+    if (t.type == PLUS || t.type == MINUS) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+    }
+
+    Token u = peek();
+    checkNotUnknown(u);
+    if (u.type == IDENT || u.type == INTCON || u.type == REALCON) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        return n;
+    }
+
+    throw SyntaxError("Syntax error at line " + std::to_string(u.line) + ": unexpected token " +
+                      u.toString() + ", expected ident, intcon, or realcon in <constant>");
 }
 
 ParseNode* Parser::parseTypes() {
-
+    auto* n = new ParseNode{"<type-declaration>", {}};
+    n->children.push_back(new ParseNode{"typesy", {}});
+    expect(TYPESY);
+    do {
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(IDENT);
+        expect(EQL);
+        n->children.push_back(parseType());
+        expect(SEMICOLON);
+    } while (peek().type == IDENT && peekAt(1).type == EQL);
+    return n;
 }
 
 ParseNode* Parser::parseVars() {
-
+    auto* n = new ParseNode{"<var-declaration>", {}};
+    n->children.push_back(new ParseNode{"varsy", {}});
+    expect(VARSY);
+    do {
+        n->children.push_back(parseIdList());
+        expect(COLON);
+        n->children.push_back(parseType());
+        expect(SEMICOLON);
+    } while (peek().type == IDENT);
+    return n;
 }
 
 ParseNode* Parser::parseIdList() {
-
+    auto* n = new ParseNode{"<identifier-list>", {}};
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    while (peek().type == COMMA) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(IDENT);
+    }
+    return n;
 }
 
 ParseNode* Parser::parseType() {
