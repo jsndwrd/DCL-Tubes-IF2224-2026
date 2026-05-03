@@ -211,55 +211,194 @@ ParseNode* Parser::parseIdList() {
 }
 
 ParseNode* Parser::parseType() {
+    auto* n = new ParseNode{"<type>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
 
+    if (t.type == ARRAYSY) {
+        n->children.push_back(parseArray());
+        return n;
+    }
+    if (t.type == RECORDSY) {
+        n->children.push_back(parseRecord());
+        return n;
+    }
+    if (t.type == LPARENT) {
+        n->children.push_back(parseEnum());
+        return n;
+    }
+    if (t.type == IDENT) {
+        if (peekAt(1).type == PERIOD && peekAt(2).type == PERIOD) {
+            n->children.push_back(parseRange());
+            return n;
+        }
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        return n;
+    }
+    if (canStartConstant(t.type)) {
+        n->children.push_back(parseRange());
+        return n;
+    }
+
+    throw SyntaxError("Syntax error at line " + std::to_string(t.line) + ": unexpected token " +
+                      t.toString() + ", expected <type>");
 }
 
 ParseNode* Parser::parseArray() {
-
+    auto* n = new ParseNode{"<array-type>", {}};
+    expect(ARRAYSY);
+    expect(LBRACK);
+    Token a = peek();
+    checkNotUnknown(a);
+    if (a.type == IDENT) {
+        if (peekAt(1).type == PERIOD && peekAt(2).type == PERIOD) {
+            n->children.push_back(parseRange());
+        } else {
+            n->children.push_back(new ParseNode{consume().toString(), {}});
+        }
+    } else if (canStartConstant(a.type)) {
+        n->children.push_back(parseRange());
+    } else {
+        throw SyntaxError("Syntax error at line " + std::to_string(a.line) +
+                          ": unexpected token " + a.toString() + " in <array-type> bound");
+    }
+    expect(RBRACK);
+    expect(OFSY);
+    n->children.push_back(parseType());
+    return n;
 }
 
 ParseNode* Parser::parseRange() {
-
+    auto* n = new ParseNode{"<range>", {}};
+    n->children.push_back(parseConstDef());
+    expect(PERIOD);
+    expect(PERIOD);
+    n->children.push_back(parseConstDef());
+    return n;
 }
 
 ParseNode* Parser::parseEnum() {
-
+    auto* n = new ParseNode{"<enumerated>", {}};
+    expect(LPARENT);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    while (peek().type == COMMA) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(IDENT);
+    }
+    expect(RPARENT);
+    return n;
 }
 
 ParseNode* Parser::parseRecord() {
-
+    auto* n = new ParseNode{"<record-type>", {}};
+    expect(RECORDSY);
+    n->children.push_back(parseFields());
+    expect(ENDSY);
+    return n;
 }
 
 ParseNode* Parser::parseFields() {
-
+    auto* n = new ParseNode{"<field-list>", {}};
+    while (peek().type != ENDSY) {
+        n->children.push_back(parseField());
+        if (peek().type == ENDSY) break;
+        expect(SEMICOLON);
+    }
+    return n;
 }
 
 ParseNode* Parser::parseField() {
-
+    auto* n = new ParseNode{"<field-part>", {}};
+    n->children.push_back(parseIdList());
+    expect(COLON);
+    n->children.push_back(parseType());
+    return n;
 }
 
 ParseNode* Parser::parseSub() {
-
+    auto* n = new ParseNode{"<subprogram-declaration>", {}};
+    if (peek().type == PROCEDURESY) {
+        n->children.push_back(parseProc());
+    } else if (peek().type == FUNCTIONSY) {
+        n->children.push_back(parseFunc());
+    } else {
+        Token t = peek();
+        checkNotUnknown(t);
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() +
+                          ", expected proceduresy or functionsy");
+    }
+    return n;
 }
 
 ParseNode* Parser::parseProc() {
-
+    auto* n = new ParseNode{"<procedure-declaration>", {}};
+    expect(PROCEDURESY);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    if (peek().type == LPARENT) {
+        n->children.push_back(parseFormals());
+    }
+    expect(SEMICOLON);
+    n->children.push_back(parseBlock());
+    expect(SEMICOLON);
+    return n;
 }
 
 ParseNode* Parser::parseFunc() {
-
+    auto* n = new ParseNode{"<function-declaration>", {}};
+    expect(FUNCTIONSY);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    if (peek().type == LPARENT) {
+        n->children.push_back(parseFormals());
+    }
+    expect(COLON);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    expect(SEMICOLON);
+    n->children.push_back(parseBlock());
+    expect(SEMICOLON);
+    return n;
 }
 
 ParseNode* Parser::parseBlock() {
-
+    auto* n = new ParseNode{"<block>", {}};
+    n->children.push_back(parseDeclaration());
+    n->children.push_back(parseCompound());
+    return n;
 }
 
 ParseNode* Parser::parseFormals() {
-
+    auto* n = new ParseNode{"<formal-parameter-list>", {}};
+    expect(LPARENT);
+    n->children.push_back(parseParamGroup());
+    while (peek().type == SEMICOLON) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseParamGroup());
+    }
+    expect(RPARENT);
+    return n;
 }
 
 ParseNode* Parser::parseParamGroup() {
-
+    auto* n = new ParseNode{"<parameter-group>", {}};
+    n->children.push_back(parseIdList());
+    expect(COLON);
+    Token t = peek();
+    checkNotUnknown(t);
+    if (t.type == ARRAYSY) {
+        n->children.push_back(parseArray());
+    } else if (t.type == IDENT) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+    } else {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() +
+                          ", expected ident or arraysy in <parameter-group>");
+    }
+    return n;
 }
 
 ParseNode* Parser::parseCompound() {
