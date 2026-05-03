@@ -45,7 +45,7 @@ private:
     ParseNode* parseRange();
     ParseNode* parseEnum();
     ParseNode* parseRecord();
-    ParseNode* parseFields();
+    ParseNode* parseFieldList();
     ParseNode* parseField();
     ParseNode* parseSub();
     ParseNode* parseProc();
@@ -54,7 +54,7 @@ private:
     ParseNode* parseFormals();
     ParseNode* parseParamGroup();
     ParseNode* parseCompound();
-    ParseNode* parseStmts();
+    ParseNode* parseStmtList();
     ParseNode* parseStmt();
     ParseNode* parseVar();
     ParseNode* parseCompVar();

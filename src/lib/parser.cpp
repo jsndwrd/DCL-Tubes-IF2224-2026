@@ -38,6 +38,42 @@ void checkNotUnknown(const Token& t) {
     }
 }
 
+bool isAssignFollowed(const std::vector<Token>& tokens, int start) {
+    int i = start;
+    if (i < 0 || i >= static_cast<int>(tokens.size()) || tokens[static_cast<std::size_t>(i)].type != IDENT) {
+        return false;
+    }
+    ++i;
+    while (i < static_cast<int>(tokens.size())) {
+        ArionToken ty = tokens[static_cast<std::size_t>(i)].type;
+        if (ty == LBRACK) {
+            int depth = 1;
+            ++i;
+            while (i < static_cast<int>(tokens.size()) && depth > 0) {
+                ArionToken u = tokens[static_cast<std::size_t>(i)].type;
+                if (u == LBRACK) ++depth;
+                else if (u == RBRACK)
+                    --depth;
+                ++i;
+            }
+            if (depth != 0) return false;
+            continue;
+        }
+        if (ty == PERIOD) {
+            ++i;
+            if (i >= static_cast<int>(tokens.size()) ||
+                tokens[static_cast<std::size_t>(i)].type != IDENT) {
+                return false;
+            }
+            ++i;
+            continue;
+        }
+        break;
+    }
+    return i < static_cast<int>(tokens.size()) &&
+           tokens[static_cast<std::size_t>(i)].type == BECOMES;
+
+}
 }
 
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), pos(0) {}
@@ -294,12 +330,12 @@ ParseNode* Parser::parseEnum() {
 ParseNode* Parser::parseRecord() {
     auto* n = new ParseNode{"<record-type>", {}};
     expect(RECORDSY);
-    n->children.push_back(parseFields());
+    n->children.push_back(parseFieldList());
     expect(ENDSY);
     return n;
 }
 
-ParseNode* Parser::parseFields() {
+ParseNode* Parser::parseFieldList() {
     auto* n = new ParseNode{"<field-list>", {}};
     while (peek().type != ENDSY) {
         n->children.push_back(parseField());
@@ -405,7 +441,7 @@ ParseNode* Parser::parseCompound() {
 
 }
 
-ParseNode* Parser::parseStmts() {
+ParseNode* Parser::parseStmtList() {
 
 }
 
