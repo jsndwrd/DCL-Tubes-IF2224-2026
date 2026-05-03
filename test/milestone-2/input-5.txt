@@ -1,0 +1,26 @@
+program Larik;
+
+const
+  Awal == 1;
+  Akhir == 8;
+
+type
+  Titik == record
+    x: integer;
+    y: integer
+  end;
+  Larik == array[Awal..Akhir] of integer;
+
+var
+  p: Titik;
+  a: Larik;
+  k: integer;
+
+begin
+  k := 1;
+  a[1] := 42;
+  a[k] := a[1] + 1;
+  p.x := 3;
+  p.y := p.x * 2;
+  writeln('Jumlah: ', p.x + p.y);
+end.

@@ -1,9 +1,9 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 #include <filesystem>
 #include "header/lexer.hpp"
+#include "header/parser.hpp"
 #include "header/token.hpp"
 
 using namespace std;
@@ -22,29 +22,6 @@ string formatToken(const Token& t) {
         default:
             return t.name();
     }
-}
-
-void writeOutput(const vector<Token>& tokens, const string& outputPath) {
-    fs::path outDir = fs::path(outputPath).parent_path();
-    if (!outDir.empty() && !fs::exists(outDir))
-        fs::create_directories(outDir);
-
-    ofstream out(outputPath);
-    if (!out.is_open()) {
-        cerr << "ERROR: Tidak dapat membuat berkas keluaran: " << outputPath << "\n";
-        exit(1);
-    }
-
-    int prevLine = -1;
-    for (const Token& t : tokens) {
-        if (t.type == EOFILE) break;
-        if (prevLine != -1 && t.line > prevLine + 1)
-            out << "\n";
-        out << formatToken(t) << "\n";
-        prevLine = t.line;
-    }
-
-    out.close();
 }
 
 void printSummary(const vector<Token>& tokens) {
@@ -94,7 +71,7 @@ void printTokens(const vector<Token>& tokens) {
 
 int main() {
     cout << "===================================================\n";
-    cout << "  ARION LEXER  -  Milestone 1\n";
+    cout << "  ARION LEXER & PARSER  -  Milestone 2\n";
     cout << "  IF2224 Teori Bahasa Formal dan Automata\n";
     cout << "  Kelompok DCL - Dirty Chocolate\n";
     cout << "===================================================\n\n";
@@ -102,7 +79,7 @@ int main() {
     string inputPath;
 
     while (true) {
-        cout << "Masukkan path berkas dari folder test/ (contoh: milestone-1/input-1.txt): ";
+        cout << "Masukkan path berkas dari folder test/ (contoh: milestone-2/input-1.txt): ";
         string raw;
         if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
@@ -130,24 +107,40 @@ int main() {
     printTokens(tokens);
     printSummary(tokens);
 
-    cout << "\nSimpan hasil ke berkas? (y/n): ";
+    ParseNode* root = nullptr;
+    try {
+        Parser parser(tokens);
+        root = parser.parse();
+    } catch (const SyntaxError& e) {
+        cerr << "\n" << e.what() << "\n";
+        return 1;
+    }
+
+    cout << "\n--- Pohon Parsing ---\n";
+    printTree(root);
+    cout << "----------------------\n";
+
+    cout << "\nSimpan pohon parsing ke berkas .txt? (y/n): ";
     string jawab;
     if (!getline(cin, jawab)) {
         cout << "\nProgram dihentikan.\n";
+        destroyParseTree(root);
         return 0;
     }
 
     if (jawab != "y" && jawab != "Y") {
-        cout << "Hasil tidak disimpan.\n\n";
+        cout << "Pohon tidak disimpan.\n\n";
+        destroyParseTree(root);
         return 0;
     }
 
     string outputPath;
     while (true) {
-        cout << "Masukkan path keluaran dari folder test/ (contoh: milestone-1/output-1.txt): ";
+        cout << "Masukkan path keluaran dari folder test/ (contoh: milestone-2/output-tree-1.txt): ";
         string raw;
         if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
+            destroyParseTree(root);
             return 0;
         }
         if (raw.empty()) {
@@ -158,8 +151,15 @@ int main() {
         break;
     }
 
-    writeOutput(tokens, outputPath);
-    cout << "Hasil disimpan ke: " << outputPath << "\n\n";
+    try {
+        writeTree(root, outputPath);
+        cout << "Pohon parsing disimpan ke: " << outputPath << "\n\n";
+    } catch (const std::exception& e) {
+        cerr << "ERROR: " << e.what() << "\n";
+        destroyParseTree(root);
+        return 1;
+    }
 
+    destroyParseTree(root);
     return 0;
 }

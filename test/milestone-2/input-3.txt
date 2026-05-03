@@ -1,0 +1,28 @@
+program M3;
+
+var
+  n: integer;
+
+procedure Kosong;
+begin
+end;
+
+procedure CetakJumlah(a: integer; b: integer);
+begin
+  writeln(a + b);
+end;
+
+function Max3(x: integer; y: integer; z: integer): integer;
+begin
+  Max3 := x;
+  if y > Max3 then Max3 := y;
+  if z > Max3 then Max3 := z;
+end;
+
+begin
+  Kosong;
+  halt;
+  CetakJumlah(1, 2);
+  n := Max3(3, 7, 5);
+  writeln('Nilai = ', n);
+end.
