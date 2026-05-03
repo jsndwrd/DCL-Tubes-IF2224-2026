@@ -1,5 +1,8 @@
 #include "../header/parser.hpp"
 
+#include <fstream>
+#include <filesystem>
+#include <iostream>
 #include <string>
 #include <utility>
 
@@ -438,90 +441,429 @@ ParseNode* Parser::parseParamGroup() {
 }
 
 ParseNode* Parser::parseCompound() {
-
+    auto* n = new ParseNode{"<compound-statement>", {}};
+    n->children.push_back(new ParseNode{"beginsy", {}});
+    expect(BEGINSY);
+    n->children.push_back(parseStmtList());
+    n->children.push_back(new ParseNode{"endsy", {}});
+    expect(ENDSY);
+    return n;
 }
 
 ParseNode* Parser::parseStmtList() {
-
+    auto* n = new ParseNode{"<statement-list>", {}};
+    while (peek().type != ENDSY) {
+        n->children.push_back(parseStmt());
+        if (peek().type == ENDSY) break;
+        if (peek().type == SEMICOLON) {
+            consume();
+            continue;
+        }
+        Token t = peek();
+        checkNotUnknown(t);
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected semicolon or endsy");
+    }
+    return n;
 }
 
 ParseNode* Parser::parseStmt() {
+    auto* n = new ParseNode{"<statement>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
 
+    if (t.type == SEMICOLON) {
+        return n;
+    }
+
+    if (t.type == IFSY) {
+        n->children.push_back(parseIf());
+        return n;
+    }
+    if (t.type == CASESY) {
+        n->children.push_back(parseCase());
+        return n;
+    }
+    if (t.type == WHILESY) {
+        n->children.push_back(parseWhile());
+        return n;
+    }
+    if (t.type == REPEATSY) {
+        n->children.push_back(parseRepeat());
+        return n;
+    }
+    if (t.type == FORSY) {
+        n->children.push_back(parseFor());
+        return n;
+    }
+
+    if (t.type == IDENT) {
+        if (isAssignFollowed(tokens, pos)) {
+            n->children.push_back(parseAssign());
+            return n;
+        }
+        n->children.push_back(parseCall());
+        return n;
+    }
+
+    return n;
 }
 
 ParseNode* Parser::parseVar() {
+    Token id = peek();
+    checkNotUnknown(id);
+    if (id.type != IDENT) {
+        throw SyntaxError("Syntax error at line " + std::to_string(id.line) +
+                          ": unexpected token " + id.toString() + ", expected ident in <variable>");
+    }
 
+    auto* leafIdent = new ParseNode{consume().toString(), {}};
+    ParseNode* currentVar = new ParseNode{"<variable>", {leafIdent}};
+
+    while (peek().type == LBRACK || peek().type == PERIOD) {
+        auto* cv = new ParseNode{"<component-variable>", {}};
+        cv->children.push_back(currentVar);
+
+        if (peek().type == LBRACK) {
+            cv->children.push_back(new ParseNode{consume().toString(), {}});
+            cv->children.push_back(parseIndices());
+            cv->children.push_back(new ParseNode{peek().toString(), {}});
+            expect(RBRACK);
+        } else {
+            cv->children.push_back(new ParseNode{consume().toString(), {}});
+            cv->children.push_back(new ParseNode{peek().toString(), {}});
+            expect(IDENT);
+        }
+
+        auto* wrapped = new ParseNode{"<variable>", {}};
+        wrapped->children.push_back(cv);
+        currentVar = wrapped;
+    }
+
+    return currentVar;
 }
 
 ParseNode* Parser::parseCompVar() {
-
+    auto* cv = new ParseNode{"<component-variable>", {}};
+    cv->children.push_back(parseVar());
+    return cv;
 }
 
 ParseNode* Parser::parseIndices() {
-
+    auto* n = new ParseNode{"<index-list>", {}};
+    Token x = peek();
+    checkNotUnknown(x);
+    if (x.type != INTCON && x.type != CHARCON && x.type != IDENT) {
+        throw SyntaxError("Syntax error at line " + std::to_string(x.line) +
+                          ": unexpected token " + x.toString() +
+                          ", expected intcon, charcon, or ident in <index-list>");
+    }
+    n->children.push_back(new ParseNode{consume().toString(), {}});
+    while (peek().type == COMMA) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        Token y = peek();
+        checkNotUnknown(y);
+        if (y.type != INTCON && y.type != CHARCON && y.type != IDENT) {
+            throw SyntaxError("Syntax error at line " + std::to_string(y.line) +
+                              ": unexpected token " + y.toString() +
+                              ", expected intcon, charcon, or ident in <index-list>");
+        }
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+    }
+    return n;
 }
 
 ParseNode* Parser::parseAssign() {
-
+    auto* n = new ParseNode{"<assignment-statement>", {}};
+    n->children.push_back(parseVar());
+    n->children.push_back(new ParseNode{"becomes", {}});
+    expect(BECOMES);
+    n->children.push_back(parseExpr());
+    return n;
 }
 
 ParseNode* Parser::parseIf() {
-
+    auto* n = new ParseNode{"<if-statement>", {}};
+    expect(IFSY);
+    n->children.push_back(parseExpr());
+    expect(THENSY);
+    n->children.push_back(parseStmt());
+    if (peek().type == ELSESY) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseStmt());
+    }
+    return n;
 }
 
 ParseNode* Parser::parseCase() {
-
+    auto* n = new ParseNode{"<case-statement>", {}};
+    expect(CASESY);
+    n->children.push_back(parseExpr());
+    expect(OFSY);
+    for (;;) {
+        n->children.push_back(parseCaseArm());
+        if (peek().type == SEMICOLON) {
+            Token nxt = peekAt(1);
+            if (canStartConstant(nxt.type)) {
+                consume();
+                continue;
+            }
+            if (nxt.type == ENDSY) consume();
+        }
+        break;
+    }
+    expect(ENDSY);
+    return n;
 }
 
 ParseNode* Parser::parseCaseArm() {
-
+    auto* n = new ParseNode{"<case-block>", {}};
+    n->children.push_back(parseConstDef());
+    while (peek().type == COMMA) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseConstDef());
+    }
+    expect(COLON);
+    n->children.push_back(parseStmt());
+    return n;
 }
 
 ParseNode* Parser::parseWhile() {
-
+    auto* n = new ParseNode{"<while-statement>", {}};
+    expect(WHILESY);
+    n->children.push_back(parseExpr());
+    expect(DOSY);
+    n->children.push_back(parseStmt());
+    return n;
 }
 
 ParseNode* Parser::parseRepeat() {
-
+    auto* n = new ParseNode{"<repeat-statement>", {}};
+    expect(REPEATSY);
+    auto* stmts = new ParseNode{"<statement-list>", {}};
+    while (peek().type != UNTILSY) {
+        stmts->children.push_back(parseStmt());
+        if (peek().type == UNTILSY) break;
+        if (peek().type == SEMICOLON) {
+            consume();
+            continue;
+        }
+        Token t = peek();
+        checkNotUnknown(t);
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected semicolon or untilsy");
+    }
+    n->children.push_back(stmts);
+    expect(UNTILSY);
+    n->children.push_back(parseExpr());
+    return n;
 }
 
 ParseNode* Parser::parseFor() {
-
+    auto* n = new ParseNode{"<for-statement>", {}};
+    expect(FORSY);
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    expect(BECOMES);
+    n->children.push_back(parseExpr());
+    Token t = peek();
+    checkNotUnknown(t);
+    if (t.type == TOSY || t.type == DOWNTOSY) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+    } else {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected tosy or downtosy");
+    }
+    n->children.push_back(parseExpr());
+    expect(DOSY);
+    n->children.push_back(parseStmt());
+    return n;
 }
 
 ParseNode* Parser::parseCall() {
-
+    auto* n = new ParseNode{"<procedure/function-call>", {}};
+    n->children.push_back(new ParseNode{peek().toString(), {}});
+    expect(IDENT);
+    if (peek().type == LPARENT) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseArgs());
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(RPARENT);
+    }
+    return n;
 }
 
 ParseNode* Parser::parseArgs() {
-
+    auto* n = new ParseNode{"<parameter-list>", {}};
+    if (peek().type == RPARENT) {
+        return n;
+    }
+    n->children.push_back(parseExpr());
+    while (peek().type == COMMA) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseExpr());
+    }
+    return n;
 }
 
 ParseNode* Parser::parseExpr() {
-
+    auto* n = new ParseNode{"<expression>", {}};
+    ParseNode* s1 = parseSimple();
+    if (isRelational(peek().type)) {
+        n->children.push_back(s1);
+        n->children.push_back(parseRelOp());
+        n->children.push_back(parseSimple());
+        return n;
+    }
+    n->children.push_back(s1);
+    return n;
 }
 
 ParseNode* Parser::parseSimple() {
-
+    auto* n = new ParseNode{"<simple-expression>", {}};
+    if (peek().type == PLUS || peek().type == MINUS) {
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        consume();
+    }
+    n->children.push_back(parseTerm());
+    while (isAdditiveOp(peek().type)) {
+        n->children.push_back(parseAddOp());
+        n->children.push_back(parseTerm());
+    }
+    return n;
 }
 
 ParseNode* Parser::parseTerm() {
-
+    auto* n = new ParseNode{"<term>", {}};
+    n->children.push_back(parseFactor());
+    while (isMultiplicativeOp(peek().type)) {
+        n->children.push_back(parseMulOp());
+        n->children.push_back(parseFactor());
+    }
+    return n;
 }
 
 ParseNode* Parser::parseFactor() {
+    auto* n = new ParseNode{"<factor>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
 
+    if (t.type == INTCON || t.type == REALCON || t.type == CHARCON || t.type == STRING) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        return n;
+    }
+
+    if (t.type == NOTSY) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseFactor());
+        return n;
+    }
+
+    if (t.type == LPARENT) {
+        n->children.push_back(new ParseNode{consume().toString(), {}});
+        n->children.push_back(parseExpr());
+        n->children.push_back(new ParseNode{peek().toString(), {}});
+        expect(RPARENT);
+        return n;
+    }
+
+    if (t.type == IDENT) {
+        if (peekAt(1).type == LPARENT) {
+            auto* call = new ParseNode{"<procedure/function-call>", {}};
+            call->children.push_back(new ParseNode{t.toString(), {}});
+            consume();
+            call->children.push_back(new ParseNode{consume().toString(), {}});
+            call->children.push_back(parseArgs());
+            call->children.push_back(new ParseNode{peek().toString(), {}});
+            expect(RPARENT);
+            n->children.push_back(call);
+            return n;
+        }
+        n->children.push_back(parseVar());
+        return n;
+    }
+
+    throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                      ": unexpected token " + t.toString() + " in <factor>");
 }
 
 ParseNode* Parser::parseRelOp() {
-
+    auto* n = new ParseNode{"<relational-operator>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
+    if (!isRelational(t.type)) {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected relational operator");
+    }
+    n->children.push_back(new ParseNode{consume().toString(), {}});
+    return n;
 }
 
 ParseNode* Parser::parseAddOp() {
-
+    auto* n = new ParseNode{"<additive-operator>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
+    if (!isAdditiveOp(t.type)) {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() + ", expected additive operator");
+    }
+    n->children.push_back(new ParseNode{consume().toString(), {}});
+    return n;
 }
 
 ParseNode* Parser::parseMulOp() {
+    auto* n = new ParseNode{"<multiplicative-operator>", {}};
+    Token t = peek();
+    checkNotUnknown(t);
+    if (!isMultiplicativeOp(t.type)) {
+        throw SyntaxError("Syntax error at line " + std::to_string(t.line) +
+                          ": unexpected token " + t.toString() +
+                          ", expected multiplicative operator");
+    }
+    n->children.push_back(new ParseNode{consume().toString(), {}});
+    return n;
+}
+
+namespace {
+
+void printTreeImpl(std::ostream& os, ParseNode* node, const std::string& prefix, bool isLast, bool isRoot) {
+    if (!node) return;
+    if (isRoot) {
+        os << node->label << '\n';
+    } else {
+        os << prefix << (isLast ? "└── " : "├── ") << node->label << '\n';
+    }
+    const std::string nextPrefix = prefix + (isRoot ? "" : (isLast ? "    " : "│   "));
+    for (std::size_t i = 0; i < node->children.size(); ++i) {
+        printTreeImpl(os, node->children[i], nextPrefix, i + 1 == node->children.size(), false);
+    }
+}
 
 }
 
+void printTree(ParseNode* root) {
+    if (!root) return;
+    printTreeImpl(std::cout, root, "", true, true);
+}
+
+void writeTree(ParseNode* root, const std::string& outputPath) {
+    if (!root) return;
+
+    namespace fs = std::filesystem;
+    fs::path outDir = fs::path(outputPath).parent_path();
+    if (!outDir.empty() && !fs::exists(outDir))
+        fs::create_directories(outDir);
+
+    std::ofstream out(outputPath);
+    if (!out.is_open()) {
+        throw std::runtime_error("cannot open output file: " + outputPath);
+    }
+    printTreeImpl(out, root, "", true, true);
+}
+
+void destroyParseTree(ParseNode* root) {
+    if (!root) return;
+    for (ParseNode* child : root->children)
+        destroyParseTree(child);
+    delete root;
+}

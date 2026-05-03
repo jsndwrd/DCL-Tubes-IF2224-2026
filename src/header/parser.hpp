@@ -77,4 +77,8 @@ private:
     ParseNode* parseMulOp();
 };
 
+void printTree(ParseNode* root);
+void writeTree(ParseNode* root, const std::string& outputPath);
+void destroyParseTree(ParseNode* root);
+
 #endif
