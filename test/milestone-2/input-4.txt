@@ -1,0 +1,32 @@
+program Alur;
+
+var
+  i, idx, x, y: integer;
+
+begin
+  { statement kosong }
+  ;
+  if i < 10 then
+    x := 1
+  else
+    x := 2;
+
+  case i of
+    0: y := 0;
+    1, 2: y := 1
+  end;
+
+  while x > 0 do
+    x := x - 1;
+
+  repeat
+    i := i + 1;
+    y := y + 1
+  until i == 5;
+
+  for idx := 1 to 3 do
+    writeln('step ', idx);
+
+  for i := 10 downto 8 do
+    y := y - 1;
+end.

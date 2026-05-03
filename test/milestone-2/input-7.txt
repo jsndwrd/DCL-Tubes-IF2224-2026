@@ -1,0 +1,7 @@
+program KonstantaEql;
+
+const
+  ONE = 1;
+
+begin
+end.

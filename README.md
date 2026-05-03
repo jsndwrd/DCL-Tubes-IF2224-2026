@@ -81,3 +81,12 @@ make clean
 | 13524028 | Muhammad Nur Majiid       | 25%        |
 | 13524034 | Jason Edward Salim        | 25%        |
 | 13524068 | Athilla Zaidan Zidna Fann | 25%        |
+
+### Milestone 2
+
+| NIM      | Name                      | Percentage |
+| -------- | ------------------------- | ---------- |
+| 13524026 | Made Branenda Jordhy      | 25%        |
+| 13524028 | Muhammad Nur Majiid       | 25%        |
+| 13524034 | Jason Edward Salim        | 25%        |
+| 13524068 | Athilla Zaidan Zidna Fann | 25%        |

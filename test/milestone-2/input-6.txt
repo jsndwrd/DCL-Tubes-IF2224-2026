@@ -1,0 +1,11 @@
+program Urutan;
+
+var
+  n: integer;
+
+type
+  Bilangan == integer;
+
+begin
+  n := 0;
+end.

@@ -1,0 +1,39 @@
+program Deklarasi;
+
+const
+  MAKS == 100;
+  PI == 3.14;
+  HURUF == 'A';
+  NAMA == 'ab';
+  NEG == -42;
+  SKORMIN == 1;
+  SKORMAKS == 100;
+  BARISAWAL == 1;
+  BARISAKHIR == 4;
+  KOLOWAL == 1;
+  KOLOMAKHIR == 3;
+
+type
+  RentangSkor == SKORMIN..SKORMAKS;
+  KotakHuruf == 'a'..'z';
+  Bulan == (Jan, Feb, Mar, Apr);
+  IndeksBaris == BARISAWAL..BARISAKHIR;
+  PapanSkor == array[RentangSkor] of integer;
+  Matriks == array[IndeksBaris] of array[KOLOWAL..KOLOMAKHIR] of real;
+
+var
+  i, j: integer;
+  r: real;
+  s: RentangSkor;
+  huruf: KotakHuruf;
+  papan: PapanSkor;
+  m: Matriks;
+
+begin
+  i := MAKS;
+  r := PI + 1.0;
+  huruf := HURUF;
+  s := 10;
+  papan[s] := i div 2;
+  m[1][2] := r * 2.0;
+end.
