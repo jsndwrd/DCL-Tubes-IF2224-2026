@@ -1,0 +1,58 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Theoretical Background}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Syntax Analysis}{3}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Context-Free Grammar (CFG)}{3}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Parse Tree dan AST}{3}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}Recursive Descent Parsing}{3}{subsection.1.4}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {3}{130.12479pt}\LT@entry 
+    {1}{353.43306pt}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pipeline kompilasi Arion: keluaran lexer (Milestone~1) menjadi masukan parser (Milestone~2).}}{4}{figure.caption.3}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:pipeline}{{1}{4}{Pipeline kompilasi Arion: keluaran lexer (Milestone~1) menjadi masukan parser (Milestone~2)}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Design and Implementation}{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Overview}{4}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Hard-coded Grammar}{4}{subsection.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Production rules grammar Arion yang di-\textit  {hardcode} pada parser.}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:grammar}{{1}{4}{Production rules grammar Arion yang di-\textit {hardcode} pada parser}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Recursive Descent Architecture}{5}{subsection.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Hierarki pemanggilan utama recursive descent parser. Setiap node menggambarkan satu fungsi anggota kelas \texttt  {Parser}; subtree ekspresi (\texttt  {parseExpr} $\to $ \texttt  {parseSimple} $\to $ \texttt  {parseTerm} $\to $ \texttt  {parseFactor}) tidak ditampilkan karena dipanggil dari berbagai cabang.}}{6}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:rd-call}{{2}{6}{Hierarki pemanggilan utama recursive descent parser. Setiap node menggambarkan satu fungsi anggota kelas \texttt {Parser}; subtree ekspresi (\texttt {parseExpr} $\to $ \texttt {parseSimple} $\to $ \texttt {parseTerm} $\to $ \texttt {parseFactor}) tidak ditampilkan karena dipanggil dari berbagai cabang}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Parsing Expression: Operator Precedence}{6}{subsection.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Stratifikasi ekspresi: presedensi naik dari atas ke bawah.}}{6}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:expr-strat}{{3}{6}{Stratifikasi ekspresi: presedensi naik dari atas ke bawah}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Disambiguasi: Assignment vs Procedure Call}{6}{subsection.2.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Disambiguasi statement berbasis multi-token lookahead non-konsumtif.}}{7}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:disambig}{{4}{7}{Disambiguasi statement berbasis multi-token lookahead non-konsumtif}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Error Handling}{7}{subsection.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}Parse Tree Output}{7}{subsection.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8}Tokenization Flow}{7}{subsection.2.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Alur eksekusi pada level statement di dalam recursive descent parser.}}{7}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:parse-flow}{{5}{7}{Alur eksekusi pada level statement di dalam recursive descent parser}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9}Contoh Parse Tree}{8}{subsection.2.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Parse tree untuk ekspresi \texttt  {a + b * 2}.}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:tree-expr}{{6}{8}{Parse tree untuk ekspresi \texttt {a + b * 2}}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Testing}{8}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Lokasi File Pengujian}{8}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Ringkasan Kasus Uji}{8}{subsection.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Ringkasan tujuh kasus uji Milestone~2.}}{8}{table.caption.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Hasil Uji Berdasarkan Screenshot}{9}{subsection.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Pasangan hasil uji kasus 1 (golden-path program minimal).}}{9}{figure.caption.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Pasangan hasil uji kasus 2 (deklarasi \texttt  {const}, \texttt  {type}, array bertingkat).}}{9}{figure.caption.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Pasangan hasil uji kasus 3 (prosedur dan fungsi).}}{9}{figure.caption.12}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Pasangan hasil uji kasus 4 (seluruh statement kontrol alur).}}{10}{figure.caption.13}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Pasangan hasil uji kasus 5 (\texttt  {record} dan akses field).}}{10}{figure.caption.14}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Pasangan hasil uji kasus 6 (error: \texttt  {type} dideklarasikan setelah \texttt  {var}).}}{10}{figure.caption.15}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Pasangan hasil uji kasus 7 (error: \texttt  {=} alih-alih \texttt  {==} pada deklarasi konstanta).}}{11}{figure.caption.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{11}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Saran}{11}{subsection.4.1}\protected@file@percent }
+\bibcite{aho2006}{1}
+\bibcite{hopcroft2006}{2}
+\bibcite{tutorialspoint}{3}
+\bibcite{pivak}{4}
+\bibcite{gnu_make}{5}
+\@writefile{toc}{\contentsline {section}{Appendix}{13}{section*.18}\protected@file@percent }
+\gdef \@abspage@last{13}
