@@ -176,10 +176,12 @@ ParseNode* Parser::parseConsts() {
     n->children.push_back(new ParseNode{"constsy", {}});
     expect(CONSTSY);
     do {
-        n->children.push_back(new ParseNode{peek().toString(), {}});
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // ident(NAME)
         expect(IDENT);
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // eql
         expect(EQL);
         n->children.push_back(parseConstDef());
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
         expect(SEMICOLON);
     } while (peek().type == IDENT && peekAt(1).type == EQL);
     return n;
@@ -215,10 +217,12 @@ ParseNode* Parser::parseTypes() {
     n->children.push_back(new ParseNode{"typesy", {}});
     expect(TYPESY);
     do {
-        n->children.push_back(new ParseNode{peek().toString(), {}});
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // ident(NAME)
         expect(IDENT);
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // eql
         expect(EQL);
         n->children.push_back(parseType());
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
         expect(SEMICOLON);
     } while (peek().type == IDENT && peekAt(1).type == EQL);
     return n;
@@ -230,8 +234,10 @@ ParseNode* Parser::parseVars() {
     expect(VARSY);
     do {
         n->children.push_back(parseIdList());
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // colon
         expect(COLON);
         n->children.push_back(parseType());
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
         expect(SEMICOLON);
     } while (peek().type == IDENT);
     return n;
@@ -285,7 +291,9 @@ ParseNode* Parser::parseType() {
 
 ParseNode* Parser::parseArray() {
     auto* n = new ParseNode{"<array-type>", {}};
+    n->children.push_back(new ParseNode{"arraysy", {}});
     expect(ARRAYSY);
+    n->children.push_back(new ParseNode{"lbrack", {}});
     expect(LBRACK);
     Token a = peek();
     checkNotUnknown(a);
@@ -301,7 +309,9 @@ ParseNode* Parser::parseArray() {
         throw SyntaxError("Syntax error at line " + std::to_string(a.line) +
                           ": unexpected token " + a.toString() + " in <array-type> bound");
     }
+    n->children.push_back(new ParseNode{"rbrack", {}});
     expect(RBRACK);
+    n->children.push_back(new ParseNode{"ofsy", {}});
     expect(OFSY);
     n->children.push_back(parseType());
     return n;
@@ -318,6 +328,7 @@ ParseNode* Parser::parseRange() {
 
 ParseNode* Parser::parseEnum() {
     auto* n = new ParseNode{"<enumerated>", {}};
+    n->children.push_back(new ParseNode{"lparent", {}});
     expect(LPARENT);
     n->children.push_back(new ParseNode{peek().toString(), {}});
     expect(IDENT);
@@ -326,14 +337,17 @@ ParseNode* Parser::parseEnum() {
         n->children.push_back(new ParseNode{peek().toString(), {}});
         expect(IDENT);
     }
+    n->children.push_back(new ParseNode{"rparent", {}});
     expect(RPARENT);
     return n;
 }
 
 ParseNode* Parser::parseRecord() {
     auto* n = new ParseNode{"<record-type>", {}};
+    n->children.push_back(new ParseNode{"recordsy", {}});
     expect(RECORDSY);
     n->children.push_back(parseFieldList());
+    n->children.push_back(new ParseNode{"endsy", {}});
     expect(ENDSY);
     return n;
 }
@@ -343,6 +357,7 @@ ParseNode* Parser::parseFieldList() {
     while (peek().type != ENDSY) {
         n->children.push_back(parseField());
         if (peek().type == ENDSY) break;
+        n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
         expect(SEMICOLON);
     }
     return n;
@@ -351,6 +366,7 @@ ParseNode* Parser::parseFieldList() {
 ParseNode* Parser::parseField() {
     auto* n = new ParseNode{"<field-part>", {}};
     n->children.push_back(parseIdList());
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // colon
     expect(COLON);
     n->children.push_back(parseType());
     return n;
@@ -374,31 +390,38 @@ ParseNode* Parser::parseSub() {
 
 ParseNode* Parser::parseProc() {
     auto* n = new ParseNode{"<procedure-declaration>", {}};
+    n->children.push_back(new ParseNode{"proceduresy", {}});
     expect(PROCEDURESY);
     n->children.push_back(new ParseNode{peek().toString(), {}});
     expect(IDENT);
     if (peek().type == LPARENT) {
         n->children.push_back(parseFormals());
     }
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
     expect(SEMICOLON);
     n->children.push_back(parseBlock());
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
     expect(SEMICOLON);
     return n;
 }
 
 ParseNode* Parser::parseFunc() {
     auto* n = new ParseNode{"<function-declaration>", {}};
+    n->children.push_back(new ParseNode{"functionsy", {}});
     expect(FUNCTIONSY);
     n->children.push_back(new ParseNode{peek().toString(), {}});
     expect(IDENT);
     if (peek().type == LPARENT) {
         n->children.push_back(parseFormals());
     }
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // colon
     expect(COLON);
-    n->children.push_back(new ParseNode{peek().toString(), {}});
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // ident (return type)
     expect(IDENT);
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
     expect(SEMICOLON);
     n->children.push_back(parseBlock());
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // semicolon
     expect(SEMICOLON);
     return n;
 }
@@ -412,12 +435,14 @@ ParseNode* Parser::parseBlock() {
 
 ParseNode* Parser::parseFormals() {
     auto* n = new ParseNode{"<formal-parameter-list>", {}};
+    n->children.push_back(new ParseNode{"lparent", {}});
     expect(LPARENT);
     n->children.push_back(parseParamGroup());
     while (peek().type == SEMICOLON) {
         n->children.push_back(new ParseNode{consume().toString(), {}});
         n->children.push_back(parseParamGroup());
     }
+    n->children.push_back(new ParseNode{"rparent", {}});
     expect(RPARENT);
     return n;
 }
@@ -425,6 +450,7 @@ ParseNode* Parser::parseFormals() {
 ParseNode* Parser::parseParamGroup() {
     auto* n = new ParseNode{"<parameter-group>", {}};
     n->children.push_back(parseIdList());
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // colon
     expect(COLON);
     Token t = peek();
     checkNotUnknown(t);
@@ -456,7 +482,7 @@ ParseNode* Parser::parseStmtList() {
         n->children.push_back(parseStmt());
         if (peek().type == ENDSY) break;
         if (peek().type == SEMICOLON) {
-            consume();
+            n->children.push_back(new ParseNode{consume().toString(), {}});
             continue;
         }
         Token t = peek();
@@ -517,36 +543,25 @@ ParseNode* Parser::parseVar() {
                           ": unexpected token " + id.toString() + ", expected ident in <variable>");
     }
 
-    auto* leafIdent = new ParseNode{consume().toString(), {}};
-    ParseNode* currentVar = new ParseNode{"<variable>", {leafIdent}};
+    auto* n = new ParseNode{"<variable>", {}};
+    n->children.push_back(new ParseNode{consume().toString(), {}});  // ident
 
     while (peek().type == LBRACK || peek().type == PERIOD) {
         auto* cv = new ParseNode{"<component-variable>", {}};
-        cv->children.push_back(currentVar);
-
         if (peek().type == LBRACK) {
-            cv->children.push_back(new ParseNode{consume().toString(), {}});
+            cv->children.push_back(new ParseNode{consume().toString(), {}});  // lbrack
             cv->children.push_back(parseIndices());
-            cv->children.push_back(new ParseNode{peek().toString(), {}});
+            cv->children.push_back(new ParseNode{peek().toString(), {}});     // rbrack
             expect(RBRACK);
         } else {
-            cv->children.push_back(new ParseNode{consume().toString(), {}});
-            cv->children.push_back(new ParseNode{peek().toString(), {}});
+            cv->children.push_back(new ParseNode{consume().toString(), {}});  // period
+            cv->children.push_back(new ParseNode{peek().toString(), {}});     // ident
             expect(IDENT);
         }
-
-        auto* wrapped = new ParseNode{"<variable>", {}};
-        wrapped->children.push_back(cv);
-        currentVar = wrapped;
+        n->children.push_back(cv);
     }
 
-    return currentVar;
-}
-
-ParseNode* Parser::parseCompVar() {
-    auto* cv = new ParseNode{"<component-variable>", {}};
-    cv->children.push_back(parseVar());
-    return cv;
+    return n;
 }
 
 ParseNode* Parser::parseIndices() {
@@ -584,8 +599,10 @@ ParseNode* Parser::parseAssign() {
 
 ParseNode* Parser::parseIf() {
     auto* n = new ParseNode{"<if-statement>", {}};
+    n->children.push_back(new ParseNode{"ifsy", {}});
     expect(IFSY);
     n->children.push_back(parseExpr());
+    n->children.push_back(new ParseNode{"thensy", {}});
     expect(THENSY);
     n->children.push_back(parseStmt());
     if (peek().type == ELSESY) {
@@ -597,21 +614,26 @@ ParseNode* Parser::parseIf() {
 
 ParseNode* Parser::parseCase() {
     auto* n = new ParseNode{"<case-statement>", {}};
+    n->children.push_back(new ParseNode{"casesy", {}});
     expect(CASESY);
     n->children.push_back(parseExpr());
+    n->children.push_back(new ParseNode{"ofsy", {}});
     expect(OFSY);
     for (;;) {
         n->children.push_back(parseCaseArm());
         if (peek().type == SEMICOLON) {
             Token nxt = peekAt(1);
             if (canStartConstant(nxt.type)) {
-                consume();
+                n->children.push_back(new ParseNode{consume().toString(), {}});
                 continue;
             }
-            if (nxt.type == ENDSY) consume();
+            if (nxt.type == ENDSY) {
+                n->children.push_back(new ParseNode{consume().toString(), {}});
+            }
         }
         break;
     }
+    n->children.push_back(new ParseNode{"endsy", {}});
     expect(ENDSY);
     return n;
 }
@@ -623,6 +645,7 @@ ParseNode* Parser::parseCaseArm() {
         n->children.push_back(new ParseNode{consume().toString(), {}});
         n->children.push_back(parseConstDef());
     }
+    n->children.push_back(new ParseNode{peek().toString(), {}});  // colon
     expect(COLON);
     n->children.push_back(parseStmt());
     return n;
@@ -630,8 +653,10 @@ ParseNode* Parser::parseCaseArm() {
 
 ParseNode* Parser::parseWhile() {
     auto* n = new ParseNode{"<while-statement>", {}};
+    n->children.push_back(new ParseNode{"whilesy", {}});
     expect(WHILESY);
     n->children.push_back(parseExpr());
+    n->children.push_back(new ParseNode{"dosy", {}});
     expect(DOSY);
     n->children.push_back(parseStmt());
     return n;
@@ -639,13 +664,14 @@ ParseNode* Parser::parseWhile() {
 
 ParseNode* Parser::parseRepeat() {
     auto* n = new ParseNode{"<repeat-statement>", {}};
+    n->children.push_back(new ParseNode{"repeatsy", {}});
     expect(REPEATSY);
     auto* stmts = new ParseNode{"<statement-list>", {}};
     while (peek().type != UNTILSY) {
         stmts->children.push_back(parseStmt());
         if (peek().type == UNTILSY) break;
         if (peek().type == SEMICOLON) {
-            consume();
+            stmts->children.push_back(new ParseNode{consume().toString(), {}});
             continue;
         }
         Token t = peek();
@@ -654,6 +680,7 @@ ParseNode* Parser::parseRepeat() {
                           ": unexpected token " + t.toString() + ", expected semicolon or untilsy");
     }
     n->children.push_back(stmts);
+    n->children.push_back(new ParseNode{"untilsy", {}});
     expect(UNTILSY);
     n->children.push_back(parseExpr());
     return n;
@@ -661,9 +688,11 @@ ParseNode* Parser::parseRepeat() {
 
 ParseNode* Parser::parseFor() {
     auto* n = new ParseNode{"<for-statement>", {}};
+    n->children.push_back(new ParseNode{"forsy", {}});
     expect(FORSY);
     n->children.push_back(new ParseNode{peek().toString(), {}});
     expect(IDENT);
+    n->children.push_back(new ParseNode{"becomes", {}});
     expect(BECOMES);
     n->children.push_back(parseExpr());
     Token t = peek();
@@ -675,6 +704,7 @@ ParseNode* Parser::parseFor() {
                           ": unexpected token " + t.toString() + ", expected tosy or downtosy");
     }
     n->children.push_back(parseExpr());
+    n->children.push_back(new ParseNode{"dosy", {}});
     expect(DOSY);
     n->children.push_back(parseStmt());
     return n;
@@ -831,9 +861,9 @@ void printTreeImpl(std::ostream& os, ParseNode* node, const std::string& prefix,
     if (isRoot) {
         os << node->label << '\n';
     } else {
-        os << prefix << (isLast ? "└── " : "├── ") << node->label << '\n';
+        os << prefix << (isLast ? "\\-- " : "+-- ") << node->label << '\n';
     }
-    const std::string nextPrefix = prefix + (isRoot ? "" : (isLast ? "    " : "│   "));
+    const std::string nextPrefix = prefix + (isRoot ? "" : (isLast ? "    " : "|   "));
     for (std::size_t i = 0; i < node->children.size(); ++i) {
         printTreeImpl(os, node->children[i], nextPrefix, i + 1 == node->children.size(), false);
     }
