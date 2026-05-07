@@ -1,0 +1,28 @@
+Memproses test/milestone-2/input-7.txt ...
+
+--- Daftar Token ---
+programsy
+ident(KonstantaEql)
+semicolon
+
+constsy
+ident(ONE)
+unknown(=)
+intcon(1)
+semicolon
+
+beginsy
+endsy
+period
+--------------------
+
+Total token      : 11
+Kata kunci       : 7
+Identifier       : 2
+Literal          : 1
+Token tidak valid: 1
+
+Token tidak dikenali:
+  Baris 4: '='
+
+Syntax error at line 4: unexpected token unknown(=), expected eql

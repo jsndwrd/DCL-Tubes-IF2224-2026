@@ -1,0 +1,223 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(M3)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <var-declaration>
+│   │   ├── varsy
+│   │   ├── <identifier-list>
+│   │   │   └── ident(n)
+│   │   └── <type>
+│   │       └── ident(integer)
+│   ├── <subprogram-declaration>
+│   │   └── <procedure-declaration>
+│   │       ├── ident(Kosong)
+│   │       └── <block>
+│   │           ├── <declaration-part>
+│   │           └── <compound-statement>
+│   │               ├── beginsy
+│   │               ├── <statement-list>
+│   │               └── endsy
+│   ├── <subprogram-declaration>
+│   │   └── <procedure-declaration>
+│   │       ├── ident(CetakJumlah)
+│   │       ├── <formal-parameter-list>
+│   │       │   ├── <parameter-group>
+│   │       │   │   ├── <identifier-list>
+│   │       │   │   │   └── ident(a)
+│   │       │   │   └── ident(integer)
+│   │       │   ├── semicolon(;)
+│   │       │   └── <parameter-group>
+│   │       │       ├── <identifier-list>
+│   │       │       │   └── ident(b)
+│   │       │       └── ident(integer)
+│   │       └── <block>
+│   │           ├── <declaration-part>
+│   │           └── <compound-statement>
+│   │               ├── beginsy
+│   │               ├── <statement-list>
+│   │               │   └── <statement>
+│   │               │       └── <procedure/function-call>
+│   │               │           ├── ident(writeln)
+│   │               │           ├── lparent(()
+│   │               │           ├── <parameter-list>
+│   │               │           │   └── <expression>
+│   │               │           │       └── <simple-expression>
+│   │               │           │           ├── <term>
+│   │               │           │           │   └── <factor>
+│   │               │           │           │       └── <variable>
+│   │               │           │           │           └── ident(a)
+│   │               │           │           ├── <additive-operator>
+│   │               │           │           │   └── plus(+)
+│   │               │           │           └── <term>
+│   │               │           │               └── <factor>
+│   │               │           │                   └── <variable>
+│   │               │           │                       └── ident(b)
+│   │               │           └── rparent())
+│   │               └── endsy
+│   └── <subprogram-declaration>
+│       └── <function-declaration>
+│           ├── ident(Max3)
+│           ├── <formal-parameter-list>
+│           │   ├── <parameter-group>
+│           │   │   ├── <identifier-list>
+│           │   │   │   └── ident(x)
+│           │   │   └── ident(integer)
+│           │   ├── semicolon(;)
+│           │   ├── <parameter-group>
+│           │   │   ├── <identifier-list>
+│           │   │   │   └── ident(y)
+│           │   │   └── ident(integer)
+│           │   ├── semicolon(;)
+│           │   └── <parameter-group>
+│           │       ├── <identifier-list>
+│           │       │   └── ident(z)
+│           │       └── ident(integer)
+│           ├── ident(integer)
+│           └── <block>
+│               ├── <declaration-part>
+│               └── <compound-statement>
+│                   ├── beginsy
+│                   ├── <statement-list>
+│                   │   ├── <statement>
+│                   │   │   └── <assignment-statement>
+│                   │   │       ├── <variable>
+│                   │   │       │   └── ident(Max3)
+│                   │   │       ├── becomes
+│                   │   │       └── <expression>
+│                   │   │           └── <simple-expression>
+│                   │   │               └── <term>
+│                   │   │                   └── <factor>
+│                   │   │                       └── <variable>
+│                   │   │                           └── ident(x)
+│                   │   ├── <statement>
+│                   │   │   └── <if-statement>
+│                   │   │       ├── <expression>
+│                   │   │       │   ├── <simple-expression>
+│                   │   │       │   │   └── <term>
+│                   │   │       │   │       └── <factor>
+│                   │   │       │   │           └── <variable>
+│                   │   │       │   │               └── ident(y)
+│                   │   │       │   ├── <relational-operator>
+│                   │   │       │   │   └── gtr(>)
+│                   │   │       │   └── <simple-expression>
+│                   │   │       │       └── <term>
+│                   │   │       │           └── <factor>
+│                   │   │       │               └── <variable>
+│                   │   │       │                   └── ident(Max3)
+│                   │   │       └── <statement>
+│                   │   │           └── <assignment-statement>
+│                   │   │               ├── <variable>
+│                   │   │               │   └── ident(Max3)
+│                   │   │               ├── becomes
+│                   │   │               └── <expression>
+│                   │   │                   └── <simple-expression>
+│                   │   │                       └── <term>
+│                   │   │                           └── <factor>
+│                   │   │                               └── <variable>
+│                   │   │                                   └── ident(y)
+│                   │   └── <statement>
+│                   │       └── <if-statement>
+│                   │           ├── <expression>
+│                   │           │   ├── <simple-expression>
+│                   │           │   │   └── <term>
+│                   │           │   │       └── <factor>
+│                   │           │   │           └── <variable>
+│                   │           │   │               └── ident(z)
+│                   │           │   ├── <relational-operator>
+│                   │           │   │   └── gtr(>)
+│                   │           │   └── <simple-expression>
+│                   │           │       └── <term>
+│                   │           │           └── <factor>
+│                   │           │               └── <variable>
+│                   │           │                   └── ident(Max3)
+│                   │           └── <statement>
+│                   │               └── <assignment-statement>
+│                   │                   ├── <variable>
+│                   │                   │   └── ident(Max3)
+│                   │                   ├── becomes
+│                   │                   └── <expression>
+│                   │                       └── <simple-expression>
+│                   │                           └── <term>
+│                   │                               └── <factor>
+│                   │                                   └── <variable>
+│                   │                                       └── ident(z)
+│                   └── endsy
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <procedure/function-call>
+│   │   │       └── ident(Kosong)
+│   │   ├── <statement>
+│   │   │   └── <procedure/function-call>
+│   │   │       └── ident(halt)
+│   │   ├── <statement>
+│   │   │   └── <procedure/function-call>
+│   │   │       ├── ident(CetakJumlah)
+│   │   │       ├── lparent(()
+│   │   │       ├── <parameter-list>
+│   │   │       │   ├── <expression>
+│   │   │       │   │   └── <simple-expression>
+│   │   │       │   │       └── <term>
+│   │   │       │   │           └── <factor>
+│   │   │       │   │               └── intcon(1)
+│   │   │       │   ├── comma(,)
+│   │   │       │   └── <expression>
+│   │   │       │       └── <simple-expression>
+│   │   │       │           └── <term>
+│   │   │       │               └── <factor>
+│   │   │       │                   └── intcon(2)
+│   │   │       └── rparent())
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(n)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <procedure/function-call>
+│   │   │                           ├── ident(Max3)
+│   │   │                           ├── lparent(()
+│   │   │                           ├── <parameter-list>
+│   │   │                           │   ├── <expression>
+│   │   │                           │   │   └── <simple-expression>
+│   │   │                           │   │       └── <term>
+│   │   │                           │   │           └── <factor>
+│   │   │                           │   │               └── intcon(3)
+│   │   │                           │   ├── comma(,)
+│   │   │                           │   ├── <expression>
+│   │   │                           │   │   └── <simple-expression>
+│   │   │                           │   │       └── <term>
+│   │   │                           │   │           └── <factor>
+│   │   │                           │   │               └── intcon(7)
+│   │   │                           │   ├── comma(,)
+│   │   │                           │   └── <expression>
+│   │   │                           │       └── <simple-expression>
+│   │   │                           │           └── <term>
+│   │   │                           │               └── <factor>
+│   │   │                           │                   └── intcon(5)
+│   │   │                           └── rparent())
+│   │   └── <statement>
+│   │       └── <procedure/function-call>
+│   │           ├── ident(writeln)
+│   │           ├── lparent(()
+│   │           ├── <parameter-list>
+│   │           │   ├── <expression>
+│   │           │   │   └── <simple-expression>
+│   │           │   │       └── <term>
+│   │           │   │           └── <factor>
+│   │           │   │               └── string('Nilai = ')
+│   │           │   ├── comma(,)
+│   │           │   └── <expression>
+│   │           │       └── <simple-expression>
+│   │           │           └── <term>
+│   │           │               └── <factor>
+│   │           │                   └── <variable>
+│   │           │                       └── ident(n)
+│   │           └── rparent())
+│   └── endsy
+└── period
