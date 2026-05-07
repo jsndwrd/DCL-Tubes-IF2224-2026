@@ -1,0 +1,16 @@
+program EnumCase;
+
+type
+  Buah == (Apel, Jeruk, Mangga, Durian);
+
+var
+  kode: integer;
+
+begin
+  kode := 2;
+  case kode of
+    0: writeln('Apel');
+    1, 2: writeln('Jeruk atau Mangga');
+    3: writeln('Durian')
+  end;
+end.

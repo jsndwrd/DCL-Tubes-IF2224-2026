@@ -1,0 +1,23 @@
+program NestedCalls;
+
+var
+  n, m, k: integer;
+
+function Kali(a: integer; b: integer): integer;
+begin
+  Kali := a * b
+end;
+
+function Tambah(a: integer; b: integer): integer;
+begin
+  Tambah := a + b
+end;
+
+begin
+  n := Kali(2, 3);
+  m := Tambah(Kali(2, 3), Kali(4, 1));
+  k := Kali(Tambah(1, 2), Tambah(3, 4));
+  writeln('n = ', n);
+  writeln('m = ', m);
+  writeln('k = ', k);
+end.

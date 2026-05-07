@@ -612,14 +612,15 @@ membungkus setiap \texttt{ident} sebagai hasil revisi struktur flat
 Pengujian (\textit{testing}) program dilakukan menggunakan testcase yang sudah dibuat
 dan disimpan pada direktori \texttt{test/milestone-2/}. Setiap testcase memiliki
 pasangan file input-output dengan format nama \texttt{input-\{n\}.txt} dan
-\texttt{output-\{n\}.txt}. Tujuh kasus disusun untuk meliputi kasus golden-path,
-fitur tipe data lanjutan, kontrol alur, prosedur/fungsi, hingga skenario error.
+\texttt{output-\{n\}.txt}. Sepuluh test cases disusun untuk meliputi case golden-path,
+fitur tipe data lanjutan, kontrol alur, prosedur/fungsi, operator boolean,
+pemanggilan fungsi bersarang, tipe enumerasi, hingga skenario error.
 
 \subsection{Lokasi File Pengujian}
 
 \begin{itemize}
-    \item file input: \texttt{test/milestone-2/input-1.txt} s.d. \texttt{test/milestone-2/input-7.txt}
-    \item file output: \texttt{test/milestone-2/output-1.txt} s.d. \texttt{test/milestone-2/output-7.txt}
+    \item file input: \texttt{test/milestone-2/input-1.txt} s.d. \texttt{test/milestone-2/input-10.txt}
+    \item file output: \texttt{test/milestone-2/output/output-1.txt} s.d. \texttt{test/milestone-2/output/output-10.txt}
 \end{itemize}
 
 \subsection{Ringkasan Kasus Uji}
@@ -638,9 +639,12 @@ fitur tipe data lanjutan, kontrol alur, prosedur/fungsi, hingga skenario error.
 5 & \texttt{record} \& field   & Deklarasi \texttt{record}, akses field via \texttt{.}, akses array dengan indeks variabel. \\
 6 & Error: urutan deklarasi    & \texttt{type} dideklarasikan setelah \texttt{var} (melanggar urutan strict). \\
 7 & Error: token leksikal      & Konstanta menggunakan \texttt{=} alih-alih \texttt{==}; token \texttt{unknown} terpropagasi ke parser. \\
+8 & Operator boolean           & Ekspresi kondisi dengan \texttt{and}, \texttt{or}, \texttt{not} pada \texttt{if} dan \texttt{while}. \\
+9 & Pemanggilan fungsi bersarang & Argumen fungsi berupa pemanggilan fungsi lain (nested calls). \\
+10 & Tipe enumerasi \& \texttt{case} & Deklarasi tipe enumerasi dan \texttt{case} dengan daftar konstanta. \\
 \bottomrule
 \end{tabularx}
-\caption{Ringkasan tujuh kasus uji Milestone~2.}
+\caption{Ringkasan sepuluh kasus uji Milestone~2.}
 \end{table}
 
 \subsection{Hasil Uji}
@@ -651,7 +655,7 @@ Output lengkap tersimpan pada \texttt{test/milestone-2/output/}; output
 dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
 
 % ---- Kasus 1 ----
-\subsubsection*{Kasus 1 --- Golden-path program minimal}
+\subsubsection*{Kasus 1 - Golden-path program minimal}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-1.txt}}
@@ -662,7 +666,7 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
 ]{../../test/milestone-2/output/output-1.txt}
 
 % ---- Kasus 2 ----
-\subsubsection*{Kasus 2 --- Deklarasi \texttt{const}, \texttt{type}, dan array bertingkat}
+\subsubsection*{Kasus 2 - Deklarasi \texttt{const}, \texttt{type}, dan array bertingkat}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-2.txt}}
@@ -673,8 +677,8 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-2.txt} (40 baris pertama dari \the\value{lstnumber} total)}
 ]{../../test/milestone-2/output/output-2.txt}
 
-% ---- Kasus 3 ----
-\subsubsection*{Kasus 3 --- Subprogram: prosedur dan fungsi}
+% -- Kasus 3 --
+\subsubsection*{Kasus 3 - Subprogram: prosedur dan fungsi}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-3.txt}}
@@ -685,8 +689,8 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-3.txt} (40 baris pertama)}
 ]{../../test/milestone-2/output/output-3.txt}
 
-% ---- Kasus 4 ----
-\subsubsection*{Kasus 4 --- Kontrol alur: \texttt{if}, \texttt{case}, \texttt{while}, \texttt{repeat}, \texttt{for}}
+% -- Kasus 4 --
+\subsubsection*{Kasus 4 - Kontrol alur: \texttt{if}, \texttt{case}, \texttt{while}, \texttt{repeat}, \texttt{for}}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-4.txt}}
@@ -697,8 +701,8 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-4.txt} (40 baris pertama)}
 ]{../../test/milestone-2/output/output-4.txt}
 
-% ---- Kasus 5 ----
-\subsubsection*{Kasus 5 --- \texttt{record}, field access, dan akses array dengan indeks variabel}
+% -- Kasus 5 --
+\subsubsection*{Kasus 5 - \texttt{record}, field access, dan akses array dengan indeks variabel}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-5.txt}}
@@ -709,8 +713,8 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-5.txt} (40 baris pertama)}
 ]{../../test/milestone-2/output/output-5.txt}
 
-% ---- Kasus 6 ----
-\subsubsection*{Kasus 6 --- Error: urutan deklarasi tidak valid}
+% -- Kasus 6 --
+\subsubsection*{Kasus 6 - Error: urutan deklarasi tidak valid}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-6.txt}}
@@ -720,8 +724,8 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-6.txt}}
 ]{../../test/milestone-2/output/output-6.txt}
 
-% ---- Kasus 7 ----
-\subsubsection*{Kasus 7 --- Error: token leksikal tidak valid (\texttt{=} bukan \texttt{==})}
+% -- Kasus 7 --
+\subsubsection*{Kasus 7 - Error: token leksikal tidak valid (\texttt{=} bukan \texttt{==})}
 
 \lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
     caption={\texttt{test/milestone-2/input-7.txt}}
@@ -731,7 +735,43 @@ dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
     caption={\texttt{test/milestone-2/output/output-7.txt}}
 ]{../../test/milestone-2/output/output-7.txt}
 
-% -----------------------------------------------------------------------
+% -- Kasus 8 --
+\subsubsection*{Kasus 8 - Operator boolean: \texttt{and}, \texttt{or}, \texttt{not}}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-8.txt}}
+]{../../test/milestone-2/input-8.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-8.txt} (40 baris pertama)}
+]{../../test/milestone-2/output/output-8.txt}
+
+% -- Kasus 9 --
+\subsubsection*{Kasus 9 - Pemanggilan fungsi bersarang (\textit{nested calls})}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-9.txt}}
+]{../../test/milestone-2/input-9.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-9.txt} (40 baris pertama)}
+]{../../test/milestone-2/output/output-9.txt}
+
+% -- Kasus 10 --
+\subsubsection*{Kasus 10 - Tipe enumerasi dan \texttt{case} dengan daftar konstanta}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-10.txt}}
+]{../../test/milestone-2/input-10.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-2/output/output-10.txt}}
+]{../../test/milestone-2/output/output-10.txt}
+
+% ---------------------------------------------------------------
+\newpage
 \section{Conclusion}
 
 Dari pengerjaan Milestone 2 ini, komponen \textit{Syntax Analyzer} (Parser) untuk
@@ -794,6 +834,7 @@ Berdasarkan hasil pengerjaan Milestone 2 ini, beberapa saran untuk pengembangan 
 \end{enumerate}
 
 % -----------------------------------------------------------------------
+\newpage
 \begin{thebibliography}{9}
 
 \bibitem{aho2006}

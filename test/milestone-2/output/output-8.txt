@@ -1,0 +1,232 @@
+<program>
++-- <program-header>
+|   +-- programsy
+|   +-- ident(BoolOps)
+|   \-- semicolon
++-- <declaration-part>
+|   \-- <var-declaration>
+|       +-- varsy
+|       +-- <identifier-list>
+|       |   +-- ident(p)
+|       |   +-- comma(,)
+|       |   +-- ident(q)
+|       |   +-- comma(,)
+|       |   \-- ident(r)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(integer)
+|       \-- semicolon(;)
++-- <compound-statement>
+|   +-- beginsy
+|   +-- <statement-list>
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(p)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(5)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(q)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(3)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(r)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(0)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <if-statement>
+|   |   |       +-- ifsy
+|   |   |       +-- <expression>
+|   |   |       |   \-- <simple-expression>
+|   |   |       |       \-- <term>
+|   |   |       |           +-- <factor>
+|   |   |       |           |   +-- lparent(()
+|   |   |       |           |   +-- <expression>
+|   |   |       |           |   |   +-- <simple-expression>
+|   |   |       |           |   |   |   \-- <term>
+|   |   |       |           |   |   |       \-- <factor>
+|   |   |       |           |   |   |           \-- <variable>
+|   |   |       |           |   |   |               \-- ident(p)
+|   |   |       |           |   |   +-- <relational-operator>
+|   |   |       |           |   |   |   \-- gtr(>)
+|   |   |       |           |   |   \-- <simple-expression>
+|   |   |       |           |   |       \-- <term>
+|   |   |       |           |   |           \-- <factor>
+|   |   |       |           |   |               \-- <variable>
+|   |   |       |           |   |                   \-- ident(q)
+|   |   |       |           |   \-- rparent())
+|   |   |       |           +-- <multiplicative-operator>
+|   |   |       |           |   \-- andsy
+|   |   |       |           \-- <factor>
+|   |   |       |               +-- lparent(()
+|   |   |       |               +-- <expression>
+|   |   |       |               |   +-- <simple-expression>
+|   |   |       |               |   |   \-- <term>
+|   |   |       |               |   |       \-- <factor>
+|   |   |       |               |   |           \-- <variable>
+|   |   |       |               |   |               \-- ident(q)
+|   |   |       |               |   +-- <relational-operator>
+|   |   |       |               |   |   \-- gtr(>)
+|   |   |       |               |   \-- <simple-expression>
+|   |   |       |               |       \-- <term>
+|   |   |       |               |           \-- <factor>
+|   |   |       |               |               \-- intcon(0)
+|   |   |       |               \-- rparent())
+|   |   |       +-- thensy
+|   |   |       \-- <statement>
+|   |   |           \-- <assignment-statement>
+|   |   |               +-- <variable>
+|   |   |               |   \-- ident(r)
+|   |   |               +-- becomes
+|   |   |               \-- <expression>
+|   |   |                   \-- <simple-expression>
+|   |   |                       +-- <term>
+|   |   |                       |   \-- <factor>
+|   |   |                       |       \-- <variable>
+|   |   |                       |           \-- ident(p)
+|   |   |                       +-- <additive-operator>
+|   |   |                       |   \-- minus(-)
+|   |   |                       \-- <term>
+|   |   |                           \-- <factor>
+|   |   |                               \-- <variable>
+|   |   |                                   \-- ident(q)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <if-statement>
+|   |   |       +-- ifsy
+|   |   |       +-- <expression>
+|   |   |       |   \-- <simple-expression>
+|   |   |       |       \-- <term>
+|   |   |       |           \-- <factor>
+|   |   |       |               +-- notsy
+|   |   |       |               \-- <factor>
+|   |   |       |                   +-- lparent(()
+|   |   |       |                   +-- <expression>
+|   |   |       |                   |   +-- <simple-expression>
+|   |   |       |                   |   |   \-- <term>
+|   |   |       |                   |   |       \-- <factor>
+|   |   |       |                   |   |           \-- <variable>
+|   |   |       |                   |   |               \-- ident(r)
+|   |   |       |                   |   +-- <relational-operator>
+|   |   |       |                   |   |   \-- eql(==)
+|   |   |       |                   |   \-- <simple-expression>
+|   |   |       |                   |       \-- <term>
+|   |   |       |                   |           \-- <factor>
+|   |   |       |                   |               \-- intcon(0)
+|   |   |       |                   \-- rparent())
+|   |   |       +-- thensy
+|   |   |       \-- <statement>
+|   |   |           \-- <procedure/function-call>
+|   |   |               +-- ident(writeln)
+|   |   |               +-- lparent(()
+|   |   |               +-- <parameter-list>
+|   |   |               |   +-- <expression>
+|   |   |               |   |   \-- <simple-expression>
+|   |   |               |   |       \-- <term>
+|   |   |               |   |           \-- <factor>
+|   |   |               |   |               \-- string('r = ')
+|   |   |               |   +-- comma(,)
+|   |   |               |   \-- <expression>
+|   |   |               |       \-- <simple-expression>
+|   |   |               |           \-- <term>
+|   |   |               |               \-- <factor>
+|   |   |               |                   \-- <variable>
+|   |   |               |                       \-- ident(r)
+|   |   |               \-- rparent())
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <while-statement>
+|   |   |       +-- whilesy
+|   |   |       +-- <expression>
+|   |   |       |   \-- <simple-expression>
+|   |   |       |       \-- <term>
+|   |   |       |           +-- <factor>
+|   |   |       |           |   +-- lparent(()
+|   |   |       |           |   +-- <expression>
+|   |   |       |           |   |   +-- <simple-expression>
+|   |   |       |           |   |   |   \-- <term>
+|   |   |       |           |   |   |       \-- <factor>
+|   |   |       |           |   |   |           \-- <variable>
+|   |   |       |           |   |   |               \-- ident(r)
+|   |   |       |           |   |   +-- <relational-operator>
+|   |   |       |           |   |   |   \-- gtr(>)
+|   |   |       |           |   |   \-- <simple-expression>
+|   |   |       |           |   |       \-- <term>
+|   |   |       |           |   |           \-- <factor>
+|   |   |       |           |   |               \-- intcon(0)
+|   |   |       |           |   \-- rparent())
+|   |   |       |           +-- <multiplicative-operator>
+|   |   |       |           |   \-- andsy
+|   |   |       |           \-- <factor>
+|   |   |       |               +-- lparent(()
+|   |   |       |               +-- <expression>
+|   |   |       |               |   +-- <simple-expression>
+|   |   |       |               |   |   \-- <term>
+|   |   |       |               |   |       \-- <factor>
+|   |   |       |               |   |           \-- <variable>
+|   |   |       |               |   |               \-- ident(p)
+|   |   |       |               |   +-- <relational-operator>
+|   |   |       |               |   |   \-- gtr(>)
+|   |   |       |               |   \-- <simple-expression>
+|   |   |       |               |       \-- <term>
+|   |   |       |               |           \-- <factor>
+|   |   |       |               |               \-- intcon(0)
+|   |   |       |               \-- rparent())
+|   |   |       +-- dosy
+|   |   |       \-- <statement>
+|   |   |           \-- <assignment-statement>
+|   |   |               +-- <variable>
+|   |   |               |   \-- ident(r)
+|   |   |               +-- becomes
+|   |   |               \-- <expression>
+|   |   |                   \-- <simple-expression>
+|   |   |                       +-- <term>
+|   |   |                       |   \-- <factor>
+|   |   |                       |       \-- <variable>
+|   |   |                       |           \-- ident(r)
+|   |   |                       +-- <additive-operator>
+|   |   |                       |   \-- minus(-)
+|   |   |                       \-- <term>
+|   |   |                           \-- <factor>
+|   |   |                               \-- intcon(1)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <procedure/function-call>
+|   |   |       +-- ident(writeln)
+|   |   |       +-- lparent(()
+|   |   |       +-- <parameter-list>
+|   |   |       |   +-- <expression>
+|   |   |       |   |   \-- <simple-expression>
+|   |   |       |   |       \-- <term>
+|   |   |       |   |           \-- <factor>
+|   |   |       |   |               \-- string('selesai: ')
+|   |   |       |   +-- comma(,)
+|   |   |       |   \-- <expression>
+|   |   |       |       \-- <simple-expression>
+|   |   |       |           \-- <term>
+|   |   |       |               \-- <factor>
+|   |   |       |                   \-- <variable>
+|   |   |       |                       \-- ident(r)
+|   |   |       \-- rparent())
+|   |   \-- semicolon(;)
+|   \-- endsy
+\-- period
