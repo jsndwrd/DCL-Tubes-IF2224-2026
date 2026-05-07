@@ -1,0 +1,286 @@
+<program>
++-- <program-header>
+|   +-- programsy
+|   +-- ident(Deklarasi)
+|   \-- semicolon
++-- <declaration-part>
+|   +-- <const-declaration>
+|   |   +-- constsy
+|   |   +-- ident(MAKS)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(100)
+|   |   +-- semicolon(;)
+|   |   +-- ident(PI)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- realcon(3.14)
+|   |   +-- semicolon(;)
+|   |   +-- ident(HURUF)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- charcon('A')
+|   |   +-- semicolon(;)
+|   |   +-- ident(NAMA)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- string('ab')
+|   |   +-- semicolon(;)
+|   |   +-- ident(NEG)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   +-- minus(-)
+|   |   |   \-- intcon(42)
+|   |   +-- semicolon(;)
+|   |   +-- ident(SKORMIN)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(1)
+|   |   +-- semicolon(;)
+|   |   +-- ident(SKORMAKS)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(100)
+|   |   +-- semicolon(;)
+|   |   +-- ident(BARISAWAL)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(1)
+|   |   +-- semicolon(;)
+|   |   +-- ident(BARISAKHIR)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(4)
+|   |   +-- semicolon(;)
+|   |   +-- ident(KOLOWAL)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(1)
+|   |   +-- semicolon(;)
+|   |   +-- ident(KOLOMAKHIR)
+|   |   +-- eql(==)
+|   |   +-- <constant>
+|   |   |   \-- intcon(3)
+|   |   \-- semicolon(;)
+|   +-- <type-declaration>
+|   |   +-- typesy
+|   |   +-- ident(RentangSkor)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <range>
+|   |   |       +-- <constant>
+|   |   |       |   \-- ident(SKORMIN)
+|   |   |       \-- <constant>
+|   |   |           \-- ident(SKORMAKS)
+|   |   +-- semicolon(;)
+|   |   +-- ident(KotakHuruf)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <range>
+|   |   |       +-- <constant>
+|   |   |       |   \-- charcon('a')
+|   |   |       \-- <constant>
+|   |   |           \-- charcon('z')
+|   |   +-- semicolon(;)
+|   |   +-- ident(Bulan)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <enumerated>
+|   |   |       +-- lparent
+|   |   |       +-- ident(Jan)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Feb)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Mar)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Apr)
+|   |   |       \-- rparent
+|   |   +-- semicolon(;)
+|   |   +-- ident(IndeksBaris)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <range>
+|   |   |       +-- <constant>
+|   |   |       |   \-- ident(BARISAWAL)
+|   |   |       \-- <constant>
+|   |   |           \-- ident(BARISAKHIR)
+|   |   +-- semicolon(;)
+|   |   +-- ident(PapanSkor)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <array-type>
+|   |   |       +-- arraysy
+|   |   |       +-- lbrack
+|   |   |       +-- ident(RentangSkor)
+|   |   |       +-- rbrack
+|   |   |       +-- ofsy
+|   |   |       \-- <type>
+|   |   |           \-- ident(integer)
+|   |   +-- semicolon(;)
+|   |   +-- ident(Matriks)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <array-type>
+|   |   |       +-- arraysy
+|   |   |       +-- lbrack
+|   |   |       +-- ident(IndeksBaris)
+|   |   |       +-- rbrack
+|   |   |       +-- ofsy
+|   |   |       \-- <type>
+|   |   |           \-- <array-type>
+|   |   |               +-- arraysy
+|   |   |               +-- lbrack
+|   |   |               +-- <range>
+|   |   |               |   +-- <constant>
+|   |   |               |   |   \-- ident(KOLOWAL)
+|   |   |               |   \-- <constant>
+|   |   |               |       \-- ident(KOLOMAKHIR)
+|   |   |               +-- rbrack
+|   |   |               +-- ofsy
+|   |   |               \-- <type>
+|   |   |                   \-- ident(real)
+|   |   \-- semicolon(;)
+|   \-- <var-declaration>
+|       +-- varsy
+|       +-- <identifier-list>
+|       |   +-- ident(i)
+|       |   +-- comma(,)
+|       |   \-- ident(j)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(integer)
+|       +-- semicolon(;)
+|       +-- <identifier-list>
+|       |   \-- ident(r)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(real)
+|       +-- semicolon(;)
+|       +-- <identifier-list>
+|       |   \-- ident(s)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(RentangSkor)
+|       +-- semicolon(;)
+|       +-- <identifier-list>
+|       |   \-- ident(huruf)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(KotakHuruf)
+|       +-- semicolon(;)
+|       +-- <identifier-list>
+|       |   \-- ident(papan)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(PapanSkor)
+|       +-- semicolon(;)
+|       +-- <identifier-list>
+|       |   \-- ident(m)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(Matriks)
+|       \-- semicolon(;)
++-- <compound-statement>
+|   +-- beginsy
+|   +-- <statement-list>
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(i)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- <variable>
+|   |   |                           \-- ident(MAKS)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(r)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               +-- <term>
+|   |   |               |   \-- <factor>
+|   |   |               |       \-- <variable>
+|   |   |               |           \-- ident(PI)
+|   |   |               +-- <additive-operator>
+|   |   |               |   \-- plus(+)
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- realcon(1.0)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(huruf)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- <variable>
+|   |   |                           \-- ident(HURUF)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(s)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(10)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   +-- ident(papan)
+|   |   |       |   \-- <component-variable>
+|   |   |       |       +-- lbrack([)
+|   |   |       |       +-- <index-list>
+|   |   |       |       |   \-- ident(s)
+|   |   |       |       \-- rbrack(])
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   +-- <factor>
+|   |   |                   |   \-- <variable>
+|   |   |                   |       \-- ident(i)
+|   |   |                   +-- <multiplicative-operator>
+|   |   |                   |   \-- idiv
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(2)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   +-- ident(m)
+|   |   |       |   +-- <component-variable>
+|   |   |       |   |   +-- lbrack([)
+|   |   |       |   |   +-- <index-list>
+|   |   |       |   |   |   \-- intcon(1)
+|   |   |       |   |   \-- rbrack(])
+|   |   |       |   \-- <component-variable>
+|   |   |       |       +-- lbrack([)
+|   |   |       |       +-- <index-list>
+|   |   |       |       |   \-- intcon(2)
+|   |   |       |       \-- rbrack(])
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   +-- <factor>
+|   |   |                   |   \-- <variable>
+|   |   |                   |       \-- ident(r)
+|   |   |                   +-- <multiplicative-operator>
+|   |   |                   |   \-- times(*)
+|   |   |                   \-- <factor>
+|   |   |                       \-- realcon(2.0)
+|   |   \-- semicolon(;)
+|   \-- endsy
+\-- period

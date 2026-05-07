@@ -68,6 +68,7 @@
 \usepackage{tabularx}
 \usepackage{longtable}
 \usepackage{etoolbox}
+\usepackage{fancyvrb}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -301,7 +302,8 @@ rules yang diimplementasikan.
 \texttt{<statement-list>}         & \texttt{<statement> (semicolon <statement>)*} \\
 \texttt{<statement>}              & \texttt{<assignment-statement> | <if-statement> | <case-statement> | <while-statement> | <repeat-statement> | <for-statement> | <procedure/function-call> | $\varepsilon$} \\
 \texttt{<assignment-statement>}   & \texttt{<variable> becomes <expression>} \\
-\texttt{<variable>}               & \texttt{ident ((lbrack <index-list> rbrack) | (period ident))*} \\
+\texttt{<variable>}               & \texttt{ident (<component-variable>)*} \\
+\texttt{<component-variable>}     & \texttt{(lbrack <index-list> rbrack) | (period ident)} \\
 \texttt{<if-statement>}           & \texttt{ifsy <expression> thensy <statement> (elsesy <statement>)?} \\
 \texttt{<case-statement>}         & \texttt{casesy <expression> ofsy <case-block> (semicolon <case-block>)* endsy} \\
 \texttt{<case-block>}             & \texttt{<constant> (comma <constant>)* colon <statement>} \\
@@ -567,24 +569,29 @@ presedensi \texttt{*} di atas \texttt{+}.
     edge from parent/.style={draw, -{Stealth[length=2mm]}},
     level 1/.style={sibling distance=10cm},
     level 2/.style={sibling distance=4.5cm},
-    level 3/.style={sibling distance=3cm},
-    level 4/.style={sibling distance=2.6cm}
+    level 3/.style={sibling distance=3.2cm},
+    level 4/.style={sibling distance=2.4cm},
+    level 5/.style={sibling distance=1.8cm}
 ]
 \node {\texttt{<expression>}}
   child {node {\texttt{<simple-expression>}}
     child {node {\texttt{<term>}}
       child {node {\texttt{<factor>}}
-        child {node {ident(a)}}
+        child {node {\texttt{<variable>}}
+          child {node {ident(a)}}
+        }
       }
     }
-    child {node {\texttt{<additive-op>}}
+    child {node {\texttt{<additive-operator>}}
       child {node {plus(+)}}
     }
     child {node {\texttt{<term>}}
       child {node {\texttt{<factor>}}
-        child {node {ident(b)}}
+        child {node {\texttt{<variable>}}
+          child {node {ident(b)}}
+        }
       }
-      child {node {\texttt{<mul-op>}}
+      child {node {\texttt{<multiplicative-operator>}}
         child {node {times(*)}}
       }
       child {node {\texttt{<factor>}}
@@ -593,7 +600,9 @@ presedensi \texttt{*} di atas \texttt{+}.
     }
   };
 \end{tikzpicture}}
-\caption{Parse tree untuk ekspresi \texttt{a + b * 2}.}
+\caption{Parse tree untuk ekspresi \texttt{a + b * 2}. Node \texttt{<variable>}
+membungkus setiap \texttt{ident} sebagai hasil revisi struktur flat
+\texttt{<variable>}/\texttt{<component-variable>}.}
 \label{fig:tree-expr}
 \end{figure}
 
@@ -634,119 +643,93 @@ fitur tipe data lanjutan, kontrol alur, prosedur/fungsi, hingga skenario error.
 \caption{Ringkasan tujuh kasus uji Milestone~2.}
 \end{table}
 
-\subsection{Hasil Uji Berdasarkan Screenshot}
+\subsection{Hasil Uji}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-1.png}
-        \caption{Input 1 (\texttt{test/milestone-2/input-1.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-1.png}
-        \caption{Output 1 (\texttt{test/milestone-2/output-1.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 1 (golden-path program minimal).}
-\end{figure}
+Setiap kasus uji disertai listing kode sumber Arion (\textit{input}) dan
+parse tree atau pesan error yang dihasilkan program (\textit{output}).
+Output lengkap tersimpan pada \texttt{test/milestone-2/output/}; output
+dengan panjang lebih dari 40 baris hanya ditampilkan sebagian.
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-2.png}
-        \caption{Input 2 (\texttt{test/milestone-2/input-2.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-2.png}
-        \caption{Output 2 (\texttt{test/milestone-2/output-2.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 2 (deklarasi \texttt{const}, \texttt{type}, array bertingkat).}
-\end{figure}
+% ---- Kasus 1 ----
+\subsubsection*{Kasus 1 --- Golden-path program minimal}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-3.png}
-        \caption{Input 3 (\texttt{test/milestone-2/input-3.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-3.png}
-        \caption{Output 3 (\texttt{test/milestone-2/output-3.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 3 (prosedur dan fungsi).}
-\end{figure}
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-1.txt}}
+]{../../test/milestone-2/input-1.txt}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-4.png}
-        \caption{Input 4 (\texttt{test/milestone-2/input-4.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-4.png}
-        \caption{Output 4 (\texttt{test/milestone-2/output-4.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 4 (seluruh statement kontrol alur).}
-\end{figure}
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-2/output/output-1.txt}}
+]{../../test/milestone-2/output/output-1.txt}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-5.png}
-        \caption{Input 5 (\texttt{test/milestone-2/input-5.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-5.png}
-        \caption{Output 5 (\texttt{test/milestone-2/output-5.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 5 (\texttt{record} dan akses field).}
-\end{figure}
+% ---- Kasus 2 ----
+\subsubsection*{Kasus 2 --- Deklarasi \texttt{const}, \texttt{type}, dan array bertingkat}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-6.png}
-        \caption{Input 6 (\texttt{test/milestone-2/input-6.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-6.png}
-        \caption{Output 6 (\texttt{test/milestone-2/output-6.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 6 (error: \texttt{type} dideklarasikan setelah \texttt{var}).}
-\end{figure}
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-2.txt}}
+]{../../test/milestone-2/input-2.txt}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{input-7.png}
-        \caption{Input 7 (\texttt{test/milestone-2/input-7.txt})}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \testimg{output-7.png}
-        \caption{Output 7 (\texttt{test/milestone-2/output-7.txt})}
-    \end{subfigure}
-    \caption{Pasangan hasil uji kasus 7 (error: \texttt{=} alih-alih \texttt{==} pada deklarasi konstanta).}
-\end{figure}
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-2.txt} (40 baris pertama dari \the\value{lstnumber} total)}
+]{../../test/milestone-2/output/output-2.txt}
+
+% ---- Kasus 3 ----
+\subsubsection*{Kasus 3 --- Subprogram: prosedur dan fungsi}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-3.txt}}
+]{../../test/milestone-2/input-3.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-3.txt} (40 baris pertama)}
+]{../../test/milestone-2/output/output-3.txt}
+
+% ---- Kasus 4 ----
+\subsubsection*{Kasus 4 --- Kontrol alur: \texttt{if}, \texttt{case}, \texttt{while}, \texttt{repeat}, \texttt{for}}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-4.txt}}
+]{../../test/milestone-2/input-4.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-4.txt} (40 baris pertama)}
+]{../../test/milestone-2/output/output-4.txt}
+
+% ---- Kasus 5 ----
+\subsubsection*{Kasus 5 --- \texttt{record}, field access, dan akses array dengan indeks variabel}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-5.txt}}
+]{../../test/milestone-2/input-5.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    firstline=1, lastline=40,
+    caption={\texttt{test/milestone-2/output/output-5.txt} (40 baris pertama)}
+]{../../test/milestone-2/output/output-5.txt}
+
+% ---- Kasus 6 ----
+\subsubsection*{Kasus 6 --- Error: urutan deklarasi tidak valid}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-6.txt}}
+]{../../test/milestone-2/input-6.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/output/output-6.txt}}
+]{../../test/milestone-2/output/output-6.txt}
+
+% ---- Kasus 7 ----
+\subsubsection*{Kasus 7 --- Error: token leksikal tidak valid (\texttt{=} bukan \texttt{==})}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/input-7.txt}}
+]{../../test/milestone-2/input-7.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-2/output/output-7.txt}}
+]{../../test/milestone-2/output/output-7.txt}
 
 % -----------------------------------------------------------------------
 \section{Conclusion}

@@ -1,0 +1,2 @@
+Syntax error at line 6: unexpected token typesy, expected beginsy
+(strict declaration order: const, type, var, subprogram)

@@ -57,7 +57,6 @@ private:
     ParseNode* parseStmtList();
     ParseNode* parseStmt();
     ParseNode* parseVar();
-    ParseNode* parseCompVar();
     ParseNode* parseIndices();
     ParseNode* parseAssign();
     ParseNode* parseIf();
