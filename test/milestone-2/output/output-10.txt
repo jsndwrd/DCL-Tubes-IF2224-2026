@@ -1,0 +1,108 @@
+<program>
++-- <program-header>
+|   +-- programsy
+|   +-- ident(EnumCase)
+|   \-- semicolon
++-- <declaration-part>
+|   +-- <type-declaration>
+|   |   +-- typesy
+|   |   +-- ident(Buah)
+|   |   +-- eql(==)
+|   |   +-- <type>
+|   |   |   \-- <enumerated>
+|   |   |       +-- lparent
+|   |   |       +-- ident(Apel)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Jeruk)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Mangga)
+|   |   |       +-- comma(,)
+|   |   |       +-- ident(Durian)
+|   |   |       \-- rparent
+|   |   \-- semicolon(;)
+|   \-- <var-declaration>
+|       +-- varsy
+|       +-- <identifier-list>
+|       |   \-- ident(kode)
+|       +-- colon(:)
+|       +-- <type>
+|       |   \-- ident(integer)
+|       \-- semicolon(;)
++-- <compound-statement>
+|   +-- beginsy
+|   +-- <statement-list>
+|   |   +-- <statement>
+|   |   |   \-- <assignment-statement>
+|   |   |       +-- <variable>
+|   |   |       |   \-- ident(kode)
+|   |   |       +-- becomes
+|   |   |       \-- <expression>
+|   |   |           \-- <simple-expression>
+|   |   |               \-- <term>
+|   |   |                   \-- <factor>
+|   |   |                       \-- intcon(2)
+|   |   +-- semicolon(;)
+|   |   +-- <statement>
+|   |   |   \-- <case-statement>
+|   |   |       +-- casesy
+|   |   |       +-- <expression>
+|   |   |       |   \-- <simple-expression>
+|   |   |       |       \-- <term>
+|   |   |       |           \-- <factor>
+|   |   |       |               \-- <variable>
+|   |   |       |                   \-- ident(kode)
+|   |   |       +-- ofsy
+|   |   |       +-- <case-block>
+|   |   |       |   +-- <constant>
+|   |   |       |   |   \-- intcon(0)
+|   |   |       |   +-- colon(:)
+|   |   |       |   \-- <statement>
+|   |   |       |       \-- <procedure/function-call>
+|   |   |       |           +-- ident(writeln)
+|   |   |       |           +-- lparent(()
+|   |   |       |           +-- <parameter-list>
+|   |   |       |           |   \-- <expression>
+|   |   |       |           |       \-- <simple-expression>
+|   |   |       |           |           \-- <term>
+|   |   |       |           |               \-- <factor>
+|   |   |       |           |                   \-- string('Apel')
+|   |   |       |           \-- rparent())
+|   |   |       +-- semicolon(;)
+|   |   |       +-- <case-block>
+|   |   |       |   +-- <constant>
+|   |   |       |   |   \-- intcon(1)
+|   |   |       |   +-- comma(,)
+|   |   |       |   +-- <constant>
+|   |   |       |   |   \-- intcon(2)
+|   |   |       |   +-- colon(:)
+|   |   |       |   \-- <statement>
+|   |   |       |       \-- <procedure/function-call>
+|   |   |       |           +-- ident(writeln)
+|   |   |       |           +-- lparent(()
+|   |   |       |           +-- <parameter-list>
+|   |   |       |           |   \-- <expression>
+|   |   |       |           |       \-- <simple-expression>
+|   |   |       |           |           \-- <term>
+|   |   |       |           |               \-- <factor>
+|   |   |       |           |                   \-- string('Jeruk atau Mangga')
+|   |   |       |           \-- rparent())
+|   |   |       +-- semicolon(;)
+|   |   |       +-- <case-block>
+|   |   |       |   +-- <constant>
+|   |   |       |   |   \-- intcon(3)
+|   |   |       |   +-- colon(:)
+|   |   |       |   \-- <statement>
+|   |   |       |       \-- <procedure/function-call>
+|   |   |       |           +-- ident(writeln)
+|   |   |       |           +-- lparent(()
+|   |   |       |           +-- <parameter-list>
+|   |   |       |           |   \-- <expression>
+|   |   |       |           |       \-- <simple-expression>
+|   |   |       |           |           \-- <term>
+|   |   |       |           |               \-- <factor>
+|   |   |       |           |                   \-- string('Durian')
+|   |   |       |           \-- rparent())
+|   |   |       \-- endsy
+|   |   \-- semicolon(;)
+|   \-- endsy
+\-- period

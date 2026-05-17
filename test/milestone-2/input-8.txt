@@ -1,0 +1,17 @@
+program BoolOps;
+
+var
+  p, q, r: integer;
+
+begin
+  p := 5;
+  q := 3;
+  r := 0;
+  if (p > q) and (q > 0) then
+    r := p - q;
+  if not (r == 0) then
+    writeln('r = ', r);
+  while (r > 0) and (p > 0) do
+    r := r - 1;
+  writeln('selesai: ', r);
+end.
