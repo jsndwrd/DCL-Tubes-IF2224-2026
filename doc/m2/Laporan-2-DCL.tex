@@ -204,24 +204,25 @@ linier $O(n)$ terhadap panjang barisan token.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=1cm and 1.5cm,
-    on grid,
     every node/.style={font=\small},
-    src/.style={rectangle, draw, fill=codebg, rounded corners=2pt, minimum width=2.6cm, minimum height=0.7cm},
-    proc/.style={rectangle, draw, fill=yellow!12, minimum width=2.6cm, minimum height=0.7cm},
-    output/.style={rectangle, draw, fill=keyword!10, minimum width=2.6cm, minimum height=0.7cm},
+    src/.style={rectangle, draw, fill=codebg, rounded corners=2pt,
+                minimum width=3cm, minimum height=0.8cm},
+    proc/.style={rectangle, draw, fill=yellow!12, rounded corners=2pt,
+                 minimum width=3cm, minimum height=0.8cm},
+    output/.style={rectangle, draw, fill=keyword!10, rounded corners=2pt,
+                   minimum width=3cm, minimum height=0.8cm},
     arr/.style={-{Stealth[length=2.5mm]}, thick}
 ]
-    \node[src]                    (src)   {\texttt{source.txt}};
-    \node[proc, right=2cm of src] (lex)   {Lexer (DFA)};
-    \node[src, right=2cm of lex]  (tok)   {Token Stream};
-    \node[proc, below=1.4cm of tok] (par) {Parser (RD)};
-    \node[output, left=2cm of par] (tree) {Parse Tree};
+    \node[src]                         (src)  {\texttt{source.txt}};
+    \node[proc, right=1.5cm of src]    (lex)  {Lexer (DFA)};
+    \node[src,  right=1.5cm of lex]    (tok)  {Token Stream};
+    \node[proc, below=1.4cm of tok]    (par)  {Parser (RD)};
+    \node[output, left=1.5cm of par]   (tree) {Parse Tree};
 
-    \draw[arr] (src) -- (lex);
-    \draw[arr] (lex) -- (tok);
-    \draw[arr] (tok) -- (par);
-    \draw[arr] (par) -- (tree);
+    \draw[arr] (src)  -- (lex);
+    \draw[arr] (lex)  -- (tok);
+    \draw[arr] (tok)  -- (par);
+    \draw[arr] (par)  -- (tree);
 \end{tikzpicture}
 \caption{Pipeline kompilasi Arion: keluaran lexer (Milestone~1) menjadi masukan parser (Milestone~2).}
 \label{fig:pipeline}
@@ -235,7 +236,7 @@ linier $O(n)$ terhadap panjang barisan token.
 Komponen parser diimplementasikan dalam C++17 sebagai kelanjutan langsung dari
 program Milestone~1. Antarmuka antara lexer dan parser adalah \texttt{std::vector<Token>}
 yang dihasilkan oleh \texttt{Lexer::tokenize()}. Source code parser terbagi
-menjadi dua berkas: \texttt{src/header/parser.hpp} mendeklarasikan struct
+menjadi dua file: \texttt{src/header/parser.hpp} mendeklarasikan struct
 \texttt{ParseNode}, kelas \texttt{Parser}, serta exception \texttt{SyntaxError};
 sedangkan \texttt{src/lib/parser.cpp} mengimplementasikan seluruh fungsi rekursif
 serta utilitas pencetakan parse tree (\texttt{printTree}, \texttt{writeTree}).
@@ -329,15 +330,15 @@ Diagram~\ref{fig:rd-call} menunjukkan hierarki pemanggilan utama.
 
 \begin{figure}[H]
 \centering
-\resizebox{0.95\textwidth}{!}{%
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     every node/.style={font=\footnotesize, draw, rounded corners=2pt, fill=codebg, inner sep=4pt},
-    level distance=1.1cm,
+    level distance=1.4cm,
     edge from parent/.style={draw, -{Stealth[length=2mm]}},
-    sibling distance=2.4cm,
-    level 1/.style={sibling distance=4.4cm},
-    level 2/.style={sibling distance=2.6cm},
-    level 3/.style={sibling distance=2cm}
+    level 1/.style={sibling distance=8cm},
+    level 2/.style={sibling distance=3cm},
+    level 3/.style={sibling distance=3cm},
+    level 4/.style={sibling distance=2.6cm}
 ]
 \node {parseProgram}
     child {node {parseHeader}}
@@ -424,26 +425,24 @@ percabangan dilakukan murni melalui pemeriksaan tabel token in-place.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=1.1cm and 2.2cm,
-    on grid,
     every node/.style={font=\small},
-    dec/.style={diamond, draw, fill=yellow!12, aspect=2.4, inner sep=1pt, minimum width=2.4cm},
-    proc/.style={rectangle, draw, fill=codebg, rounded corners=2pt, minimum width=3cm, minimum height=0.7cm},
+    dec/.style={diamond, draw, fill=yellow!12, aspect=2.6, inner sep=2pt, minimum width=3.6cm, minimum height=1.1cm},
+    proc/.style={rectangle, draw, fill=codebg, rounded corners=2pt, minimum width=3.2cm, minimum height=0.8cm},
     arr/.style={-{Stealth[length=2.5mm]}, thick},
     lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
 ]
-    \node[dec]                          (d1) {peek = ident?};
-    \node[proc, below=of d1]            (scan) {scan \texttt{[...]} / \texttt{.ident}};
-    \node[dec,  below=of scan]          (d2)   {next = becomes?};
-    \node[proc, below left=1.4cm and 1cm of d2] (assign) {parseAssign()};
-    \node[proc, below right=1.4cm and 1cm of d2] (call)  {parseCall()};
-    \node[proc, right=3cm of d1]        (kw)   {keyword dispatch};
+    \node[dec]                                   (d1)     {peek = ident?};
+    \node[proc, right=2.5cm of d1]               (kw)     {keyword dispatch};
+    \node[proc, below=1.4cm of d1]               (scan)   {scan \texttt{[\dots]} / \texttt{.ident}};
+    \node[dec,  below=1.4cm of scan]             (d2)     {next = becomes?};
+    \node[proc, below left=1.6cm and 0.8cm of d2](assign) {parseAssign()};
+    \node[proc, below right=1.6cm and 0.8cm of d2](call)  {parseCall()};
 
-    \draw[arr] (d1)  -- node[lbl, above] {yes} (scan);
-    \draw[arr] (d1)  -- node[lbl, above] {no}  (kw);
+    \draw[arr] (d1)   -- node[lbl, above] {no}  (kw);
+    \draw[arr] (d1)   -- node[lbl, right] {yes} (scan);
     \draw[arr] (scan) -- (d2);
-    \draw[arr] (d2)  -| node[lbl, above] {yes} (assign);
-    \draw[arr] (d2)  -| node[lbl, above] {no}  (call);
+    \draw[arr] (d2.south) -- ++(0,-0.4) -| node[lbl, pos=0.25, above] {yes} (assign.north);
+    \draw[arr] (d2.south) -- ++(0,-0.4) -| node[lbl, pos=0.25, above] {no}  (call.north);
 \end{tikzpicture}
 \caption{Disambiguasi statement berbasis multi-token lookahead non-konsumtif.}
 \label{fig:disambig}
@@ -486,48 +485,69 @@ dibuang oleh lexer, sehingga parser hanya bekerja pada barisan token.
 
 \begin{figure}[H]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.95cm and 2cm,
-    on grid,
     every node/.style={font=\small},
-    proc/.style={rectangle, draw, fill=codebg, minimum width=3.4cm,
-                 minimum height=0.65cm, rounded corners=2pt},
-    dec/.style={diamond, draw, fill=yellow!10, minimum width=2.0cm,
-                minimum height=0.65cm, aspect=2.5, font=\small, inner sep=1pt},
-    term/.style={rounded rectangle, draw, fill=black!8, minimum width=2.5cm,
-                 minimum height=0.65cm},
+    proc/.style={rectangle, draw, fill=codebg, minimum width=3cm,
+                 minimum height=0.8cm, rounded corners=2pt},
+    dec/.style={diamond, draw, fill=yellow!10, aspect=2.6, inner sep=2pt,
+                minimum width=2.6cm, minimum height=1cm},
+    term/.style={rounded rectangle, draw, fill=black!8,
+                 minimum width=2.8cm, minimum height=0.8cm},
     arr/.style={-{Stealth[length=2.5mm]}, thick},
     lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
 ]
-    \node[term]                  (start) {START};
-    \node[proc, below=of start]  (init)  {parseProgram()};
-    \node[dec,  below=of init]   (dkw)   {keyword?};
-    \node[dec,  below=of dkw]    (dident){ident?};
-    \node[dec,  below=of dident] (deps)  {$\varepsilon$?};
-    \node[proc, right=4.5cm of dkw]    (rkw)    {dispatch by keyword};
-    \node[proc, right=4.5cm of dident] (rdis)   {scan lookahead};
-    \node[proc, right=4.5cm of deps]   (rsk)    {empty stmt};
-    \node[proc, below=1.5cm of rdis]   (rassign){parseAssign()};
-    \node[proc, below=0.7cm of rassign](rcall)  {parseCall()};
-    \node[proc, right=10cm of dkw]     (push)   {append child};
-    \node[term, below=of deps]         (end)    {EOFILE};
+    % Left decision column — all at x=0
+    \node[term] (start)  at (0,   9.5) {START};
+    \node[term] (init)   at (0,   8.4) {parseProgram()};
+    \node[dec]  (dkw)    at (0,   6.8) {keyword?};
+    \node[dec]  (dident) at (0,   5.2) {ident?};
+    \node[dec]  (deps)   at (0,   3.6) {$\varepsilon$?};
+    \node[term] (end)    at (0,   2.0) {EOFILE};
 
+    % Action column — x=5.8, y aligned with decision nodes
+    \node[proc] (rkw)  at (5.8, 6.8) {dispatch by keyword};
+    \node[proc] (rdis) at (5.8, 5.2) {scan lookahead};
+    \node[proc] (rsk)  at (5.8, 3.6) {empty stmt};
+
+    % Sub-action column — x=11.0, y between rkw and rsk
+    \node[proc] (rassign) at (11.0, 6.0) {parseAssign()};
+    \node[proc] (rcall)   at (11.0, 4.4) {parseCall()};
+
+    % Sink — x=15.0, y same as rkw so rkw->push is a straight horizontal
+    \node[proc] (push) at (15.0, 6.8) {append child};
+
+    % Vertical spine
     \draw[arr] (start) -- (init);
-    \draw[arr] (init)  -- (dkw);
-    \draw[arr] (dkw)   -- node[lbl, above] {yes} (rkw);
-    \draw[arr] (dkw)   -- node[lbl, right] {no}  (dident);
-    \draw[arr] (dident)-- node[lbl, above] {yes} (rdis);
-    \draw[arr] (dident)-- node[lbl, right] {no}  (deps);
-    \draw[arr] (deps)  -- node[lbl, above] {yes} (rsk);
-    \draw[arr] (deps)  -- node[lbl, right] {no}  (end);
-    \draw[arr] (rdis) -- node[lbl, right] {becomes} (rassign);
-    \draw[arr] (rdis) |- node[lbl, pos=0.25, right] {else} (rcall);
-    \draw[arr] (rkw)    -| (push);
-    \draw[arr] (rassign)-| (push);
-    \draw[arr] (rcall)  -| (push);
-    \draw[arr] (rsk)    -| (push);
-    \draw[arr] (push.east) -- ++(0.6,0) |- (dkw.east);
-\end{tikzpicture}
+    \draw[arr] (init.south)   -- (dkw.north);
+    \draw[arr] (dkw.south)    -- node[lbl,right]{no}  (dident.north);
+    \draw[arr] (dident.south) -- node[lbl,right]{no}  (deps.north);
+    \draw[arr] (deps.south)   -- node[lbl,right]{no}  (end.north);
+
+    % Horizontal branches to action column
+    \draw[arr] (dkw.east)    -- node[lbl,above]{yes} (rkw.west);
+    \draw[arr] (dident.east) -- node[lbl,above]{yes} (rdis.west);
+    \draw[arr] (deps.east)   -- node[lbl,above]{yes} (rsk.west);
+
+    % rkw goes straight right to push (same y=6.8, no crossing)
+    \draw[arr] (rkw.east) -- node[lbl,above]{keyword handler} (push.west);
+
+    % rdis forks via a junction coordinate to rassign (up) and rcall (down)
+    \coordinate (jct) at ($(rdis.east)+(0.5,0)$);
+    \draw (rdis.east) -- (jct);
+    \draw[arr] (jct) |- node[lbl,pos=0.65,above]{becomes assign} (rassign.west);
+    \draw[arr] (jct) |- node[lbl,pos=0.65,below]{becomes call}   (rcall.west);
+
+    % rassign and rcall merge into push via -| (go right then up to push.south)
+    \draw[arr] (rassign.east) -| (push.south);
+    \draw[arr] (rcall.east)   -| (push.south);
+
+    % rsk routes to push below all other nodes
+    \draw[arr] (rsk.east) -- ++(1.5,0) |- (push.south);
+
+    % Loop back: push top goes up then left back to dkw top
+    \draw[arr, dashed] (push.north) -- ++(0,0.6) -| (dkw.north);
+\end{tikzpicture}}
 \caption{Alur eksekusi pada level statement di dalam recursive descent parser.}
 \label{fig:parse-flow}
 \end{figure}
@@ -540,15 +560,15 @@ presedensi \texttt{*} di atas \texttt{+}.
 
 \begin{figure}[H]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     every node/.style={font=\footnotesize, draw, rounded corners=2pt, fill=codebg, inner sep=3pt},
-    level distance=1cm,
+    level distance=1.3cm,
     edge from parent/.style={draw, -{Stealth[length=2mm]}},
-    sibling distance=2.6cm,
-    level 1/.style={sibling distance=4.5cm},
-    level 2/.style={sibling distance=3cm},
-    level 3/.style={sibling distance=2.2cm},
-    level 4/.style={sibling distance=1.8cm}
+    level 1/.style={sibling distance=10cm},
+    level 2/.style={sibling distance=4.5cm},
+    level 3/.style={sibling distance=3cm},
+    level 4/.style={sibling distance=2.6cm}
 ]
 \node {\texttt{<expression>}}
   child {node {\texttt{<simple-expression>}}
@@ -572,7 +592,7 @@ presedensi \texttt{*} di atas \texttt{+}.
       }
     }
   };
-\end{tikzpicture}
+\end{tikzpicture}}
 \caption{Parse tree untuk ekspresi \texttt{a + b * 2}.}
 \label{fig:tree-expr}
 \end{figure}
@@ -582,15 +602,15 @@ presedensi \texttt{*} di atas \texttt{+}.
 
 Pengujian (\textit{testing}) program dilakukan menggunakan testcase yang sudah dibuat
 dan disimpan pada direktori \texttt{test/milestone-2/}. Setiap testcase memiliki
-pasangan berkas input-output dengan format nama \texttt{input-\{n\}.txt} dan
+pasangan file input-output dengan format nama \texttt{input-\{n\}.txt} dan
 \texttt{output-\{n\}.txt}. Tujuh kasus disusun untuk meliputi kasus golden-path,
 fitur tipe data lanjutan, kontrol alur, prosedur/fungsi, hingga skenario error.
 
 \subsection{Lokasi File Pengujian}
 
 \begin{itemize}
-    \item Berkas input: \texttt{test/milestone-2/input-1.txt} s.d. \texttt{test/milestone-2/input-7.txt}
-    \item Berkas output: \texttt{test/milestone-2/output-1.txt} s.d. \texttt{test/milestone-2/output-7.txt}
+    \item file input: \texttt{test/milestone-2/input-1.txt} s.d. \texttt{test/milestone-2/input-7.txt}
+    \item file output: \texttt{test/milestone-2/output-1.txt} s.d. \texttt{test/milestone-2/output-7.txt}
 \end{itemize}
 
 \subsection{Ringkasan Kasus Uji}
