@@ -122,9 +122,12 @@ vector<Token> Lexer::tokenize(){
             ts.push_back(Token(ArionToken::SEMICOLON, ";", currLine));
             next();
         } else if (currChar == '.'){
-            // ".digit" → bukan angka valid (Arion tidak mengizinkan real tanpa
-            // angka pra-titik); konsumsi sebagai satu token UNKNOWN (longest-match).
-            if (checkDigit(f.peek())) {
+            if (f.peek() == '.') {
+                ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
+                next();
+                ts.push_back(Token(ArionToken::PERIOD, ".", currLine));
+                next();
+            } else if (checkDigit(f.peek())) {
                 string buffer(1, currChar);
                 int startLine = currLine;
                 next();
@@ -228,7 +231,6 @@ Token Lexer::readNum(){
     }
 
     if (currChar == '.'){
-        // ".." operator range (mis. 1..10), bukan bagian dari angka
         if (f.peek() == '.') {
             return Token(ArionToken::INTCON, buffer, startLine);
         }
@@ -240,6 +242,9 @@ Token Lexer::readNum(){
         while (checkDigit(currChar)){
             buffer += currChar;
             next();
+        }
+        if (currChar == '.' && f.peek() == '.') {
+            return Token(ArionToken::REALCON, buffer, startLine);
         }
         if (currChar == '.' || checkAlpha(currChar)) {
             return readMalformedNumber(buffer, startLine);
