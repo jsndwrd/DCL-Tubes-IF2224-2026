@@ -1,0 +1,20 @@
+program VarParam;
+
+var
+  x, y: integer;
+
+procedure Swap(var a: integer; var b: integer);
+var
+  temp: integer;
+begin
+  temp := a;
+  a := b;
+  b := temp;
+end;
+
+begin
+  x := 1;
+  y := 2;
+  Swap(x, y);
+  writeln(x, y);
+end.

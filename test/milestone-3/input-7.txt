@@ -1,0 +1,15 @@
+program SubrangeTest;
+
+type
+  SmallInt == 1..10;
+  Letter == 'a'..'z';
+
+var
+  s: SmallInt;
+  l: Letter;
+
+begin
+  s := 5;
+  l := 'm';
+  writeln('OK');
+end.

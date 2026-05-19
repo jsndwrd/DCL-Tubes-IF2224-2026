@@ -1,0 +1,11 @@
+program ErrWhileCondition;
+
+var
+  a: integer;
+
+begin
+  while a do
+  begin
+    a := 1;
+  end;
+end.

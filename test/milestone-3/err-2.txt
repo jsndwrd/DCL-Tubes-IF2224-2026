@@ -1,0 +1,8 @@
+program ErrRedeclare;
+
+var
+  a: integer;
+  a: real;
+
+begin
+end.

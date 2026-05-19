@@ -1,0 +1,14 @@
+program FuncReturn;
+
+var
+  r: integer;
+
+function Square(n: integer): integer;
+begin
+  Square := n * n;
+end;
+
+begin
+  r := Square(5);
+  writeln(r);
+end.

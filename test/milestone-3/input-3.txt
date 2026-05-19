@@ -1,0 +1,24 @@
+program ScopeTest;
+
+var
+  x: integer;
+
+procedure Inner;
+var
+  x: integer;
+begin
+  x := 100;
+  writeln(x);
+end;
+
+function Add(a: integer; b: integer): integer;
+begin
+  Add := a + b;
+end;
+
+begin
+  x := 1;
+  Inner;
+  x := Add(x, 5);
+  writeln(x);
+end.

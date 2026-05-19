@@ -1,0 +1,8 @@
+program ErrUnknownField;
+
+var
+  p: record x: integer; end;
+
+begin
+  p.y := 5;
+end.
