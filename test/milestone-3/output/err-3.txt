@@ -1,0 +1,1 @@
+Semantic error: assignment type mismatch (cannot assign boolean to integer)

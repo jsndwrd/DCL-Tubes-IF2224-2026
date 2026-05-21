@@ -1,0 +1,1 @@
+Semantic error: if condition must be boolean

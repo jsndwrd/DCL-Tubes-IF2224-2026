@@ -1,0 +1,71 @@
+--- Decorated AST ---
+ProgramNode(name: 'DeepScope') → tab_index:33
++-- Block
+|   \-- VarDecl(x) → tab_index:34
+|       \-- TypeRef(integer)
++-- ProcDecl(Outer) → tab_index:35
+|   +-- Block
+|   |   +-- VarDecl(x) → tab_index:36
+|   |   |   \-- TypeRef(integer)
+|   |   \-- VarDecl(y) → tab_index:37
+|   |       \-- TypeRef(integer)
+|   +-- ProcDecl(Inner) → tab_index:38
+|   |   +-- Block
+|   |   |   \-- VarDecl(z) → tab_index:39
+|   |   |       \-- TypeRef(integer)
+|   |   \-- Block, lev:2
+|   |       +-- Assign
+|   |       |   +-- Var(z) → tab_index:39, type:integer, lev:2
+|   |       |   \-- BinOp(op: '+'), type:integer
+|   |       |       +-- Var(x) → tab_index:36, type:integer, lev:1
+|   |       |       \-- Num(1), type:integer
+|   |       \-- Assign
+|   |           +-- Var(y) → tab_index:37, type:integer, lev:1
+|   |           \-- Var(z) → tab_index:39, type:integer, lev:2
+|   \-- Block, lev:1
+|       +-- Assign
+|       |   +-- Var(x) → tab_index:36, type:integer, lev:1
+|       |   \-- Num(10), type:integer
+|       +-- Assign
+|       |   +-- Var(y) → tab_index:37, type:integer, lev:1
+|       |   \-- Num(20), type:integer
+|       \-- ProcedureCall(name: 'Inner') → tab_index:38, lev:1
+\-- Block, lev:1
+    +-- Assign
+    |   +-- Var(x) → tab_index:34, type:integer
+    |   \-- Num(1), type:integer
+    \-- ProcedureCall(name: 'Outer') → tab_index:35
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33    DeepScope    program      0     0    1    0    0     9
+  34            x   variable      1     0    1    0    0    33
+  35        Outer  procedure      0     1    1    0    0    34
+  36            x   variable      1     0    1    1    0     0
+  37            y   variable      1     0    1    1    0    36
+  38        Inner  procedure      0     2    1    1    0    37
+  39            z   variable      1     0    1    2    0     0
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    35     0     0     1
+   1    38     0     0     2
+   2    39     0     0     1
+   3     0     0     0     0
+
+=== atab ===
+(empty)
+

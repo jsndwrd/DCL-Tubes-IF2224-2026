@@ -1,0 +1,52 @@
+--- Decorated AST ---
+ProgramNode(name: 'NamedRecord') → tab_index:33
++-- Block
+|   \-- TypeDecl(Point) → tab_index:36
+|       \-- RecordType
++-- Block
+|   \-- VarDecl(p1, p2) → tab_index:38
+|       \-- TypeRef(Point)
+\-- Block, lev:1
+    +-- Assign
+    |   +-- FieldAccess(x) → tab_index:34, type:integer
+    |   \-- Num(1), type:integer
+    +-- Assign
+    |   +-- FieldAccess(y) → tab_index:35, type:integer
+    |   \-- Num(2), type:integer
+    +-- Assign
+    |   +-- Var(p2) → tab_index:38, type:record
+    |   \-- Var(p1) → tab_index:37, type:record
+    \-- ProcedureCall(name: 'writeln') → tab_index:9
+        \-- FieldAccess(x) → tab_index:34, type:integer
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33  NamedRecord    program      0     0    1    0    0     9
+  34            x      field      1     0    1    0    0     0
+  35            y      field      1     0    1    0    0    34
+  36        Point       type      9     1    1    0    0    33
+  37           p1   variable      9     1    1    0    0    36
+  38           p2   variable      9     1    1    0    0    37
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    38     0     0     2
+   1    35     0     0     0
+   2     0     0     0     0
+
+=== atab ===
+(empty)
+

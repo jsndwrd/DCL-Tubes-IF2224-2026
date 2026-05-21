@@ -1,0 +1,84 @@
+--- Decorated AST ---
+ProgramNode(name: 'TypeCheck') → tab_index:33
++-- Block
+|   +-- VarDecl(i) → tab_index:34
+|   |   \-- TypeRef(integer)
+|   +-- VarDecl(r) → tab_index:35
+|   |   \-- TypeRef(real)
+|   +-- VarDecl(c) → tab_index:36
+|   |   \-- TypeRef(char)
+|   +-- VarDecl(b) → tab_index:37
+|   |   \-- TypeRef(boolean)
+|   \-- VarDecl(s) → tab_index:38
+|       \-- TypeRef(string)
+\-- Block, lev:1
+    +-- Assign
+    |   +-- Var(i) → tab_index:34, type:integer
+    |   \-- Num(10), type:integer
+    +-- Assign
+    |   +-- Var(r) → tab_index:35, type:real
+    |   \-- Num(3.14), type:real
+    +-- Assign
+    |   +-- Var(c) → tab_index:36, type:char
+    |   \-- Char('X'), type:char
+    +-- Assign
+    |   +-- Var(b) → tab_index:37, type:boolean
+    |   \-- Var(true) → tab_index:6, type:boolean
+    +-- Assign
+    |   +-- Var(s) → tab_index:38, type:string
+    |   \-- Str('hello'), type:string
+    +-- Assign
+    |   +-- Var(i) → tab_index:34, type:integer
+    |   \-- BinOp(op: '+'), type:integer
+    |       +-- Var(i) → tab_index:34, type:integer
+    |       \-- Num(5), type:integer
+    +-- Assign
+    |   +-- Var(r) → tab_index:35, type:real
+    |   \-- BinOp(op: '*'), type:real
+    |       +-- Var(r) → tab_index:35, type:real
+    |       \-- Num(2.0), type:real
+    +-- Assign
+    |   +-- Var(b) → tab_index:37, type:boolean
+    |   \-- BinOp(op: 'and'), type:boolean
+    |       +-- BinOp(op: '>'), type:boolean
+    |       |   +-- Var(i) → tab_index:34, type:integer
+    |       |   \-- Num(0), type:integer
+    |       \-- BinOp(op: '<'), type:boolean
+    |           +-- Var(r) → tab_index:35, type:real
+    |           \-- Num(10.0), type:real
+    +-- Assign
+    |   +-- Var(b) → tab_index:37, type:boolean
+    |   \-- UnaryOp(not), type:boolean
+    \-- ProcedureCall(name: 'writeln') → tab_index:9
+        \-- Str('Done'), type:string
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33    TypeCheck    program      0     0    1    0    0     9
+  34            i   variable      1     0    1    0    0    33
+  35            r   variable      2     0    1    0    0    34
+  36            c   variable      3     0    1    0    0    35
+  37            b   variable      4     0    1    0    0    36
+  38            s   variable      5     0    1    0    0    37
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    38     0     0     5
+   1     0     0     0     0
+
+=== atab ===
+(empty)
+
