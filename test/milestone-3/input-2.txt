@@ -1,0 +1,23 @@
+program TypeCheck;
+
+var
+  i: integer;
+  r: real;
+  c: char;
+  b: boolean;
+  s: string;
+
+begin
+  i := 10;
+  r := 3.14;
+  c := 'X';
+  b := true;
+  s := 'hello';
+
+  i := i + 5;
+  r := r * 2.0;
+  b := (i > 0) and (r < 10.0);
+  b := not b;
+
+  writeln('Done');
+end.

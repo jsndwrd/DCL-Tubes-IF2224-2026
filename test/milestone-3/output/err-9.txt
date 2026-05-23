@@ -1,0 +1,1 @@
+Semantic error: subrange cannot be of type real

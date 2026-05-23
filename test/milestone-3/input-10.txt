@@ -1,0 +1,28 @@
+program DeepScope;
+
+var
+  x: integer;
+
+procedure Outer;
+var
+  x: integer;
+  y: integer;
+  
+  procedure Inner;
+  var
+    z: integer;
+  begin
+    z := x + 1;
+    y := z;
+  end;
+  
+begin
+  x := 10;
+  y := 20;
+  Inner;
+end;
+
+begin
+  x := 1;
+  Outer;
+end.

@@ -1,0 +1,69 @@
+--- Decorated AST ---
+ProgramNode(name: 'VarParam') → tab_index:33
++-- Block
+|   \-- VarDecl(x, y) → tab_index:35
+|       \-- TypeRef(integer)
++-- ProcDecl(Swap) → tab_index:36
+|   +-- Param(a, var) → tab_index:37
+|   |   \-- TypeRef(integer)
+|   +-- Param(b, var) → tab_index:38
+|   |   \-- TypeRef(integer)
+|   +-- Block
+|   |   \-- VarDecl(temp) → tab_index:39
+|   |       \-- TypeRef(integer)
+|   \-- Block, lev:1
+|       +-- Assign
+|       |   +-- Var(temp) → tab_index:39, type:integer, lev:1
+|       |   \-- Var(a) → tab_index:37, type:integer, lev:1
+|       +-- Assign
+|       |   +-- Var(a) → tab_index:37, type:integer, lev:1
+|       |   \-- Var(b) → tab_index:38, type:integer, lev:1
+|       \-- Assign
+|           +-- Var(b) → tab_index:38, type:integer, lev:1
+|           \-- Var(temp) → tab_index:39, type:integer, lev:1
+\-- Block, lev:1
+    +-- Assign
+    |   +-- Var(x) → tab_index:34, type:integer
+    |   \-- Num(1), type:integer
+    +-- Assign
+    |   +-- Var(y) → tab_index:35, type:integer
+    |   \-- Num(2), type:integer
+    +-- ProcedureCall(name: 'Swap') → tab_index:36
+    |   +-- Var(x) → tab_index:34, type:integer
+    |   \-- Var(y) → tab_index:35, type:integer
+    \-- ProcedureCall(name: 'writeln') → tab_index:9
+        +-- Var(x) → tab_index:34, type:integer
+        \-- Var(y) → tab_index:35, type:integer
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33     VarParam    program      0     0    1    0    0     9
+  34            x   variable      1     0    1    0    0    33
+  35            y   variable      1     0    1    0    0    34
+  36         Swap  procedure      0     1    1    0    0    35
+  37            a   variable      1     0    0    1    0     0
+  38            b   variable      1     0    0    1    0    37
+  39         temp   variable      1     0    1    1    0    38
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    36     0     0     2
+   1    39    38     2     1
+   2     0     0     0     0
+
+=== atab ===
+(empty)
+

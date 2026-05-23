@@ -1,0 +1,24 @@
+program ArrayRecord;
+
+const
+  N == 5;
+
+type
+  Point == record
+    px: integer;
+    py: integer
+  end;
+  IntArray == array[1..N] of integer;
+
+var
+  p: Point;
+  arr: IntArray;
+  i: integer;
+
+begin
+  p.px := 3;
+  p.py := 4;
+  arr[1] := 10;
+  arr[2] := arr[1] + 5;
+  writeln('Point: ', p.px, ', ', p.py);
+end.

@@ -1,0 +1,14 @@
+program NamedRecord;
+
+type
+  Point == record x: integer; y: integer; end;
+
+var
+  p1, p2: Point;
+
+begin
+  p1.x := 1;
+  p1.y := 2;
+  p2 := p1;
+  writeln(p2.x);
+end.

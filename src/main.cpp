@@ -5,6 +5,8 @@
 #include "header/lexer.hpp"
 #include "header/parser.hpp"
 #include "header/token.hpp"
+#include "header/ast.hpp"
+#include "header/symtab.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -68,10 +70,8 @@ void printTokens(const vector<Token>& tokens) {
     cout << "--------------------\n";
 }
 
-
 int main() {
     cout << "===================================================\n";
-    cout << "  ARION LEXER & PARSER  -  Milestone 2\n";
     cout << "  IF2224 Teori Bahasa Formal dan Automata\n";
     cout << "  Kelompok DCL - Dirty Chocolate\n";
     cout << "===================================================\n\n";
@@ -79,7 +79,7 @@ int main() {
     string inputPath;
 
     while (true) {
-        cout << "Masukkan path berkas dari folder test/ (contoh: milestone-2/input-1.txt): ";
+        cout << "Masukkan path berkas dari folder test/: ";
         string raw;
         if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
@@ -107,40 +107,74 @@ int main() {
     printTokens(tokens);
     printSummary(tokens);
 
-    ParseNode* root = nullptr;
+    ParseNode* parseRoot = nullptr;
     try {
         Parser parser(tokens);
-        root = parser.parse();
+        parseRoot = parser.parse();
     } catch (const SyntaxError& e) {
         cerr << "\n" << e.what() << "\n";
         return 1;
     }
 
     cout << "\n--- Pohon Parsing ---\n";
-    printTree(root);
+    printTree(parseRoot);
     cout << "----------------------\n";
 
-    cout << "\nSimpan pohon parsing ke berkas .txt? (y/n): ";
+    ASTNode* astRoot = buildAST(parseRoot);
+    if (!astRoot) {
+        cerr << "ERROR: Gagal membangun AST dari parse tree.\n";
+        destroyParseTree(parseRoot);
+        return 1;
+    }
+
+    try {
+        SemanticAnalyzer analyzer;
+        analyzer.analyze(astRoot);
+    } catch (const SemanticError& e) {
+        cerr << "\n" << e.what() << "\n";
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
+        return 1;
+    }
+
+    cout << "\n--- Decorated AST ---\n";
+    printAST(astRoot);
+    cout << "----------------------\n";
+
+    {
+        SymbolTable dummy; 
+
+        SemanticAnalyzer printer;
+        printer.analyze(astRoot);
+        printer.sym.printTab();
+        printer.sym.printBTab();
+        printer.sym.printATab();
+    }
+
+    cout << "\nSimpan hasil ke berkas .txt? (y/n): ";
     string jawab;
     if (!getline(cin, jawab)) {
         cout << "\nProgram dihentikan.\n";
-        destroyParseTree(root);
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
         return 0;
     }
 
     if (jawab != "y" && jawab != "Y") {
-        cout << "Pohon tidak disimpan.\n\n";
-        destroyParseTree(root);
+        cout << "Hasil tidak disimpan.\n\n";
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
         return 0;
     }
 
     string outputPath;
     while (true) {
-        cout << "Masukkan path keluaran dari folder test/ (contoh: milestone-2/output-tree-1.txt): ";
+        cout << "Masukkan path keluaran dari folder test/ (contoh: milestone-3/output-1.txt): ";
         string raw;
         if (!getline(cin, raw)) {
             cout << "\nProgram dihentikan.\n";
-            destroyParseTree(root);
+            destroyAST(astRoot);
+            destroyParseTree(parseRoot);
             return 0;
         }
         if (raw.empty()) {
@@ -152,14 +186,16 @@ int main() {
     }
 
     try {
-        writeTree(root, outputPath);
-        cout << "Pohon parsing disimpan ke: " << outputPath << "\n\n";
+        writeAST(astRoot, outputPath);
+        cout << "Decorated AST disimpan ke: " << outputPath << "\n\n";
     } catch (const std::exception& e) {
         cerr << "ERROR: " << e.what() << "\n";
-        destroyParseTree(root);
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
         return 1;
     }
 
-    destroyParseTree(root);
+    destroyAST(astRoot);
+    destroyParseTree(parseRoot);
     return 0;
 }

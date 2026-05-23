@@ -1,0 +1,7 @@
+program ErrRealSubrange;
+
+type
+  BadRange == 1.0..10.0;
+
+begin
+end.

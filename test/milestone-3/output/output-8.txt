@@ -1,0 +1,47 @@
+--- Decorated AST ---
+ProgramNode(name: 'EnumTest') → tab_index:33
++-- Block
+|   \-- TypeDecl(Color) → tab_index:34
+|       \-- Enum
++-- Block
+|   \-- VarDecl(c) → tab_index:38
+|       \-- TypeRef(Color)
+\-- Block, lev:1
+    +-- Assign
+    |   +-- Var(c) → tab_index:38, type:enumerated
+    |   \-- Var(Red) → tab_index:35, type:enumerated
+    \-- ProcedureCall(name: 'writeln') → tab_index:9
+        \-- Str('enum ok'), type:string
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33     EnumTest    program      0     0    1    0    0     9
+  34        Color       type      7     0    1    0    0    33
+  35          Red   constant      7     0    1    0    0    34
+  36        Green   constant      7     0    1    0    1    35
+  37         Blue   constant      7     0    1    0    2    36
+  38            c   variable      7     0    1    0    0    37
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    38     0     0     4
+   1     0     0     0     0
+
+=== atab ===
+ idx  xtyp  etyp  eref   low  high  elsz  size
+-----------------------------------------------
+   0     1     1     0     0     2     1     3
+

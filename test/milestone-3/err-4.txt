@@ -1,0 +1,10 @@
+program ErrArrayIndex;
+
+var
+  arr: array[1..10] of integer;
+  idx: real;
+
+begin
+  idx := 1.5;
+  arr[idx] := 5;
+end.

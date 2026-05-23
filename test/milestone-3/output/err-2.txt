@@ -1,0 +1,1 @@
+Semantic error: identifier 'a' is already declared in this scope

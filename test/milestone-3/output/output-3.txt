@@ -1,0 +1,74 @@
+--- Decorated AST ---
+ProgramNode(name: 'ScopeTest') → tab_index:33
++-- Block
+|   \-- VarDecl(x) → tab_index:34
+|       \-- TypeRef(integer)
++-- ProcDecl(Inner) → tab_index:35
+|   +-- Block
+|   |   \-- VarDecl(x) → tab_index:36
+|   |       \-- TypeRef(integer)
+|   \-- Block, lev:1
+|       +-- Assign
+|       |   +-- Var(x) → tab_index:36, type:integer, lev:1
+|       |   \-- Num(100), type:integer
+|       \-- ProcedureCall(name: 'writeln') → tab_index:9
+|           \-- Var(x) → tab_index:36, type:integer, lev:1
++-- FuncDecl(Add) → tab_index:37
+|   +-- Param(a) → tab_index:38
+|   |   \-- TypeRef(integer)
+|   +-- Param(b) → tab_index:39
+|   |   \-- TypeRef(integer)
+|   +-- TypeRef(integer)
+|   \-- Block, lev:1
+|       \-- Assign
+|           +-- Var(Add) → tab_index:40, type:integer, lev:1
+|           \-- BinOp(op: '+'), type:integer
+|               +-- Var(a) → tab_index:38, type:integer, lev:1
+|               \-- Var(b) → tab_index:39, type:integer, lev:1
+\-- Block, lev:1
+    +-- Assign
+    |   +-- Var(x) → tab_index:34, type:integer
+    |   \-- Num(1), type:integer
+    +-- ProcedureCall(name: 'Inner') → tab_index:35
+    +-- Assign
+    |   +-- Var(x) → tab_index:34, type:integer
+    |   \-- ProcedureCall(name: 'Add') → tab_index:37, type:integer
+    |       +-- Var(x) → tab_index:34, type:integer
+    |       \-- Num(5), type:integer
+    \-- ProcedureCall(name: 'writeln') → tab_index:9
+        \-- Var(x) → tab_index:34, type:integer
+----------------------
+
+=== tab ===
+ idx           id        obj   type   ref  nrm  lev  adr  link
+-----------------------------------------------------------
+   0                       -      0     0    1    0    0     0
+   1      integer       type      1     0    1    0    0     0
+   2         real       type      2     0    1    0    0     1
+   3         char       type      3     0    1    0    0     2
+   4      boolean       type      4     0    1    0    0     3
+   5       string       type      5     0    1    0    0     4
+   6         true   constant      4     0    1    0    1     5
+   7        false   constant      4     0    1    0    0     6
+   8       readln  procedure      0     0    1    0    0     7
+   9      writeln  procedure      0     0    1    0    0     8
+  33    ScopeTest    program      0     0    1    0    0     9
+  34            x   variable      1     0    1    0    0    33
+  35        Inner  procedure      0     1    1    0    0    34
+  36            x   variable      1     0    1    1    0     0
+  37          Add   function      1     2    1    0    0    35
+  38            a   variable      1     0    1    1    0     0
+  39            b   variable      1     0    1    1    0    38
+  40          Add   variable      1     0    1    1    0    39
+
+=== btab ===
+ idx  last  lpar  psze  vsze
+-----------------------------
+   0    37     0     0     1
+   1    36     0     0     1
+   2    40    39     2     1
+   3     0     0     0     0
+
+=== atab ===
+(empty)
+

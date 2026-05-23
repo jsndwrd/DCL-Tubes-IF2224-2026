@@ -1,0 +1,9 @@
+program ErrIfCondition;
+
+var
+  a: integer;
+
+begin
+  if a then
+    a := 1;
+end.

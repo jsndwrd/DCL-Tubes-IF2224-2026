@@ -1,0 +1,9 @@
+program ErrTypeMismatch;
+
+var
+  a: integer;
+  b: real;
+
+begin
+  a := b;
+end.

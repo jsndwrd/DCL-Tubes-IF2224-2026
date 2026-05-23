@@ -1,0 +1,10 @@
+program StringTest;
+
+var
+  s1, s2: string;
+
+begin
+  s1 := 'hello';
+  s2 := 'world';
+  writeln(s1, ' ', s2);
+end.

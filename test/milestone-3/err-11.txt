@@ -1,0 +1,10 @@
+program ErrorTest;
+
+var
+  a: integer;
+  b: real;
+
+begin
+  c := 5;          { Error: undeclared identifier c }
+  a := b;          { Error: type mismatch real to integer }
+end.

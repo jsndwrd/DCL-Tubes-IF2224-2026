@@ -1,6 +1,6 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall
-SRC      = src/main.cpp src/lib/lexer.cpp src/lib/parser.cpp
+SRC      = src/main.cpp src/lib/lexer.cpp src/lib/parser.cpp src/lib/ast.cpp src/lib/symtab.cpp
 BIN      = bin
 
 ifeq ($(OS), Windows_NT)
