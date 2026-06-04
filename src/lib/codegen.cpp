@@ -104,7 +104,19 @@ void CodeGenerator::genAssign(AssignNode* n) {
 }
 
 void CodeGenerator::genIf(IfNode* n) {
-    (void)n;
+    genExpr(n->condition);
+    int jpcIdx = emit(OpCode::JPC, 0, 0);
+
+    genStmt(n->thenBranch);
+
+    if (n->elseBranch) {
+        int jmpIdx = emit(OpCode::JMP, 0, 0);
+        patch(jpcIdx, nextLine());
+        genStmt(n->elseBranch);
+        patch(jmpIdx, nextLine());
+    } else {
+        patch(jpcIdx, nextLine());
+    }
 }
 
 void CodeGenerator::genWhile(WhileNode* n) {
