@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "ast.hpp"
 #include "symtab.hpp"
 #include "instruction.hpp"
@@ -25,6 +26,9 @@ public:
 private:
     SymbolTable& sym;
     std::vector<Instruction> instr;
+    std::unordered_map<int, int> procEntry;
+    std::vector<int> pendingCalls;
+    int curLevel;
 
     void resolveAddresses();
     void resolveBlockAddresses(int btabIdx);

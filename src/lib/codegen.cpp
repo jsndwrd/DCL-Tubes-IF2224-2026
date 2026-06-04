@@ -1,7 +1,7 @@
 #include "../header/codegen.hpp"
 #include <algorithm>
 
-CodeGenerator::CodeGenerator(SymbolTable& sym) : sym(sym) {}
+CodeGenerator::CodeGenerator(SymbolTable& sym) : sym(sym), curLevel(0) {}
 
 int CodeGenerator::emit(OpCode op, int level, int operand) {
     int idx = nextLine();
@@ -57,6 +57,17 @@ std::vector<Instruction> CodeGenerator::generate(ASTNode* root) {
 }
 
 void CodeGenerator::genProgram(ProgramNode* n) {
+    int jmpToMain = emit(OpCode::JMP, 0, 0);
+
+    for (ASTNode* decl : n->decls) {
+        if (decl->nodeType == AST_PROCDECL || decl->nodeType == AST_FUNCDECL) {
+            genSubprogram(decl);
+        }
+    }
+
+    patch(jmpToMain, nextLine());
+
+    curLevel = 0;
     int vsze = sym.btab.empty() ? 0 : sym.btab[0].vsze;
     emit(OpCode::INT, 0, FRAME_HEADER_SIZE + vsze);
 
@@ -65,6 +76,15 @@ void CodeGenerator::genProgram(ProgramNode* n) {
     }
 
     emit(OpCode::RET, 0, 0);
+
+    for (int callIdx : pendingCalls) {
+        int tabIdx = instr[callIdx].operand;
+        auto it = procEntry.find(tabIdx);
+        if (it == procEntry.end()) {
+            throw CodeGenError("call to undefined subprogram entry");
+        }
+        patch(callIdx, it->second);
+    }
 }
 
 void CodeGenerator::genBlock(BlockNode* n) {
@@ -99,7 +119,7 @@ void CodeGenerator::genAssign(AssignNode* n) {
 
     genExpr(n->value);
 
-    int lvl = levelDiff(target->lexLevel, sym.tab[idx].lev);
+    int lvl = levelDiff(curLevel, sym.tab[idx].lev);
     emit(OpCode::STO, lvl, sym.tab[idx].adr);
 }
 
@@ -139,7 +159,7 @@ void CodeGenerator::genFor(ForNode* n) {
     if (idx < 0 || idx >= static_cast<int>(sym.tab.size())) {
         throw CodeGenError("unresolved for loop variable: " + n->varName);
     }
-    int lvl = levelDiff(sym.tab[idx].lev, sym.tab[idx].lev);
+    int lvl = levelDiff(curLevel, sym.tab[idx].lev);
     int adr = sym.tab[idx].adr;
 
     genExpr(n->init);
@@ -199,8 +219,9 @@ void CodeGenerator::genCall(CallNode* n) {
     for (ASTNode* arg : n->args) {
         genExpr(arg);
     }
-    int lvl = levelDiff(n->lexLevel, sym.tab[idx].lev);
-    emit(OpCode::CAL, lvl, sym.tab[idx].adr);
+    int lvl = levelDiff(curLevel, sym.tab[idx].lev);
+    int callIdx = emit(OpCode::CAL, lvl, idx);
+    pendingCalls.push_back(callIdx);
 }
 
 void CodeGenerator::genExpr(ASTNode* n) {
@@ -259,7 +280,7 @@ void CodeGenerator::genVar(VarNode* n) {
         emit(OpCode::LIT, 0, sym.tab[idx].adr);
         return;
     }
-    int lvl = levelDiff(n->lexLevel, sym.tab[idx].lev);
+    int lvl = levelDiff(curLevel, sym.tab[idx].lev);
     emit(OpCode::LOD, lvl, sym.tab[idx].adr);
 }
 
@@ -280,7 +301,44 @@ void CodeGenerator::genChar(CharNode* n) {
 }
 
 void CodeGenerator::genSubprogram(ASTNode* n) {
-    (void)n;
+    int tabIdx;
+    std::vector<ASTNode*> decls;
+    ASTNode* body;
+    int btabRef;
+
+    if (n->nodeType == AST_PROCDECL) {
+        auto* p = static_cast<ProcDeclNode*>(n);
+        tabIdx = p->tabIndex;
+        decls = p->decls;
+        body = p->block;
+    } else {
+        auto* f = static_cast<FuncDeclNode*>(n);
+        tabIdx = f->tabIndex;
+        decls = f->decls;
+        body = f->block;
+    }
+
+    for (ASTNode* decl : decls) {
+        if (decl->nodeType == AST_PROCDECL || decl->nodeType == AST_FUNCDECL) {
+            genSubprogram(decl);
+        }
+    }
+
+    btabRef = sym.tab[tabIdx].ref;
+    procEntry[tabIdx] = nextLine();
+    curLevel = sym.tab[tabIdx].lev + 1;
+
+    int vsze = (btabRef >= 0 && btabRef < static_cast<int>(sym.btab.size()))
+                   ? sym.btab[btabRef].vsze : 0;
+    int psze = (btabRef >= 0 && btabRef < static_cast<int>(sym.btab.size()))
+                   ? sym.btab[btabRef].psze : 0;
+    emit(OpCode::INT, 0, FRAME_HEADER_SIZE + psze + vsze);
+
+    if (body && body->nodeType == AST_BLOCK) {
+        genBlock(static_cast<BlockNode*>(body));
+    }
+
+    emit(OpCode::RET, 0, 0);
 }
 
 OprCode CodeGenerator::binOpToOpr(const std::string& op) const {
