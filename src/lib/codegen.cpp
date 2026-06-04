@@ -135,11 +135,44 @@ void CodeGenerator::genWhile(WhileNode* n) {
 }
 
 void CodeGenerator::genFor(ForNode* n) {
-    (void)n;
+    int idx = n->init ? n->init->tabIndex : -1;
+    if (idx < 0 || idx >= static_cast<int>(sym.tab.size())) {
+        throw CodeGenError("unresolved for loop variable: " + n->varName);
+    }
+    int lvl = levelDiff(sym.tab[idx].lev, sym.tab[idx].lev);
+    int adr = sym.tab[idx].adr;
+
+    genExpr(n->init);
+    emit(OpCode::STO, lvl, adr);
+
+    int condLine = nextLine();
+    emit(OpCode::LOD, lvl, adr);
+    genExpr(n->endExpr);
+    emit(OpCode::OPR, 0, static_cast<int>(n->isTo ? OprCode::LEQ : OprCode::GEQ));
+    int jpcIdx = emit(OpCode::JPC, 0, 0);
+
+    if (n->body && n->body->nodeType == AST_BLOCK) {
+        genBlock(static_cast<BlockNode*>(n->body));
+    } else {
+        genStmt(n->body);
+    }
+
+    emit(OpCode::LOD, lvl, adr);
+    emit(OpCode::LIT, 0, 1);
+    emit(OpCode::OPR, 0, static_cast<int>(n->isTo ? OprCode::ADD : OprCode::SUB));
+    emit(OpCode::STO, lvl, adr);
+
+    emit(OpCode::JMP, 0, condLine);
+    patch(jpcIdx, nextLine());
 }
 
 void CodeGenerator::genRepeat(RepeatNode* n) {
-    (void)n;
+    int startLine = nextLine();
+    for (ASTNode* stmt : n->stmts) {
+        genStmt(stmt);
+    }
+    genExpr(n->condition);
+    emit(OpCode::JPC, 0, startLine);
 }
 
 void CodeGenerator::genCall(CallNode* n) {
