@@ -120,7 +120,18 @@ void CodeGenerator::genIf(IfNode* n) {
 }
 
 void CodeGenerator::genWhile(WhileNode* n) {
-    (void)n;
+    int startLine = nextLine();
+    genExpr(n->condition);
+    int jpcIdx = emit(OpCode::JPC, 0, 0);
+
+    if (n->body && n->body->nodeType == AST_BLOCK) {
+        genBlock(static_cast<BlockNode*>(n->body));
+    } else {
+        genStmt(n->body);
+    }
+
+    emit(OpCode::JMP, 0, startLine);
+    patch(jpcIdx, nextLine());
 }
 
 void CodeGenerator::genFor(ForNode* n) {
