@@ -120,7 +120,31 @@ void CodeGenerator::genRepeat(RepeatNode* n) {
 }
 
 void CodeGenerator::genCall(CallNode* n) {
-    (void)n;
+    if (n->name == "writeln" || n->name == "write") {
+        OprCode opr = (n->name == "writeln") ? OprCode::WRTLN : OprCode::WRT;
+        if (n->args.empty()) {
+            emit(OpCode::OPR, 0, static_cast<int>(opr));
+            return;
+        }
+        for (ASTNode* arg : n->args) {
+            genExpr(arg);
+            emit(OpCode::OPR, 0, static_cast<int>(opr));
+        }
+        return;
+    }
+    if (n->name == "readln") {
+        throw CodeGenError("readln not supported in codegen");
+    }
+
+    int idx = n->tabIndex;
+    if (idx < 0 || idx >= static_cast<int>(sym.tab.size())) {
+        throw CodeGenError("unresolved call target: " + n->name);
+    }
+    for (ASTNode* arg : n->args) {
+        genExpr(arg);
+    }
+    int lvl = levelDiff(n->lexLevel, sym.tab[idx].lev);
+    emit(OpCode::CAL, lvl, sym.tab[idx].adr);
 }
 
 void CodeGenerator::genExpr(ASTNode* n) {
