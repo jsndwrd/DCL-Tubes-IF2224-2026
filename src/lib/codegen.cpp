@@ -1,5 +1,7 @@
 #include "../header/codegen.hpp"
 #include <algorithm>
+#include <fstream>
+#include <filesystem>
 
 CodeGenerator::CodeGenerator(SymbolTable& sym) : sym(sym), curLevel(0) {}
 
@@ -57,15 +59,24 @@ std::vector<Instruction> CodeGenerator::generate(ASTNode* root) {
 }
 
 void CodeGenerator::genProgram(ProgramNode* n) {
-    int jmpToMain = emit(OpCode::JMP, 0, 0);
-
+    bool hasSub = false;
     for (ASTNode* decl : n->decls) {
         if (decl->nodeType == AST_PROCDECL || decl->nodeType == AST_FUNCDECL) {
-            genSubprogram(decl);
+            hasSub = true;
+            break;
         }
     }
 
-    patch(jmpToMain, nextLine());
+    int jmpToMain = -1;
+    if (hasSub) {
+        jmpToMain = emit(OpCode::JMP, 0, 0);
+        for (ASTNode* decl : n->decls) {
+            if (decl->nodeType == AST_PROCDECL || decl->nodeType == AST_FUNCDECL) {
+                genSubprogram(decl);
+            }
+        }
+        patch(jmpToMain, nextLine());
+    }
 
     curLevel = 0;
     int vsze = sym.btab.empty() ? 0 : sym.btab[0].vsze;
@@ -203,6 +214,7 @@ void CodeGenerator::genCall(CallNode* n) {
             return;
         }
         for (ASTNode* arg : n->args) {
+            if (arg->nodeType == AST_STRING) continue;
             genExpr(arg);
             emit(OpCode::OPR, 0, static_cast<int>(opr));
         }
@@ -339,6 +351,26 @@ void CodeGenerator::genSubprogram(ASTNode* n) {
     }
 
     emit(OpCode::RET, 0, 0);
+}
+
+void CodeGenerator::printCode(std::ostream& os) const {
+    for (const auto& i : instr) {
+        os << i.line << " " << opCodeName(i.op)
+           << " " << i.level << " " << i.operand << "\n";
+    }
+}
+
+void CodeGenerator::writeCode(const std::string& outputPath) const {
+    namespace fs = std::filesystem;
+    fs::path outDir = fs::path(outputPath).parent_path();
+    if (!outDir.empty() && !fs::exists(outDir)) {
+        fs::create_directories(outDir);
+    }
+    std::ofstream out(outputPath);
+    if (!out.is_open()) {
+        throw CodeGenError("cannot open output file: " + outputPath);
+    }
+    printCode(out);
 }
 
 OprCode CodeGenerator::binOpToOpr(const std::string& op) const {

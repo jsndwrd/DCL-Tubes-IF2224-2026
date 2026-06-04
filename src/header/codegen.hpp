@@ -23,6 +23,9 @@ public:
 
     const std::vector<Instruction>& code() const { return instr; }
 
+    void printCode(std::ostream& os = std::cout) const;
+    void writeCode(const std::string& outputPath) const;
+
 private:
     SymbolTable& sym;
     std::vector<Instruction> instr;
