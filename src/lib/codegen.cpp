@@ -34,8 +34,7 @@ void CodeGenerator::resolveBlockAddresses(int btabIdx) {
 
     int addr = FRAME_HEADER_SIZE;
     for (int idx : chain) {
-        int obj = sym.tab[idx].obj;
-        if (obj == OBJ_VARIABLE || obj == OBJ_CONSTANT) {
+        if (sym.tab[idx].obj == OBJ_VARIABLE) {
             sym.tab[idx].adr = addr;
             addr += 1;
         }
@@ -58,19 +57,50 @@ std::vector<Instruction> CodeGenerator::generate(ASTNode* root) {
 }
 
 void CodeGenerator::genProgram(ProgramNode* n) {
-    (void)n;
+    int vsze = sym.btab.empty() ? 0 : sym.btab[0].vsze;
+    emit(OpCode::INT, 0, FRAME_HEADER_SIZE + vsze);
+
+    if (n->block && n->block->nodeType == AST_BLOCK) {
+        genBlock(static_cast<BlockNode*>(n->block));
+    }
+
+    emit(OpCode::RET, 0, 0);
 }
 
 void CodeGenerator::genBlock(BlockNode* n) {
-    (void)n;
+    for (ASTNode* stmt : n->stmts) {
+        genStmt(stmt);
+    }
 }
 
 void CodeGenerator::genStmt(ASTNode* n) {
-    (void)n;
+    if (!n) return;
+    switch (n->nodeType) {
+        case AST_ASSIGN: genAssign(static_cast<AssignNode*>(n)); break;
+        case AST_IF:     genIf(static_cast<IfNode*>(n)); break;
+        case AST_WHILE:  genWhile(static_cast<WhileNode*>(n)); break;
+        case AST_FOR:    genFor(static_cast<ForNode*>(n)); break;
+        case AST_REPEAT: genRepeat(static_cast<RepeatNode*>(n)); break;
+        case AST_CALL:   genCall(static_cast<CallNode*>(n)); break;
+        case AST_BLOCK:  genBlock(static_cast<BlockNode*>(n)); break;
+        default: break;
+    }
 }
 
 void CodeGenerator::genAssign(AssignNode* n) {
-    (void)n;
+    if (n->target->nodeType != AST_VAR) {
+        throw CodeGenError("codegen only supports simple variable assignment");
+    }
+    auto* target = static_cast<VarNode*>(n->target);
+    int idx = target->tabIndex;
+    if (idx < 0 || idx >= static_cast<int>(sym.tab.size())) {
+        throw CodeGenError("unresolved assignment target");
+    }
+
+    genExpr(n->value);
+
+    int lvl = levelDiff(target->lexLevel, sym.tab[idx].lev);
+    emit(OpCode::STO, lvl, sym.tab[idx].adr);
 }
 
 void CodeGenerator::genIf(IfNode* n) {
@@ -94,31 +124,79 @@ void CodeGenerator::genCall(CallNode* n) {
 }
 
 void CodeGenerator::genExpr(ASTNode* n) {
-    (void)n;
+    if (!n) return;
+    switch (n->nodeType) {
+        case AST_BINOP:   genBinOp(static_cast<BinOpNode*>(n)); break;
+        case AST_UNARYOP: genUnaryOp(static_cast<UnaryOpNode*>(n)); break;
+        case AST_VAR:     genVar(static_cast<VarNode*>(n)); break;
+        case AST_NUMBER:  genNumber(static_cast<NumberNode*>(n)); break;
+        case AST_BOOL:    genBool(static_cast<BoolNode*>(n)); break;
+        case AST_CHAR:    genChar(static_cast<CharNode*>(n)); break;
+        case AST_CALL:    genCall(static_cast<CallNode*>(n)); break;
+        default:
+            throw CodeGenError("unsupported expression node in codegen");
+    }
 }
 
 void CodeGenerator::genBinOp(BinOpNode* n) {
-    (void)n;
+    if (n->op == "and" || n->op == "or") {
+        genExpr(n->left);
+        genExpr(n->right);
+        if (n->op == "and") {
+            emit(OpCode::OPR, 0, static_cast<int>(OprCode::MUL));
+        } else {
+            emit(OpCode::OPR, 0, static_cast<int>(OprCode::ADD));
+        }
+        return;
+    }
+
+    genExpr(n->left);
+    genExpr(n->right);
+    emit(OpCode::OPR, 0, static_cast<int>(binOpToOpr(n->op)));
 }
 
 void CodeGenerator::genUnaryOp(UnaryOpNode* n) {
-    (void)n;
+    if (n->op == "-") {
+        genExpr(n->operand);
+        emit(OpCode::OPR, 0, static_cast<int>(OprCode::NEG));
+    } else if (n->op == "+") {
+        genExpr(n->operand);
+    } else if (n->op == "not") {
+        emit(OpCode::LIT, 0, 1);
+        genExpr(n->operand);
+        emit(OpCode::OPR, 0, static_cast<int>(OprCode::SUB));
+    } else {
+        throw CodeGenError("unsupported unary operator: " + n->op);
+    }
 }
 
 void CodeGenerator::genVar(VarNode* n) {
-    (void)n;
+    int idx = n->tabIndex;
+    if (idx < 0 || idx >= static_cast<int>(sym.tab.size())) {
+        throw CodeGenError("unresolved variable: " + n->name);
+    }
+    if (sym.tab[idx].obj == OBJ_CONSTANT) {
+        emit(OpCode::LIT, 0, sym.tab[idx].adr);
+        return;
+    }
+    int lvl = levelDiff(n->lexLevel, sym.tab[idx].lev);
+    emit(OpCode::LOD, lvl, sym.tab[idx].adr);
 }
 
 void CodeGenerator::genNumber(NumberNode* n) {
-    (void)n;
+    if (n->isReal) {
+        throw CodeGenError("real literals not supported in stack machine");
+    }
+    emit(OpCode::LIT, 0, std::stoi(n->value));
 }
 
 void CodeGenerator::genBool(BoolNode* n) {
-    (void)n;
+    emit(OpCode::LIT, 0, n->value ? 1 : 0);
 }
 
 void CodeGenerator::genChar(CharNode* n) {
-    (void)n;
+    int code = n->value.empty() ? 0 : static_cast<unsigned char>(n->value[0]);
+    emit(OpCode::LIT, 0, code);
 }
 
 void CodeGenerator::genSubprogram(ASTNode* n) {
