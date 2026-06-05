@@ -34,11 +34,16 @@ void CodeGenerator::resolveBlockAddresses(int btabIdx) {
     }
     std::reverse(chain.begin(), chain.end());
 
-    int addr = FRAME_HEADER_SIZE;
+    int psze = sym.btab[btabIdx].psze;
+    int paramSeen = 0;
+    int localAddr = FRAME_HEADER_SIZE;
     for (int idx : chain) {
-        if (sym.tab[idx].obj == OBJ_VARIABLE) {
-            sym.tab[idx].adr = addr;
-            addr += 1;
+        if (sym.tab[idx].obj != OBJ_VARIABLE) continue;
+        if (paramSeen < psze) {
+            sym.tab[idx].adr = -(psze - paramSeen);
+            ++paramSeen;
+        } else {
+            sym.tab[idx].adr = localAddr++;
         }
     }
 }
@@ -344,13 +349,33 @@ void CodeGenerator::genSubprogram(ASTNode* n) {
                    ? sym.btab[btabRef].vsze : 0;
     int psze = (btabRef >= 0 && btabRef < static_cast<int>(sym.btab.size()))
                    ? sym.btab[btabRef].psze : 0;
-    emit(OpCode::INT, 0, FRAME_HEADER_SIZE + psze + vsze);
+    emit(OpCode::INT, 0, FRAME_HEADER_SIZE + vsze);
 
     if (body && body->nodeType == AST_BLOCK) {
         genBlock(static_cast<BlockNode*>(body));
     }
 
-    emit(OpCode::RET, 0, 0);
+    if (n->nodeType == AST_FUNCDECL) {
+        int shadowAddr = findShadowAddress(btabRef, sym.tab[tabIdx].id);
+        emit(OpCode::LOD, 0, shadowAddr);
+        emit(OpCode::RET, 1, psze);
+    } else {
+        emit(OpCode::RET, 0, psze);
+    }
+}
+
+int CodeGenerator::findShadowAddress(int btabIdx, const std::string& name) const {
+    if (btabIdx < 0 || btabIdx >= static_cast<int>(sym.btab.size())) {
+        return FRAME_HEADER_SIZE;
+    }
+    int p = sym.btab[btabIdx].last;
+    while (p != 0) {
+        if (sym.tab[p].obj == OBJ_VARIABLE && sym.tab[p].id == name) {
+            return sym.tab[p].adr;
+        }
+        p = sym.tab[p].link;
+    }
+    return FRAME_HEADER_SIZE;
 }
 
 void CodeGenerator::printCode(std::ostream& os) const {

@@ -35,6 +35,7 @@ private:
 
     void resolveAddresses();
     void resolveBlockAddresses(int btabIdx);
+    int findShadowAddress(int btabIdx, const std::string& name) const;
 
     int emit(OpCode op, int level, int operand);
     int nextLine() const { return static_cast<int>(instr.size()); }
