@@ -1,0 +1,671 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+\onehalfspacing
+\raggedbottom
+\setlength{\emergencystretch}{3em}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\graphicspath{{./}{./assets/}{./images/}}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, shapes.misc, arrows.meta, positioning, calc, fit, backgrounds}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{HTML}{F7F7F7}
+\definecolor{codeframe}{HTML}{DDDDDD}
+\definecolor{keyword}{HTML}{005FAF}
+\definecolor{comment}{HTML}{6A737D}
+\definecolor{string}{HTML}{D73A49}
+\definecolor{accent}{HTML}{2E7D32}
+\definecolor{warn}{HTML}{C62828}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keyword}\bfseries,
+    commentstyle=\color{comment}\itshape,
+    stringstyle=\color{string},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    tabsize=4,
+    showstringspaces=false,
+    language=C++,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{etoolbox}
+\usepackage{fancyvrb}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=keyword,
+    citecolor=black,
+    pdfauthor={Made Branenda Jordhy, Muhammad Nur Majiid, Jason Edward Salim, Athilla Zaidan Zidna Fann},
+    pdftitle={Laporan Milestone 4 - Intermediate Code and Interpreter - IF2224}
+}
+
+% HEADER/FOOTER
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{36pt}
+\fancyhead[L]{%
+    \small\textnormal{School of Electrical Engineering and Informatics}\\[-1pt]
+    \small\textnormal{Institut Teknologi Bandung}%
+}
+\fancyhead[R]{\IfFileExists{assets/LogoITB.png}{\includegraphics[height=1cm]{assets/LogoITB.png}}{}}
+\fancyfoot[L]{\small\textnormal{IF2224 Formal Language and Automata Theory}}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% TITLE
+\title{
+    \vspace{-1.5cm}
+    {\Large\textsc{IF2224 Formal Language and Automata Theory}}\\[0.35cm]
+    {\LARGE\textbf{Arion Compiler - Milestone 4: Intermediate Code and Interpreter}}\\[0.3cm]
+    \vspace{-0.3cm}
+}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{assets/foto_kelompok.png}{%
+        \includegraphics[width=0.6\textwidth]{assets/foto_kelompok.png}%
+    }{%
+        \vspace{4cm}
+    }
+\end{figure}
+
+\vspace{1cm}
+\begin{center}
+    \textbf{Made Branenda Jordhy} - 13524026 \\[0.15cm]
+    \textbf{Muhammad Nur Majiid} - 13524028 \\[0.15cm]
+    \textbf{Jason Edward Salim} - 13524034 \\[0.15cm]
+    \textbf{Athilla Zaidan Zidna Fann} - 13524068
+\end{center}
+
+\vspace{3cm}
+\begin{center}
+    {\large\textbf{School of Electrical Engineering and Informatics}}\\[0.1cm]
+    {\large\textbf{Institut Teknologi Bandung}}\\[0.1cm]
+    {\large\textbf{Semester II 2025/2026}}\\[0.1cm]
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% =======================================================================
+\section{Theoretical Background}
+
+\subsection{Intermediate Code Generation}
+
+\textit{Intermediate code generation} adalah tahap translasi dari
+\textit{Decorated AST} menuju representasi instruksi yang lebih dekat dengan
+mesin. Setelah Milestone~3, AST Arion sudah membawa informasi semantik seperti
+tipe data, indeks symbol table, lexical level, dan alamat variabel. Informasi
+tersebut menjadi dasar untuk mengubah ekspresi dan statement tingkat tinggi
+menjadi instruksi linier.
+
+Pada Milestone~4 ini, bentuk instruksi yang digunakan mengikuti model
+\textit{stack machine}. Setiap ekspresi dievaluasi dengan mendorong operand ke
+stack, menjalankan operasi lewat instruksi \texttt{OPR}, lalu memakai nilai
+hasilnya untuk assignment, percabangan, atau output. Pendekatan ini membuat
+eksekusi tidak perlu lagi menelusuri pohon AST secara langsung.
+
+\subsection{Three Address Code dan Stack Machine}
+
+Secara umum, \textit{Three Address Code} memecah ekspresi kompleks menjadi
+instruksi sederhana dengan jumlah operand terbatas. Pada implementasi Arion,
+instruksi tidak menyimpan tiga alamat eksplisit seperti \texttt{t1 := a + b},
+tetapi memakai bentuk P-Code sederhana:
+
+\begin{center}
+\begin{tabular}{c l c c}
+\toprule
+\textbf{Line} & \textbf{Instruksi} & \textbf{Level} & \textbf{Operand} \\
+\midrule
+0 & \texttt{INT} & 0 & 5 \\
+1 & \texttt{LIT} & 0 & 5 \\
+2 & \texttt{STO} & 0 & 3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Maknanya tetap sama: instruksi bekerja pada alamat memori dan stack. Instruksi
+\texttt{LIT} mendorong literal ke stack, \texttt{LOD} membaca variabel,
+\texttt{STO} menulis variabel, \texttt{CAL} membentuk frame pemanggilan,
+\texttt{RET} membersihkan frame, \texttt{JMP}/\texttt{JPC} mengatur alur
+kontrol, dan \texttt{OPR} menjalankan operasi aritmatika, relasional, atau
+output.
+
+\subsection{Interpreter}
+
+Interpreter bertindak sebagai mesin virtual yang menjalankan daftar instruksi
+secara berurutan. Mesin menyimpan tiga komponen utama:
+
+\begin{itemize}
+    \item \textbf{Instruction pointer} (\texttt{ip}) untuk menunjuk instruksi
+          yang sedang dieksekusi.
+    \item \textbf{Base pointer} (\texttt{bp}) untuk menunjuk awal stack frame
+          aktif.
+    \item \textbf{Stack} untuk menyimpan static link, dynamic link, return
+          address, variabel lokal, parameter, operand sementara, dan hasil
+          ekspresi.
+\end{itemize}
+
+Siklus eksekusinya mengikuti pola \textit{fetch-decode-execute}. Interpreter
+mengambil instruksi pada \texttt{ip}, memeriksa opcode-nya, menjalankan handler
+yang sesuai, lalu melanjutkan ke instruksi berikutnya kecuali terjadi lompatan
+atau return.
+
+\subsection{Runtime Safety}
+
+Walaupun Arion sudah melakukan pengecekan semantik secara statis, interpreter
+tetap perlu menjaga keamanan eksekusi. Implementasi saat ini menambahkan
+pengecekan \textit{stack overflow}, \textit{stack underflow}, akses stack
+\textit{out-of-bounds}, target jump invalid, pembagian dengan nol, modulo dengan
+nol, serta opcode/OPR yang tidak dikenal. Dengan demikian, kesalahan runtime
+tidak langsung menyebabkan program C++ crash, tetapi dilaporkan melalui
+\texttt{RuntimeError}.
+
+% =======================================================================
+\section{Design and Implementation}
+
+\subsection{Overview Pipeline}
+
+Pipeline kompilasi yang menjadi dasar Milestone~4 adalah kelanjutan dari tiga
+milestone sebelumnya. Lexer menghasilkan token stream, parser membangun parse
+tree, AST builder mereduksi parse tree menjadi AST, semantic analyzer
+mendekorasi AST dan mengisi symbol table, lalu code generator membuat
+intermediate code yang dapat dijalankan interpreter.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    src/.style={rectangle, draw, fill=codebg, rounded corners=2pt,
+                minimum width=2.5cm, minimum height=0.85cm, align=center},
+    proc/.style={rectangle, draw, fill=yellow!12, rounded corners=2pt,
+                 minimum width=2.5cm, minimum height=0.85cm, align=center},
+    back/.style={rectangle, draw, fill=accent!15, rounded corners=2pt,
+                 minimum width=2.5cm, minimum height=0.85cm, align=center},
+    arr/.style={-{Stealth[length=2.5mm]}, thick}
+]
+    \node[src]  (src) at (0,0) {Source};
+    \node[proc, right=0.55cm of src] (lex) {Lexer};
+    \node[proc, right=0.55cm of lex] (par) {Parser};
+    \node[proc, right=0.55cm of par] (ast) {AST Builder};
+    \node[proc, right=0.55cm of ast] (sem) {Semantic\\Analyzer};
+    \node[back, right=0.55cm of sem] (cg) {Code\\Generator};
+    \node[back, right=0.55cm of cg] (vm) {Interpreter};
+    \node[src, right=0.55cm of vm] (out) {Output};
+
+    \draw[arr] (src) -- (lex);
+    \draw[arr] (lex) -- (par);
+    \draw[arr] (par) -- (ast);
+    \draw[arr] (ast) -- (sem);
+    \draw[arr] (sem) -- (cg);
+    \draw[arr] (cg) -- (vm);
+    \draw[arr] (vm) -- (out);
+\end{tikzpicture}}
+\caption{Pipeline lengkap Arion dari source code hingga output eksekusi.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Instruction Representation}
+
+Instruksi intermediate code didefinisikan pada \texttt{src/header/instruction.hpp}
+dengan empat field utama: nomor baris, opcode, level, dan operand.
+
+\begin{lstlisting}
+struct Instruction {
+    int line;
+    OpCode op;
+    int level;
+    int operand;
+};
+\end{lstlisting}
+
+Opcode yang tersedia dirangkum pada Tabel~\ref{tab:opcode}. Instruksi ini
+sesuai dengan konvensi pada spesifikasi Milestone~4, dengan tambahan struktur
+data C++ agar mudah dicetak dan dieksekusi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{Opcode} & \textbf{Fungsi} \\
+\midrule
+\texttt{INT} & Mengalokasikan ruang variabel lokal pada stack frame aktif. Frame header dibuat saat inisialisasi global atau saat \texttt{CAL}. \\
+\texttt{LIT} & Mendorong nilai literal integer/boolean/char ke stack. \\
+\texttt{LOD} & Membaca nilai variabel dari stack frame tertentu. \\
+\texttt{STO} & Mengambil nilai dari puncak stack dan menyimpannya ke alamat variabel. \\
+\texttt{CAL} & Melakukan pemanggilan prosedur/fungsi. \\
+\texttt{JMP} & Melompat tanpa syarat ke baris instruksi tertentu. \\
+\texttt{JPC} & Melompat jika kondisi pada puncak stack bernilai false/0. \\
+\texttt{OPR} & Menjalankan operasi aritmatika, relasional, atau output. \\
+\texttt{RET} & Keluar dari stack frame aktif dan kembali ke caller. \\
+\bottomrule
+\end{tabularx}
+\caption{Opcode intermediate code yang tersedia.}
+\label{tab:opcode}
+\end{table}
+
+\subsection{OPR Code}
+
+Instruksi \texttt{OPR} memakai operand sebagai kode operasi. Operasi yang
+diimplementasikan adalah \texttt{NEG}, \texttt{ADD}, \texttt{SUB},
+\texttt{MUL}, \texttt{DIV}, \texttt{MOD}, operator relasional
+\texttt{EQL}/\texttt{NEQ}/\texttt{LSS}/\texttt{GEQ}/\texttt{GTR}/\texttt{LEQ},
+serta \texttt{WRT} dan \texttt{WRTLN}. Nilai boolean direpresentasikan sebagai
+integer \texttt{0} dan \texttt{1}, sehingga operasi \texttt{and} dipetakan ke
+perkalian dan \texttt{or} dipetakan ke penjumlahan pada code generator.
+
+\subsection{Code Generator}
+
+Komponen \texttt{CodeGenerator} berada pada \texttt{src/header/codegen.hpp} dan
+\texttt{src/lib/codegen.cpp}. Generator menerima \texttt{ASTNode*} dan
+\texttt{SymbolTable} hasil semantic analyzer. Sebelum menghasilkan instruksi,
+generator memanggil \texttt{resolveAddresses()} untuk mengisi alamat variabel
+pada \texttt{tab[idx].adr} berdasarkan urutan deklarasi pada setiap
+\texttt{btab}.
+
+Strategi translasi dilakukan secara rekursif sesuai jenis node AST:
+
+\begin{itemize}
+    \item \texttt{genProgram()} menghasilkan instruksi utama dan, bila ada
+          subprogram, membuat \texttt{JMP} awal untuk melewati kode prosedur
+          atau fungsi.
+    \item \texttt{genAssign()} menghasilkan instruksi ekspresi kanan lalu
+          \texttt{STO} ke alamat variabel target.
+    \item \texttt{genIf()} memakai \texttt{JPC} yang di-\textit{patch} setelah
+          cabang \texttt{then}/\texttt{else} selesai digenerate.
+    \item \texttt{genWhile()}, \texttt{genFor()}, dan \texttt{genRepeat()}
+          membangun control flow dengan kombinasi label implisit berupa nomor
+          baris, \texttt{JMP}, dan \texttt{JPC}.
+    \item \texttt{genCall()} menangani \texttt{write}/\texttt{writeln} sebagai
+          \texttt{OPR WRT/WRTLN}, dan subprogram pengguna sebagai
+          \texttt{CAL}.
+\end{itemize}
+
+Generator juga sudah memisahkan alamat parameter dan variabel lokal. Parameter
+disimpan pada alamat negatif relatif terhadap base pointer, sedangkan variabel
+lokal dimulai dari offset \texttt{FRAME\_HEADER\_SIZE}. Pada fungsi, assignment
+ke nama fungsi dibaca kembali sebagai nilai return dan diikuti instruksi
+\texttt{RET 1 psze}; pada prosedur, instruksi akhirnya adalah
+\texttt{RET 0 psze}. Operand \texttt{psze} dipakai interpreter untuk
+membersihkan argumen setelah subprogram selesai.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    proc/.style={rectangle, draw, fill=codebg, rounded corners=2pt,
+                 minimum width=3.3cm, minimum height=0.75cm},
+    dec/.style={diamond, draw, fill=yellow!12, aspect=2.5,
+                minimum width=2.8cm, minimum height=0.9cm},
+    arr/.style={-{Stealth[length=2.5mm]}, thick},
+    lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
+]
+    \node[proc] (start) {genExpr(left)};
+    \node[proc, below=0.8cm of start] (right) {genExpr(right)};
+    \node[dec, below=0.9cm of right] (op) {operator?};
+    \node[proc, below left=1.0cm and 0.5cm of op] (arith) {emit OPR arithmetic};
+    \node[proc, below right=1.0cm and 0.5cm of op] (rel) {emit OPR relational};
+
+    \draw[arr] (start) -- (right);
+    \draw[arr] (right) -- (op);
+    \draw[arr] (op) -- node[lbl, left] {+ - * div mod} (arith);
+    \draw[arr] (op) -- node[lbl, right] {== <> < <= > >=} (rel);
+\end{tikzpicture}
+\caption{Skema translasi ekspresi biner pada code generator.}
+\label{fig:binop}
+\end{figure}
+
+\subsection{Interpreter}
+
+Komponen \texttt{Interpreter} diimplementasikan sebagai modul header dan
+library terpisah. Interpreter menyimpan daftar instruksi, stack eksekusi,
+serta pointer \texttt{ip} dan \texttt{bp}. Setiap opcode memiliki handler
+terpisah untuk operasi literal, load, store, call, jump, conditional jump,
+operasi \texttt{OPR}, dan return.
+
+Stack frame menggunakan tiga slot awal. Pada awal eksekusi, interpreter
+mendorong frame header global berisi tiga nol. Pada pemanggilan subprogram,
+\texttt{CAL} mendorong static link, dynamic link, dan return address, lalu
+\texttt{INT} menambahkan ruang lokal.
+
+\begin{center}
+\begin{tabular}{c l}
+\toprule
+\textbf{Offset} & \textbf{Isi} \\
+\midrule
+0 & Static link \\
+1 & Dynamic link \\
+2 & Return address \\
+3 dst. & Parameter, variabel lokal, dan ruang kerja frame \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Alamat variabel dihitung lewat \texttt{resolveAddress(level, address)}. Nilai
+\texttt{level} menyatakan berapa banyak static link yang perlu ditelusuri dari
+frame aktif untuk mencapai frame deklarasi variabel.
+
+\subsection{Error Handling}
+
+Pada code generator, error dilaporkan dengan \texttt{CodeGenError}. Contoh
+kasus yang ditangani adalah target assignment yang belum ter-resolve, literal
+real yang belum didukung oleh stack machine, \texttt{readln} yang belum
+diimplementasikan, dan operator yang belum dipetakan ke \texttt{OPR}.
+
+Pada interpreter, error runtime dilaporkan dengan \texttt{RuntimeError}. Handler
+mengecek batas stack, stack kosong sebelum operasi \texttt{pop}, target jump di
+luar range instruksi, frame pointer invalid, pembagian dengan nol, modulo dengan
+nol, dan kode \texttt{OPR} yang tidak dikenal.
+
+\subsection{Status Integrasi}
+
+Berdasarkan struktur repository saat laporan ini dibuat, komponen Milestone~4
+sudah terintegrasi ke pipeline utama. \texttt{Makefile} telah memasukkan
+\path{src/lib/codegen.cpp} dan \path{src/lib/interpreter.cpp} ke daftar
+\texttt{SRC}. Sementara itu, \path{src/main.cpp} sudah menghubungkan
+\texttt{codegen.hpp} dan \texttt{interpreter.hpp}. Setelah lexer, parser, AST
+builder, dan semantic analyzer selesai, program menghasilkan intermediate code
+melalui \texttt{CodeGenerator}, mencetaknya, lalu menjalankannya melalui
+\texttt{Interpreter} pada bagian \texttt{--- Output Program ---}.
+
+Dengan demikian, executable utama tidak lagi berhenti pada \textit{Decorated
+AST}. Output terminal sudah berisi seluruh tahapan: daftar token, parse tree,
+decorated AST, symbol table, intermediate code, dan output aktual program Arion.
+
+Keterbatasan implementasi yang terlihat dari kode adalah sebagai berikut.
+
+\begin{itemize}
+    \item Eksekusi stack machine masih berbasis \texttt{int}; literal
+          \texttt{real} belum didukung.
+    \item \texttt{writeln} untuk string literal di-skip oleh generator, sehingga
+          output string belum tersedia pada stack machine.
+    \item Assignment baru mendukung variabel sederhana; akses array dan field
+          record belum digenerate.
+    \item \texttt{readln} belum didukung pada code generation.
+    \item \texttt{case} belum memiliki cabang generator khusus.
+\end{itemize}
+
+% =======================================================================
+\section{Testing}
+
+Pengujian (\textit{testing}) Milestone~4 disimpan pada direktori
+\texttt{test/milestone-4/}. Setiap testcase memiliki berkas input dan output
+dengan format \texttt{input-\{n\}.txt} dan
+\texttt{output/output-\{n\}.txt}. Output pada folder tersebut berbentuk
+intermediate code teks, sehingga dapat langsung dimasukkan ke laporan dengan
+\texttt{lstinputlisting}.
+
+\subsection{Lokasi File Pengujian}
+
+\begin{itemize}
+    \item file input: \path{test/milestone-4/input-1.txt} s.d. \path{test/milestone-4/input-8.txt}
+    \item file output: \path{test/milestone-4/output/output-1.txt} s.d. \path{test/milestone-4/output/output-8.txt}
+\end{itemize}
+
+\subsection{Ringkasan Kasus Uji}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{c l X}
+\toprule
+\textbf{No} & \textbf{Fokus} & \textbf{Deskripsi singkat} \\
+\midrule
+1 & Assignment dasar & Assignment integer, operasi penjumlahan, dan \texttt{writeln}. \\
+2 & \texttt{if-else} dan \texttt{while} & Percabangan dengan \texttt{JPC}/\texttt{JMP}, operasi relasional, dan loop decrement. \\
+3 & \texttt{for} dan \texttt{repeat-until} & Translasi \texttt{for-to}, akumulasi nilai, dan loop \texttt{repeat} sampai kondisi terpenuhi. \\
+4 & Function call & Contoh instruksi \texttt{JMP} awal, entry fungsi, \texttt{CAL}, dan \texttt{RET}. \\
+5 & Nested scope & Contoh static link dan akses variabel pada lexical level berbeda. \\
+6 & Procedure call dengan parameter & Pemanggilan prosedur \texttt{add(a,b)}, parameter alamat negatif, dan pembersihan argumen lewat \texttt{RET 0 2}. \\
+7 & Nested procedure dan loop & Prosedur dengan parameter, \texttt{if-else}, \texttt{while}, dan dua kali pemanggilan dari blok utama. \\
+8 & Aritmatika lengkap & Operasi \texttt{+}, \texttt{-}, \texttt{*}, \texttt{div}, relasional \texttt{<}, dan beberapa output. \\
+\bottomrule
+\end{tabularx}
+\caption{Ringkasan kasus uji Milestone~4.}
+\label{tab:tests}
+\end{table}
+
+\subsection{Catatan Testcase}
+
+Seluruh testcase Milestone~4 sekarang berupa program Arion lengkap yang ditutup
+dengan \texttt{end.}. File output pada repository berisi intermediate code yang
+dihasilkan generator. Karena \texttt{main.cpp} terbaru juga menjalankan
+interpreter, output final program juga muncul di terminal pada bagian
+\texttt{--- Output Program ---}. Pada laporan ini, bukti pengujian ditampilkan
+dalam bentuk teks agar lebih mudah dibaca dan diverifikasi.
+
+\subsection{Hasil Pengujian Intermediate Code}
+
+\subsubsection*{Kasus 1 - Assignment dasar dan \texttt{writeln}}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-1.txt}}
+]{../../test/milestone-4/input-1.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/output/output-1.txt}}
+]{../../test/milestone-4/output/output-1.txt}
+
+\subsubsection*{Kasus 2 - Percabangan dan \texttt{while}}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-2.txt}}
+]{../../test/milestone-4/input-2.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-2.txt}}
+]{../../test/milestone-4/output/output-2.txt}
+
+\subsubsection*{Kasus 3 - \texttt{for-to} dan \texttt{repeat-until}}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-3.txt}}
+]{../../test/milestone-4/input-3.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-3.txt}}
+]{../../test/milestone-4/output/output-3.txt}
+
+\subsubsection*{Kasus 4 - Function call}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-4.txt}}
+]{../../test/milestone-4/input-4.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-4.txt}}
+]{../../test/milestone-4/output/output-4.txt}
+
+\subsubsection*{Kasus 5 - Nested scope}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-5.txt}}
+]{../../test/milestone-4/input-5.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-5.txt}}
+]{../../test/milestone-4/output/output-5.txt}
+
+\subsubsection*{Kasus 6 - Procedure call dengan parameter}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-6.txt}}
+]{../../test/milestone-4/input-6.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-6.txt}}
+]{../../test/milestone-4/output/output-6.txt}
+
+\subsubsection*{Kasus 7 - Nested procedure dan loop}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-7.txt}}
+]{../../test/milestone-4/input-7.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-7.txt}}
+]{../../test/milestone-4/output/output-7.txt}
+
+\subsubsection*{Kasus 8 - Aritmatika dan relasional}
+
+\lstinputlisting[language={}, numbers=none, basicstyle=\ttfamily\small,
+    caption={\texttt{test/milestone-4/input-8.txt}}
+]{../../test/milestone-4/input-8.txt}
+
+\lstinputlisting[language={}, numbers=left, basicstyle=\ttfamily\scriptsize,
+    caption={\texttt{test/milestone-4/output/output-8.txt}}
+]{../../test/milestone-4/output/output-8.txt}
+
+% =======================================================================
+\newpage
+\section{Conclusion}
+
+Dari pengerjaan Milestone~4 ini, komponen \textit{Intermediate Code Generator}
+dan \textit{Interpreter} untuk Arion sudah dibangun dan diintegrasikan sebagai
+tahap akhir dari pipeline compiler. Generator mampu mengubah sebagian besar AST
+statement imperatif menjadi instruksi stack machine seperti \texttt{INT},
+\texttt{LIT}, \texttt{LOD}, \texttt{STO}, \texttt{JMP}, \texttt{JPC},
+\texttt{CAL}, \texttt{OPR}, dan \texttt{RET}. Instruksi tersebut sudah cukup
+untuk mewakili assignment integer, ekspresi aritmatika, operator relasional,
+\texttt{if-else}, \texttt{while}, \texttt{for}, \texttt{repeat-until},
+procedure call, function call dengan return value, nested procedure sederhana,
+serta output numerik melalui \texttt{write}/\texttt{writeln}.
+
+Interpreter juga sudah memiliki arsitektur stack machine dengan instruction
+pointer, base pointer, stack frame, static link, dynamic link, dan return
+address. Selain menjalankan instruksi dasar, interpreter sudah memuat error
+handling runtime untuk stack overflow, stack underflow, akses stack di luar
+batas, target jump invalid, pembagian dengan nol, dan opcode yang tidak
+dikenal.
+
+Integrasi utama juga sudah berjalan: setelah semantic analyzer selesai,
+\texttt{main.cpp} mencetak intermediate code dan menjalankan interpreter untuk
+menghasilkan output final program. Delapan testcase Milestone~4 disiapkan untuk
+menguji assignment dasar, control flow, loop, function call, procedure call,
+nested scope, nested procedure, dan operasi aritmatika/relasional.
+
+\subsection{Saran}
+
+Berdasarkan status implementasi Milestone~4, beberapa saran pengembangan adalah
+sebagai berikut.
+
+\begin{enumerate}
+    \item \textbf{Simpan output lengkap pipeline.} Saat ini file output testcase
+          berisi intermediate code. Ke depan, output final interpreter dapat
+          ikut disimpan agar validasi tidak hanya membandingkan instruksi, tetapi
+          juga hasil eksekusinya.
+    \item \textbf{Dukung tipe non-integer.} Jika interpreter tetap memakai stack
+          integer, string dan real perlu direpresentasikan melalui tabel literal
+          atau variant value agar \texttt{writeln('teks')} dan real arithmetic
+          dapat berjalan.
+    \item \textbf{Lengkapi akses komposit.} Tambahkan code generation untuk
+          array indexing, field access pada record, dan assignment tipe
+          komposit.
+    \item \textbf{Tambahkan pengujian runtime.} Selain intermediate code,
+          simpan juga output final interpreter agar pengujian membuktikan dua
+          hal sekaligus: instruksi yang dihasilkan benar dan mesin virtual
+          mengeksekusinya dengan hasil yang sesuai.
+\end{enumerate}
+
+% =======================================================================
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{aho2006}
+A.~V.~Aho, R.~Sethi, and J.~D.~Ullman,
+\textit{Compilers: Principles, Techniques, and Tools}, 2nd ed.
+Addison-Wesley, 2006.
+
+\bibitem{hopcroft2006}
+J.~E.~Hopcroft, R.~Motwani, and J.~D.~Ullman,
+\textit{Introduction to Automata Theory, Languages, and Computation}, 3rd ed.
+Pearson, 2006.
+
+\bibitem{wirth1976}
+N.~Wirth,
+\textit{Algorithms + Data Structures = Programs}.
+Prentice-Hall, 1976.
+
+\bibitem{pivak}
+R.~Spivak, ``Let's Build A Simple Interpreter,''
+\url{https://ruslanspivak.com/lsbasi-part1/}
+
+\bibitem{tutorialspoint}
+``Compiler Design - Intermediate Code Generation,''
+TutorialsPoint.
+\url{https://www.tutorialspoint.com/compiler_design/compiler_design_intermediate_code.htm}
+
+\end{thebibliography}
+
+% =======================================================================
+\newpage
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+\subsection*{GitHub Repository}
+
+\url{https://github.com/jsndwrd/DCL-Tubes-IF2224-2026}
+
+\subsection*{Task Distribution}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{clX}
+        \toprule
+        \textbf{NIM} & \textbf{Nama} & \textbf{Kontribusi} \\
+        \midrule
+            13524026 & Made Branenda Jordhy      & 25\% \\
+            13524028 & Muhammad Nur Majiid       & 25\% \\
+            13524034 & Jason Edward Salim        & 25\% \\
+            13524068 & Athilla Zaidan Zidna Fann & 25\% \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\end{document}
