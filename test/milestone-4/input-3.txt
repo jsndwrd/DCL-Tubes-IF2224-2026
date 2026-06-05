@@ -1,22 +1,3 @@
-program ArithmeticTest;
-var
-  a, b, c: integer;
-
-begin
-  a := 5;
-  b := 10;
-  c := a + b;
-  writeln(c);
-  c := b - a;
-  writeln(c);
-  c := a * b;
-  writeln(c);
-  c := b div a;
-  writeln(c);
-  if a < b then
-    begin
-      writeln(a);
-    end;
 program ForRepeat;
 
 var
