@@ -7,6 +7,8 @@
 #include "header/token.hpp"
 #include "header/ast.hpp"
 #include "header/symtab.hpp"
+#include "header/codegen.hpp"
+#include "header/interpreter.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -127,8 +129,8 @@ int main() {
         return 1;
     }
 
+    SemanticAnalyzer analyzer;
     try {
-        SemanticAnalyzer analyzer;
         analyzer.analyze(astRoot);
     } catch (const SemanticError& e) {
         cerr << "\n" << e.what() << "\n";
@@ -141,15 +143,36 @@ int main() {
     printAST(astRoot);
     cout << "----------------------\n";
 
-    {
-        SymbolTable dummy; 
+    analyzer.sym.printTab();
+    analyzer.sym.printBTab();
+    analyzer.sym.printATab();
 
-        SemanticAnalyzer printer;
-        printer.analyze(astRoot);
-        printer.sym.printTab();
-        printer.sym.printBTab();
-        printer.sym.printATab();
+    vector<Instruction> code;
+    try {
+        CodeGenerator gen(analyzer.sym);
+        code = gen.generate(astRoot);
+    } catch (const CodeGenError& e) {
+        cerr << "\n" << e.what() << "\n";
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
+        return 1;
     }
+
+    cout << "\n--- Intermediate Code ---\n";
+    printInstructions(code);
+    cout << "-------------------------\n";
+
+    cout << "\n--- Output Program ---\n";
+    try {
+        Interpreter interp;
+        interp.execute(code);
+    } catch (const RuntimeError& e) {
+        cerr << "\n" << e.what() << "\n";
+        destroyAST(astRoot);
+        destroyParseTree(parseRoot);
+        return 1;
+    }
+    cout << "----------------------\n";
 
     cout << "\nSimpan hasil ke berkas .txt? (y/n): ";
     string jawab;

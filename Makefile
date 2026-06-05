@@ -1,6 +1,6 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall
-SRC      = src/main.cpp src/lib/lexer.cpp src/lib/parser.cpp src/lib/ast.cpp src/lib/symtab.cpp src/lib/interpreter.cpp
+SRC      = src/main.cpp src/lib/lexer.cpp src/lib/parser.cpp src/lib/ast.cpp src/lib/symtab.cpp src/lib/codegen.cpp src/lib/interpreter.cpp
 BIN      = bin
 
 ifeq ($(OS), Windows_NT)
@@ -25,7 +25,9 @@ all: build
 
 build: $(OUT)
 
-$(OUT):
+HEADERS = $(wildcard src/header/*.hpp)
+
+$(OUT): $(SRC) $(HEADERS)
 	$(MKDIR)
 	$(CXX) $(CXXFLAGS) $(SRC) -o $(OUT)
 
