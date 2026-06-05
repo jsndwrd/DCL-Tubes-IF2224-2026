@@ -31,11 +31,11 @@ private:
     void handleLit(int operand);
     void handleLod(int level, int address);
     void handleSto(int level, int address);
-    void handleCal(int operand);
+    void handleCal(int level, int operand);
     void handleJmp(int operand);
     void handleJpc(int operand);
     void handleOpr(int operand);
-    void handleRet();
+    void handleRet(int level, int operand);
 
     int resolveAddress(int level, int address);
     void ensureStackSpace(int needed);

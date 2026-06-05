@@ -30,30 +30,13 @@ int Interpreter::resolveAddress(int level, int addr) {
 }
 
 void Interpreter::handleInt(int level, int operand) {
-    ensureStackSpace(operand);
-    int frameStart = static_cast<int>(stack.size());
-
-    int sl = 0;
-    if (level > 0) {
-        int parent = bp;
-        for (int i = 1; i < level; ++i) {
-            if (parent < 0 || parent >= static_cast<int>(stack.size())) {
-                throw RuntimeError("stack corruption in INT: cannot resolve static link");
-            }
-            parent = stack[parent];
-        }
-        sl = parent;
-    }
-
-    stack.push_back(sl);
-    stack.push_back(bp);
-    stack.push_back(0);
-
-    for (int i = 3; i < operand; ++i) {
+    (void)level;
+    int locals = operand - FRAME_HEADER_SIZE;
+    if (locals < 0) locals = 0;
+    ensureStackSpace(locals);
+    for (int i = 0; i < locals; ++i) {
         stack.push_back(0);
     }
-
-    bp = frameStart;
 }
 
 void Interpreter::handleLit(int operand) {
@@ -64,7 +47,8 @@ void Interpreter::handleLit(int operand) {
 void Interpreter::handleLod(int level, int address) {
     ensureStackSpace(1);
     int target = resolveAddress(level, address);
-    stack.push_back(stack[target]);
+    int value = stack[target];
+    stack.push_back(value);
 }
 
 void Interpreter::handleSto(int level, int address) {
@@ -77,25 +61,21 @@ void Interpreter::handleSto(int level, int address) {
     stack[target] = value;
 }
 
-void Interpreter::handleCal(int operand) {
-    ensureStackSpace(3);
-    int sl = 0;
-    if (operand > 0) {
-        int parent = bp;
-        for (int i = 1; i < operand; ++i) {
-            if (parent < 0 || parent >= static_cast<int>(stack.size())) {
-                throw RuntimeError("stack corruption in CAL: invalid frame chain");
-            }
-            parent = stack[parent];
+void Interpreter::handleCal(int level, int operand) {
+    ensureStackSpace(FRAME_HEADER_SIZE);
+    int sl = bp;
+    for (int i = 0; i < level; ++i) {
+        if (sl < 0 || sl >= static_cast<int>(stack.size())) {
+            throw RuntimeError("stack corruption in CAL: invalid static link chain");
         }
-        sl = parent;
+        sl = stack[sl];
     }
 
     stack.push_back(sl);
     stack.push_back(bp);
-    stack.push_back(ip + 1);
+    stack.push_back(ip);
 
-    bp = static_cast<int>(stack.size()) - 3;
+    bp = static_cast<int>(stack.size()) - FRAME_HEADER_SIZE;
 
     if (operand < 0 || operand >= static_cast<int>(code.size())) {
         throw RuntimeError("invalid jump target in CAL: line " +
@@ -234,7 +214,7 @@ void Interpreter::handleOpr(int operand) {
     }
 }
 
-void Interpreter::handleRet() {
+void Interpreter::handleRet(int level, int operand) {
     if (bp < 0 || bp + 2 >= static_cast<int>(stack.size())) {
         throw RuntimeError("stack corruption in RET: invalid frame");
     }
@@ -246,7 +226,24 @@ void Interpreter::handleRet() {
         return;
     }
 
-    stack.resize(bp);
+    bool hasResult = (level == 1);
+    int result = 0;
+    if (hasResult) {
+        if (stack.empty()) {
+            throw RuntimeError("stack underflow in function RET: missing result");
+        }
+        result = stack.back();
+    }
+
+    int newTop = bp - operand;
+    if (newTop < 0) {
+        throw RuntimeError("stack underflow in RET: argument cleanup underflows stack");
+    }
+    stack.resize(newTop);
+    if (hasResult) {
+        stack.push_back(result);
+    }
+
     bp = oldBp;
     ip = returnAddr;
 }
@@ -256,6 +253,10 @@ void Interpreter::execute(const std::vector<Instruction>& code) {
     ip = 0;
     bp = 0;
     stack.clear();
+
+    stack.push_back(0);
+    stack.push_back(0);
+    stack.push_back(0);
 
     while (ip >= 0 && ip < static_cast<int>(code.size())) {
         const Instruction& inst = code[ip];
@@ -267,11 +268,11 @@ void Interpreter::execute(const std::vector<Instruction>& code) {
             case OpCode::LIT: handleLit(inst.operand); break;
             case OpCode::LOD: handleLod(inst.level, inst.operand); break;
             case OpCode::STO: handleSto(inst.level, inst.operand); break;
-            case OpCode::CAL: handleCal(inst.operand); break;
+            case OpCode::CAL: handleCal(inst.level, inst.operand); break;
             case OpCode::JMP: handleJmp(inst.operand); break;
             case OpCode::JPC: handleJpc(inst.operand); break;
             case OpCode::OPR: handleOpr(inst.operand); break;
-            case OpCode::RET: handleRet();
+            case OpCode::RET: handleRet(inst.level, inst.operand);
 
                 if (ip >= static_cast<int>(code.size())) return;
                 break;
