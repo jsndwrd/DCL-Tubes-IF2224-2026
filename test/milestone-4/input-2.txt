@@ -1,3 +1,35 @@
+program NestedScopeTest;
+var
+  a, b: integer;
+
+procedure outer(x: integer);
+var
+  y: integer;
+begin
+  y := x * 2;
+  if x > 5 then
+    begin
+      y := y + 10;
+      writeln(y);
+    end
+  else
+    begin
+      y := y - 1;
+      writeln(y);
+    end;
+
+  while y > 0 do
+    begin
+      y := y - 1;
+    end;
+  writeln(y);
+end;
+
+begin
+  a := 3;
+  b := 8;
+  outer(a);
+  outer(b);
 program TestKeywords;
 
 var
